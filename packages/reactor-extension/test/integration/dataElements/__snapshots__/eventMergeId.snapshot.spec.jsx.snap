@@ -3,10 +3,7 @@
 exports[`Event merge ID settings snapshots > preserves a saved cache ID without generating a replacement 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "cacheId": "11111111-1111-4111-8111-111111111111",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "cacheId": "11111111-1111-4111-8111-111111111111",
   },

@@ -3,22 +3,7 @@
 exports[`Send streaming media event settings snapshots > omits empty started and ended state arrays 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "media.statesUpdate",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": "player",
-    "xdm": {
-      "eventType": "media.statesUpdate",
-      "mediaCollection": {
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "media.statesUpdate",
@@ -54,193 +39,7 @@ exports[`Send streaming media event settings snapshots > rejects a negative sess
       "testId": "sessionDetails.lengthNumberField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "production": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-production",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-production",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 3,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-production",
-        },
-        "datastreamId": "ds-production",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "staging": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-staging",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-staging",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 2,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-staging",
-        },
-        "datastreamId": "ds-staging",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "eventType": "media.sessionStart",
-    "handleMediaSessionAutomatically": true,
-    "instanceName": "secondary",
-    "playerId": "%player%",
-    "xdm": {
-      "eventType": "media.sessionStart",
-      "mediaCollection": {
-        "customMetadata": [
-          {
-            "name": "key",
-            "value": "%value%",
-          },
-          {
-            "name": "country",
-            "value": "US",
-          },
-        ],
-        "playhead": "%playhead%",
-        "qoeDataDetails": "%qoe%",
-        "sessionDetails": {
-          "adLoad": "1",
-          "album": "Album",
-          "appVersion": undefined,
-          "artist": "Artist",
-          "assetID": "asset",
-          "author": "Author",
-          "authorized": "true",
-          "channel": undefined,
-          "contentType": "vod",
-          "dayPart": "morning",
-          "episode": "1",
-          "feed": "main",
-          "firstAirDate": "2025-01-01",
-          "firstDigitalDate": "2025-01-02",
-          "friendlyName": "Video",
-          "genre": "news",
-          "label": "label",
-          "length": -1,
-          "mvpd": "mvpd",
-          "name": "video-1",
-          "network": "network",
-          "originator": "originator",
-          "playerName": undefined,
-          "publisher": "publisher",
-          "rating": "PG",
-          "season": "1",
-          "show": "show",
-          "showType": "0",
-          "station": "station",
-          "streamFormat": "HD",
-          "streamType": "video",
-        },
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -434,193 +233,7 @@ exports[`Send streaming media event settings snapshots > rejects a negative sess
 exports[`Send streaming media event settings snapshots > rejects a negative session length and accepts length supplied by a data element 2`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "production": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-production",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-production",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 3,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-production",
-        },
-        "datastreamId": "ds-production",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "staging": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-staging",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-staging",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 2,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-staging",
-        },
-        "datastreamId": "ds-staging",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "eventType": "media.sessionStart",
-    "handleMediaSessionAutomatically": true,
-    "instanceName": "secondary",
-    "playerId": "%player%",
-    "xdm": {
-      "eventType": "media.sessionStart",
-      "mediaCollection": {
-        "customMetadata": [
-          {
-            "name": "key",
-            "value": "%value%",
-          },
-          {
-            "name": "country",
-            "value": "US",
-          },
-        ],
-        "playhead": "%playhead%",
-        "qoeDataDetails": "%qoe%",
-        "sessionDetails": {
-          "adLoad": "1",
-          "album": "Album",
-          "appVersion": undefined,
-          "artist": "Artist",
-          "assetID": "asset",
-          "author": "Author",
-          "authorized": "true",
-          "channel": undefined,
-          "contentType": "vod",
-          "dayPart": "morning",
-          "episode": "1",
-          "feed": "main",
-          "firstAirDate": "2025-01-01",
-          "firstDigitalDate": "2025-01-02",
-          "friendlyName": "Video",
-          "genre": "news",
-          "label": "label",
-          "length": "%edited%",
-          "mvpd": "mvpd",
-          "name": "video-1",
-          "network": "network",
-          "originator": "originator",
-          "playerName": undefined,
-          "publisher": "publisher",
-          "rating": "PG",
-          "season": "1",
-          "show": "show",
-          "showType": "0",
-          "station": "station",
-          "streamFormat": "HD",
-          "streamType": "video",
-        },
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -822,22 +435,7 @@ exports[`Send streaming media event settings snapshots > rejects an unknown even
       "testId": "eventTypeField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "not a data element",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "secondary",
-    "playerId": "%player%",
-    "xdm": {
-      "eventType": "not a data element",
-      "mediaCollection": {
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "not a data element",
@@ -860,22 +458,7 @@ exports[`Send streaming media event settings snapshots > rejects an unknown even
 exports[`Send streaming media event settings snapshots > rejects an unknown event type and accepts a data element event type 2`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "%edited%",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "secondary",
-    "playerId": "%player%",
-    "xdm": {
-      "eventType": "%edited%",
-      "mediaCollection": {
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "%edited%",
@@ -923,26 +506,7 @@ exports[`Send streaming media event settings snapshots > reports required ad bre
       "testId": "advertisingPodDetails.indexNumberField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "media.adBreakStart",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": "player",
-    "xdm": {
-      "eventType": "media.adBreakStart",
-      "mediaCollection": {
-        "advertisingPodDetails": {
-          "index": undefined,
-          "offset": undefined,
-        },
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "media.adBreakStart",
@@ -1001,27 +565,7 @@ exports[`Send streaming media event settings snapshots > reports required ad det
       "testId": "advertisingDetails.podPositionNumberField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "media.adStart",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": "player",
-    "xdm": {
-      "eventType": "media.adStart",
-      "mediaCollection": {
-        "advertisingDetails": {
-          "length": undefined,
-          "playerName": undefined,
-          "podPosition": undefined,
-        },
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "media.adStart",
@@ -1086,27 +630,7 @@ exports[`Send streaming media event settings snapshots > reports required chapte
       "testId": "chapterDetails.offsetNumberField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "media.chapterStart",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": "player",
-    "xdm": {
-      "eventType": "media.chapterStart",
-      "mediaCollection": {
-        "chapterDetails": {
-          "index": undefined,
-          "length": undefined,
-          "offset": undefined,
-        },
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "media.chapterStart",
@@ -1149,23 +673,7 @@ exports[`Send streaming media event settings snapshots > reports required error 
       "testId": "errorDetails.sourceTextField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "media.error",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": "player",
-    "xdm": {
-      "eventType": "media.error",
-      "mediaCollection": {
-        "errorDetails": {},
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "media.error",
@@ -1223,28 +731,7 @@ exports[`Send streaming media event settings snapshots > reports required sessio
       "testId": "sessionDetails.nameTextField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "media.sessionStart",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": "player",
-    "xdm": {
-      "eventType": "media.sessionStart",
-      "mediaCollection": {
-        "playhead": undefined,
-        "sessionDetails": {
-          "appVersion": undefined,
-          "channel": undefined,
-          "length": undefined,
-          "playerName": undefined,
-        },
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "media.sessionStart",
@@ -1273,24 +760,7 @@ exports[`Send streaming media event settings snapshots > reports required sessio
 exports[`Send streaming media event settings snapshots > round trips chapter and metadata data elements settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "media.chapterStart",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": "%player%",
-    "xdm": {
-      "eventType": "media.chapterStart",
-      "mediaCollection": {
-        "chapterDetails": "%chapter%",
-        "customMetadata": "%metadata%",
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "media.chapterStart",
@@ -1328,27 +798,7 @@ exports[`Send streaming media event settings snapshots > round trips negative ch
       "testId": "chapterDetails.lengthNumberField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "media.chapterStart",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": "player",
-    "xdm": {
-      "eventType": "media.chapterStart",
-      "mediaCollection": {
-        "chapterDetails": {
-          "index": 1,
-          "length": -1,
-          "offset": 0,
-        },
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "media.chapterStart",
@@ -1391,22 +841,7 @@ exports[`Send streaming media event settings snapshots > round trips new setting
       "testId": "playerIdTextField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": undefined,
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": undefined,
-    "xdm": {
-      "eventType": undefined,
-      "mediaCollection": {
-        "playhead": undefined,
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": undefined,
@@ -1429,193 +864,7 @@ exports[`Send streaming media event settings snapshots > round trips new setting
 exports[`Send streaming media event settings snapshots > round trips populated session settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "production": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-production",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-production",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 3,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-production",
-        },
-        "datastreamId": "ds-production",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "staging": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-staging",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-staging",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 2,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-staging",
-        },
-        "datastreamId": "ds-staging",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "eventType": "media.sessionStart",
-    "handleMediaSessionAutomatically": true,
-    "instanceName": "secondary",
-    "playerId": "%player%",
-    "xdm": {
-      "eventType": "media.sessionStart",
-      "mediaCollection": {
-        "customMetadata": [
-          {
-            "name": "key",
-            "value": "%value%",
-          },
-          {
-            "name": "country",
-            "value": "US",
-          },
-        ],
-        "playhead": "%playhead%",
-        "qoeDataDetails": "%qoe%",
-        "sessionDetails": {
-          "adLoad": "1",
-          "album": "Album",
-          "appVersion": undefined,
-          "artist": "Artist",
-          "assetID": "asset",
-          "author": "Author",
-          "authorized": "true",
-          "channel": undefined,
-          "contentType": "vod",
-          "dayPart": "morning",
-          "episode": "1",
-          "feed": "main",
-          "firstAirDate": "2025-01-01",
-          "firstDigitalDate": "2025-01-02",
-          "friendlyName": "Video",
-          "genre": "news",
-          "label": "label",
-          "length": 120,
-          "mvpd": "mvpd",
-          "name": "video-1",
-          "network": "network",
-          "originator": "originator",
-          "playerName": undefined,
-          "publisher": "publisher",
-          "rating": "PG",
-          "season": "1",
-          "show": "show",
-          "showType": "0",
-          "station": "station",
-          "streamFormat": "HD",
-          "streamType": "video",
-        },
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -1809,33 +1058,7 @@ exports[`Send streaming media event settings snapshots > round trips populated s
 exports[`Send streaming media event settings snapshots > round trips populated started and ended states 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": undefined,
-    "eventType": "media.statesUpdate",
-    "handleMediaSessionAutomatically": false,
-    "instanceName": "alloy",
-    "playerId": "player",
-    "xdm": {
-      "eventType": "media.statesUpdate",
-      "mediaCollection": {
-        "playhead": undefined,
-        "statesEnd": [
-          {
-            "name": "mute",
-          },
-        ],
-        "statesStart": [
-          {
-            "name": "fullscreen",
-          },
-          {
-            "name": "custom",
-          },
-        ],
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": undefined,
     "eventType": "media.statesUpdate",
@@ -1869,184 +1092,7 @@ exports[`Send streaming media event settings snapshots > round trips populated s
 exports[`Send streaming media event settings snapshots > serializes a custom metadata data element but fails validation without visible errors 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "production": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-production",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-production",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 3,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-production",
-        },
-        "datastreamId": "ds-production",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "staging": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-staging",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-staging",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 2,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-staging",
-        },
-        "datastreamId": "ds-staging",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "eventType": "media.sessionStart",
-    "handleMediaSessionAutomatically": true,
-    "instanceName": "secondary",
-    "playerId": "%player%",
-    "xdm": {
-      "eventType": "media.sessionStart",
-      "mediaCollection": {
-        "customMetadata": "%edited%",
-        "playhead": "%playhead%",
-        "qoeDataDetails": "%qoe%",
-        "sessionDetails": {
-          "adLoad": "1",
-          "album": "Album",
-          "appVersion": undefined,
-          "artist": "Artist",
-          "assetID": "asset",
-          "author": "Author",
-          "authorized": "true",
-          "channel": undefined,
-          "contentType": "vod",
-          "dayPart": "morning",
-          "episode": "1",
-          "feed": "main",
-          "firstAirDate": "2025-01-01",
-          "firstDigitalDate": "2025-01-02",
-          "friendlyName": "Video",
-          "genre": "news",
-          "label": "label",
-          "length": 120,
-          "mvpd": "mvpd",
-          "name": "video-1",
-          "network": "network",
-          "originator": "originator",
-          "playerName": undefined,
-          "publisher": "publisher",
-          "rating": "PG",
-          "season": "1",
-          "show": "show",
-          "showType": "0",
-          "station": "station",
-          "streamFormat": "HD",
-          "streamType": "video",
-        },
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -2239,193 +1285,7 @@ exports[`Send streaming media event settings snapshots > switches SDK instances 
       "testId": "reportSuitesOverride.0",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "production": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-production",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-production",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 3,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-production",
-        },
-        "datastreamId": "ds-production",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "staging": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-staging",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-staging",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 2,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-staging",
-        },
-        "datastreamId": "ds-staging",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "eventType": "media.sessionStart",
-    "handleMediaSessionAutomatically": true,
-    "instanceName": "alloy",
-    "playerId": "%player%",
-    "xdm": {
-      "eventType": "media.sessionStart",
-      "mediaCollection": {
-        "customMetadata": [
-          {
-            "name": "key",
-            "value": "%value%",
-          },
-          {
-            "name": "country",
-            "value": "US",
-          },
-        ],
-        "playhead": "%playhead%",
-        "qoeDataDetails": "%qoe%",
-        "sessionDetails": {
-          "adLoad": "1",
-          "album": "Album",
-          "appVersion": undefined,
-          "artist": "Artist",
-          "assetID": "asset",
-          "author": "Author",
-          "authorized": "true",
-          "channel": undefined,
-          "contentType": "vod",
-          "dayPart": "morning",
-          "episode": "1",
-          "feed": "main",
-          "firstAirDate": "2025-01-01",
-          "firstDigitalDate": "2025-01-02",
-          "friendlyName": "Video",
-          "genre": "news",
-          "label": "label",
-          "length": 120,
-          "mvpd": "mvpd",
-          "name": "video-1",
-          "network": "network",
-          "originator": "originator",
-          "playerName": undefined,
-          "publisher": "publisher",
-          "rating": "PG",
-          "season": "1",
-          "show": "show",
-          "showType": "0",
-          "station": "station",
-          "streamFormat": "HD",
-          "streamType": "video",
-        },
-        "statesEnd": undefined,
-        "statesStart": undefined,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -2619,10 +1479,7 @@ exports[`Send streaming media event settings snapshots > switches SDK instances 
 exports[`Send streaming media event settings snapshots > throws from both settings reads when whole session details come from a data element 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "threw": "Cannot create property 'playerName' on string '%edited%'",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "threw": "Cannot create property 'playerName' on string '%edited%'",
   },

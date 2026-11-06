@@ -3,10 +3,7 @@
 exports[`Reset event merge ID settings snapshots > round trips a saved event merge ID before the first validation 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "eventMergeId": "%event.id%",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "eventMergeId": "%event.id%",
   },

@@ -11,10 +11,7 @@ exports[`Evaluate rulesets settings snapshots > keeps a blank row before an inva
       "testId": "Key1Field",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
   },
@@ -33,17 +30,7 @@ exports[`Evaluate rulesets settings snapshots > rejects duplicate keys 1`] = `
       "testId": "Key1Field",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "personalization": {
-      "decisionContext": {
-        "country": "%cart%",
-        "empty": "",
-      },
-    },
-    "renderDecisions": true,
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "personalization": {
@@ -61,13 +48,7 @@ exports[`Evaluate rulesets settings snapshots > rejects duplicate keys 1`] = `
 exports[`Evaluate rulesets settings snapshots > round trips data element settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-    "personalization": {
-      "decisionContext": "%context%",
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
     "personalization": {
@@ -81,18 +62,7 @@ exports[`Evaluate rulesets settings snapshots > round trips data element setting
 exports[`Evaluate rulesets settings snapshots > round trips populated settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "personalization": {
-      "decisionContext": {
-        "cart": "%cart%",
-        "country": "US",
-        "empty": "",
-      },
-    },
-    "renderDecisions": true,
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "personalization": {
@@ -111,8 +81,7 @@ exports[`Evaluate rulesets settings snapshots > round trips populated settings 1
 exports[`Evaluate rulesets settings snapshots > round trips with components disabled 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {},
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {},
   "valid": true,
 }

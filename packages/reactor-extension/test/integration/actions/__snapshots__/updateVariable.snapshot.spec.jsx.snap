@@ -13,27 +13,7 @@ exports[`Update variable settings snapshots > edits custom code through the exte
       "message": "This field contains an error",
     },
   ],
-  "settingsAfterValidate": {
-    "customCode": "content.xdm.count = 42;",
-    "data": {
-      "count": 2,
-      "flag": true,
-      "nested": {
-        "label": "nested",
-      },
-      "tags": [
-        "a",
-        "b",
-      ],
-      "testField": "%value%",
-    },
-    "dataElementId": "DE1",
-    "dataElementName": "XDM variable",
-    "schema": {
-      "id": "https://ns.adobe.com/test/schemas/sch123",
-      "version": "1.0",
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "customCode": "content.xdm.count = 42;",
     "data": {
@@ -62,21 +42,7 @@ exports[`Update variable settings snapshots > edits custom code through the exte
 exports[`Update variable settings snapshots > round trips data variable settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "data": {
-      "__adobe": {
-        "analytics": {
-          "pageName": "Home",
-        },
-        "target": {
-          "mbox": "home",
-        },
-      },
-    },
-    "dataElementId": "DE2",
-    "dataElementName": "Data variable",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "data": {
       "__adobe": {
@@ -106,12 +72,7 @@ exports[`Update variable settings snapshots > round trips new settings 1`] = `
       "testId": "dataElementField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "data": {},
-    "dataElementId": undefined,
-    "dataElementName": undefined,
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "data": {},
     "dataElementId": undefined,
@@ -124,21 +85,7 @@ exports[`Update variable settings snapshots > round trips new settings 1`] = `
 exports[`Update variable settings snapshots > round trips root clear transform settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "data": {},
-    "dataElementId": "DE1",
-    "dataElementName": "XDM variable",
-    "schema": {
-      "id": "https://ns.adobe.com/test/schemas/sch123",
-      "version": "1.0",
-    },
-    "transforms": {
-      "": {
-        "clear": true,
-      },
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "data": {},
     "dataElementId": "DE1",
@@ -160,13 +107,7 @@ exports[`Update variable settings snapshots > round trips root clear transform s
 exports[`Update variable settings snapshots > switches from an XDM variable to a Data variable 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "customCode": "content.xdm.count = 2;",
-    "data": {},
-    "dataElementId": "DE2",
-    "dataElementName": "Data variable",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "customCode": "content.xdm.count = 2;",
     "data": {},

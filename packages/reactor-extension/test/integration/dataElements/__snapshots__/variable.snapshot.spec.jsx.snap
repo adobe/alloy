@@ -11,16 +11,7 @@ exports[`Variable settings snapshots > round trips schema without sandbox settin
       "testId": "schemaField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "sandbox": {
-      "name": "prod",
-    },
-    "schema": {
-      "id": undefined,
-      "version": undefined,
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "sandbox": {
       "name": "prod",
@@ -53,8 +44,7 @@ exports[`Variable settings snapshots > round trips untouched empty solutions set
       "testId": "targetCheckbox",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {},
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {},
   "valid": false,
 }
@@ -79,8 +69,7 @@ exports[`Variable settings snapshots > unchecks all solutions while the last che
       "testId": "targetCheckbox",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {},
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {},
   "valid": false,
 }

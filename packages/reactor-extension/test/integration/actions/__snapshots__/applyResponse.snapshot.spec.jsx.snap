@@ -18,12 +18,7 @@ exports[`Apply response settings snapshots > round trips invalid settings 1`] = 
       "testId": "responseBodyField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-    "responseBody": "plain",
-    "responseHeaders": "%broken",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
     "responseBody": "plain",
@@ -44,10 +39,7 @@ exports[`Apply response settings snapshots > round trips new settings 1`] = `
       "testId": "responseBodyField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
   },
@@ -58,13 +50,7 @@ exports[`Apply response settings snapshots > round trips new settings 1`] = `
 exports[`Apply response settings snapshots > round trips populated settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "renderDecisions": true,
-    "responseBody": "%body%",
-    "responseHeaders": "%headers%",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "renderDecisions": true,
@@ -78,13 +64,7 @@ exports[`Apply response settings snapshots > round trips populated settings 1`] 
 exports[`Apply response settings snapshots > selects a response body through the bridge 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "renderDecisions": true,
-    "responseBody": "%data element name%",
-    "responseHeaders": "%headers%",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "renderDecisions": true,

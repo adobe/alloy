@@ -11,55 +11,7 @@ exports[`Redirect with identity settings snapshots > edits development analytics
       "testId": "analyticsEnabled",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "enabled": "%bad",
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -123,55 +75,7 @@ exports[`Redirect with identity settings snapshots > edits development analytics
       "testId": "analyticsEnabled",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "enabled": "invalid",
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -235,54 +139,7 @@ exports[`Redirect with identity settings snapshots > edits development idSyncCon
       "testId": "idSyncContainerOverride",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": -1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -345,54 +202,7 @@ exports[`Redirect with identity settings snapshots > edits development idSyncCon
       "testId": "idSyncContainerOverride",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -455,51 +265,7 @@ exports[`Redirect with identity settings snapshots > edits development idSyncCon
       "testId": "idSyncContainerOverride",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -559,51 +325,7 @@ exports[`Redirect with identity settings snapshots > edits development idSyncCon
       "testId": "idSyncContainerOverride",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -663,55 +385,7 @@ exports[`Redirect with identity settings snapshots > edits production analyticsE
       "testId": "analyticsEnabled",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "production": {
-        "com_adobe_analytics": {
-          "enabled": "invalid",
-          "reportSuites": [
-            "suite-production",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-production",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 3,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-production",
-        },
-        "datastreamId": "ds-production",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "production": {
@@ -775,55 +449,7 @@ exports[`Redirect with identity settings snapshots > edits staging analyticsEnab
       "testId": "analyticsEnabled",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "staging": {
-        "com_adobe_analytics": {
-          "enabled": "invalid",
-          "reportSuites": [
-            "suite-staging",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-staging",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 2,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-staging",
-        },
-        "datastreamId": "ds-staging",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "staging": {
@@ -879,54 +505,7 @@ exports[`Redirect with identity settings snapshots > edits staging analyticsEnab
 exports[`Redirect with identity settings snapshots > edits, clears, and invalidates development overridesEnabled 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": "%edited%",
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -981,54 +560,7 @@ exports[`Redirect with identity settings snapshots > edits, clears, and invalida
 exports[`Redirect with identity settings snapshots > edits, clears, and invalidates development overridesEnabled 2`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": false,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -1091,54 +623,7 @@ exports[`Redirect with identity settings snapshots > edits, clears, and invalida
       "testId": "overridesEnabled",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": false,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -1193,45 +678,7 @@ exports[`Redirect with identity settings snapshots > edits, clears, and invalida
 exports[`Redirect with identity settings snapshots > round trips legacy settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite",
-          ],
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 12,
-        },
-        "enabled": true,
-      },
-      "production": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite",
-          ],
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 12,
-        },
-        "enabled": true,
-      },
-      "staging": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite",
-          ],
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 12,
-        },
-        "enabled": true,
-      },
-    },
-    "instanceName": "alloy",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -1285,138 +732,7 @@ exports[`Redirect with identity settings snapshots > switches instances and wait
       "testId": "reportSuitesOverride.0",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "production": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-production",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-production",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 3,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-production",
-        },
-        "datastreamId": "ds-production",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "staging": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-staging",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-staging",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 2,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-staging",
-        },
-        "datastreamId": "ds-staging",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "alloy",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -1555,18 +871,7 @@ exports[`Redirect with identity settings snapshots > switches instances and wait
 exports[`Redirect with identity settings snapshots > validates saved ID-sync override "%id%" 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_identity": {
-          "idSyncContainerId": "%id%",
-        },
-        "enabled": true,
-      },
-    },
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {

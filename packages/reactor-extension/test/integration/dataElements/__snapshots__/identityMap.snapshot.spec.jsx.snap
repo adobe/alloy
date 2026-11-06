@@ -3,35 +3,7 @@
 exports[`Identity map settings snapshots > adds a custom namespace 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "CRM": [
-      {
-        "authenticatedState": "ambiguous",
-        "id": "123",
-        "primary": false,
-      },
-    ],
-    "Email": [
-      {
-        "authenticatedState": "authenticated",
-        "id": "%email%",
-        "primary": true,
-      },
-      {
-        "authenticatedState": "loggedOut",
-        "id": "other@example.com",
-        "primary": false,
-      },
-    ],
-    "NewNamespace": [
-      {
-        "authenticatedState": "ambiguous",
-        "id": "%id%",
-        "primary": false,
-      },
-    ],
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "CRM": [
       {
@@ -73,28 +45,7 @@ exports[`Identity map settings snapshots > makes an identifier in another namesp
       "testId": "identity1primaryField0",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "CRM": [
-      {
-        "authenticatedState": "ambiguous",
-        "id": "123",
-        "primary": true,
-      },
-    ],
-    "Email": [
-      {
-        "authenticatedState": "authenticated",
-        "id": "%email%",
-        "primary": true,
-      },
-      {
-        "authenticatedState": "loggedOut",
-        "id": "other@example.com",
-        "primary": false,
-      },
-    ],
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "CRM": [
       {
@@ -138,16 +89,7 @@ exports[`Identity map settings snapshots > round trips new settings 1`] = `
       "testId": "identity0idField0",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "": [
-      {
-        "authenticatedState": "ambiguous",
-        "id": "",
-        "primary": false,
-      },
-    ],
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "": [
       {

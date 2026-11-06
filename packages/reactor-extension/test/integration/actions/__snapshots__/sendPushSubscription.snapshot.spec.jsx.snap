@@ -3,10 +3,7 @@
 exports[`Send push subscription settings snapshots > round trips populated settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
   },

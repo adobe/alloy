@@ -3,10 +3,7 @@
 exports[`Monitor triggered settings snapshots > round trips a monitoring hook supplied by a data element 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "name": "%hook%",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "name": "%hook%",
   },

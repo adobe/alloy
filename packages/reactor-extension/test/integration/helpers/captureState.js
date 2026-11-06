@@ -68,6 +68,18 @@ const schemaTreeErrors = () =>
       })),
   );
 
+// JSON.stringify would hide undefined values and NaN, which differ between
+// settings that otherwise look the same.
+const serialize = (value) =>
+  JSON.stringify(value, (_, v) => {
+    if (v === undefined) return "<undefined>";
+    if (Number.isNaN(v)) return "<NaN>";
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      return Object.fromEntries(Object.entries(v).sort());
+    }
+    return v;
+  });
+
 export default async function captureState(bridge) {
   const registration = await bridge.registration;
   await settle();
@@ -75,11 +87,15 @@ export default async function captureState(bridge) {
   const valid = await call(() => registration.validate());
   const settingsAfterValidate = await call(() => registration.getSettings());
   await settle();
+  const treeErrors = schemaTreeErrors();
   return {
     settingsBeforeValidate,
     valid,
-    settingsAfterValidate,
+    settingsAfterValidate:
+      serialize(settingsAfterValidate) === serialize(settingsBeforeValidate)
+        ? "<same as before validation>"
+        : settingsAfterValidate,
     errors: visibleErrors(),
-    schemaTreeErrors: schemaTreeErrors(),
+    ...(treeErrors.length > 0 && { schemaTreeErrors: treeErrors }),
   };
 }

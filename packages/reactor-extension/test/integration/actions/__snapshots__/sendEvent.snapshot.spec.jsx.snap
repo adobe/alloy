@@ -3,13 +3,7 @@
 exports[`Send event settings snapshots > clicks defaultPersonalizationEnabledtrueOption 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "personalization": {
-      "defaultPersonalizationEnabled": true,
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "personalization": {
@@ -31,161 +25,7 @@ exports[`Send event settings snapshots > clicks guidedEventsEnabledCheckbox 1`] 
       "testId": "idSyncContainerOverride",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "advertising": {
-      "handleAdvertisingData": "wait",
-    },
-    "data": "%data%",
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "production": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-production",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-production",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 3,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-production",
-        },
-        "datastreamId": "ds-production",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "staging": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-staging",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-staging",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 2,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-staging",
-        },
-        "datastreamId": "ds-staging",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "guidedEventsEnabled": true,
-    "instanceName": "secondary",
-    "personalization": {
-      "decisionContext": {
-        "country": "US",
-      },
-      "decisionScopes": [
-        "home",
-        "checkout",
-      ],
-      "defaultPersonalizationEnabled": false,
-      "sendDisplayEvent": false,
-      "surfaces": [
-        "web://example.com/cart",
-        "#hero",
-      ],
-    },
-    "renderDecisions": true,
-    "type": "decisioning.propositionFetch",
-    "xdm": "%xdm%",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "advertising": {
       "handleAdvertisingData": "wait",
@@ -347,10 +187,7 @@ exports[`Send event settings snapshots > clicks guidedEventsEnabledCheckbox 1`] 
 exports[`Send event settings snapshots > clicks renderDecisionsCheckbox 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
   },
@@ -369,16 +206,7 @@ exports[`Send event settings snapshots > edits, clears, and invalidates surfaces
       "testId": "surfaces0Field",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "personalization": {
-      "surfaces": [
-        "%edited%",
-        "#hero",
-      ],
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "personalization": {
@@ -395,15 +223,7 @@ exports[`Send event settings snapshots > edits, clears, and invalidates surfaces
 exports[`Send event settings snapshots > edits, clears, and invalidates surfaces0Field 2`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "personalization": {
-      "surfaces": [
-        "#hero",
-      ],
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "personalization": {
@@ -419,22 +239,7 @@ exports[`Send event settings snapshots > edits, clears, and invalidates surfaces
 exports[`Send event settings snapshots > round trips data elements settings before any edits or validation 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "advertising": {
-      "handleAdvertisingData": "%advertising%",
-    },
-    "data": "%data%",
-    "instanceName": "alloy",
-    "personalization": {
-      "decisionContext": "%context%",
-      "decisionScopes": "%scopes%",
-      "defaultPersonalizationEnabled": false,
-      "surfaces": "%surfaces%",
-    },
-    "type": "%type%",
-    "xdm": "%xdm%",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "advertising": {
       "handleAdvertisingData": "%advertising%",
@@ -465,15 +270,7 @@ exports[`Send event settings snapshots > round trips invalid surface settings be
       "testId": "surfaces1Field",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-    "personalization": {
-      "surfaces": [
-        "ftp://example.com",
-      ],
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
     "personalization": {
@@ -489,11 +286,7 @@ exports[`Send event settings snapshots > round trips invalid surface settings be
 exports[`Send event settings snapshots > round trips legacy dataset settings before any edits or validation 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "datasetId": "legacy-dataset",
-    "instanceName": "alloy",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "datasetId": "legacy-dataset",
     "instanceName": "alloy",
@@ -505,10 +298,7 @@ exports[`Send event settings snapshots > round trips legacy dataset settings bef
 exports[`Send event settings snapshots > round trips legacy fetch without rendering settings before any edits or validation 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
   },
@@ -519,163 +309,7 @@ exports[`Send event settings snapshots > round trips legacy fetch without render
 exports[`Send event settings snapshots > round trips populated settings before any edits or validation 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "advertising": {
-      "handleAdvertisingData": "wait",
-    },
-    "data": "%data%",
-    "documentUnloading": true,
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-development",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-development",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 1,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-development",
-        },
-        "datastreamId": "ds-development",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "production": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-production",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-production",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 3,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-production",
-        },
-        "datastreamId": "ds-production",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-      "staging": {
-        "com_adobe_analytics": {
-          "reportSuites": [
-            "suite-staging",
-            "%suite%",
-          ],
-        },
-        "com_adobe_audiencemanager": {
-          "enabled": false,
-        },
-        "com_adobe_experience_platform": {
-          "com_adobe_edge_ajo": {
-            "enabled": false,
-          },
-          "com_adobe_edge_destinations": {
-            "enabled": false,
-          },
-          "com_adobe_edge_ode": {
-            "enabled": false,
-          },
-          "com_adobe_edge_segmentation": {
-            "enabled": false,
-          },
-          "datasets": {
-            "event": {
-              "datasetId": "dataset-staging",
-            },
-          },
-        },
-        "com_adobe_identity": {
-          "idSyncContainerId": 2,
-        },
-        "com_adobe_launch_ssf": {
-          "enabled": false,
-        },
-        "com_adobe_target": {
-          "propertyToken": "token-staging",
-        },
-        "datastreamId": "ds-staging",
-        "enabled": true,
-        "sandbox": "prod",
-      },
-    },
-    "instanceName": "secondary",
-    "mergeId": "%merge%",
-    "personalization": {
-      "decisionContext": {
-        "country": "US",
-      },
-      "decisionScopes": [
-        "home",
-        "checkout",
-      ],
-      "defaultPersonalizationEnabled": false,
-      "includeRenderedPropositions": true,
-      "sendDisplayEvent": false,
-      "surfaces": [
-        "web://example.com/cart",
-        "#hero",
-      ],
-    },
-    "renderDecisions": true,
-    "type": "web.webpagedetails.pageViews",
-    "xdm": "%xdm%",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "advertising": {
       "handleAdvertisingData": "wait",
@@ -839,11 +473,7 @@ exports[`Send event settings snapshots > round trips populated settings before a
 exports[`Send event settings snapshots > selects a predefined event type 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-    "type": "web.webpagedetails.pageViews",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
     "type": "web.webpagedetails.pageViews",
@@ -863,23 +493,7 @@ exports[`Send event settings snapshots > validates collect ID-sync override 123 
       "testId": "idSyncContainerOverride",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_identity": {
-          "idSyncContainerId": 123,
-        },
-        "enabled": true,
-      },
-    },
-    "guidedEvent": "collect",
-    "guidedEventsEnabled": true,
-    "instanceName": "secondary",
-    "personalization": {
-      "includeRenderedPropositions": true,
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {
@@ -911,24 +525,7 @@ exports[`Send event settings snapshots > validates fetch ID-sync override 123 1`
       "testId": "idSyncContainerOverride",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "edgeConfigOverrides": {
-      "development": {
-        "com_adobe_identity": {
-          "idSyncContainerId": 123,
-        },
-        "enabled": true,
-      },
-    },
-    "guidedEventsEnabled": true,
-    "instanceName": "secondary",
-    "personalization": {
-      "sendDisplayEvent": false,
-    },
-    "renderDecisions": true,
-    "type": "decisioning.propositionFetch",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "edgeConfigOverrides": {
       "development": {

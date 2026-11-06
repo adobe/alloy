@@ -3,18 +3,7 @@
 exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.actionTypeField 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "metadata": {
-      "checkout": {
-        "actionType": "%edited%",
-        "selector": ".cart",
-      },
-    },
-    "propositions": "%event.propositions%",
-    "viewName": "checkout",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "metadata": {
@@ -41,17 +30,7 @@ exports[`Apply propositions settings snapshots > edits, clears, and invalidates 
       "testId": "metadata.0.actionTypeField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "metadata": {
-      "checkout": {
-        "selector": ".cart",
-      },
-    },
-    "propositions": "%event.propositions%",
-    "viewName": "checkout",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "metadata": {
@@ -77,18 +56,7 @@ exports[`Apply propositions settings snapshots > edits, clears, and invalidates 
       "testId": "metadata.0.actionTypeField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "metadata": {
-      "checkout": {
-        "actionType": "not a data element",
-        "selector": ".cart",
-      },
-    },
-    "propositions": "%event.propositions%",
-    "viewName": "checkout",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "metadata": {
@@ -107,18 +75,7 @@ exports[`Apply propositions settings snapshots > edits, clears, and invalidates 
 exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.scopeTextField 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "metadata": {
-      "%edited%": {
-        "actionType": "appendHtml",
-        "selector": ".cart",
-      },
-    },
-    "propositions": "%event.propositions%",
-    "viewName": "checkout",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "metadata": {
@@ -145,12 +102,7 @@ exports[`Apply propositions settings snapshots > edits, clears, and invalidates 
       "testId": "metadata.0.scopeTextField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "propositions": "%event.propositions%",
-    "viewName": "checkout",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "propositions": "%event.propositions%",
@@ -178,13 +130,7 @@ exports[`Apply propositions settings snapshots > keeps a blank metadata row befo
       "testId": "metadata.0.actionTypeField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-    "metadata": {
-      "home": {},
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
     "metadata": {
@@ -206,18 +152,7 @@ exports[`Apply propositions settings snapshots > rejects duplicate scopes 1`] = 
       "testId": "metadata.1.scopeTextField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "metadata": {
-      "checkout": {
-        "actionType": "setHtml",
-        "selector": "#home",
-      },
-    },
-    "propositions": "%event.propositions%",
-    "viewName": "checkout",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "metadata": {
@@ -236,13 +171,7 @@ exports[`Apply propositions settings snapshots > rejects duplicate scopes 1`] = 
 exports[`Apply propositions settings snapshots > round trips data elements settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-    "metadata": "%metadata%",
-    "propositions": "%props%",
-    "viewName": "%view%",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
     "metadata": "%metadata%",
@@ -256,11 +185,7 @@ exports[`Apply propositions settings snapshots > round trips data elements setti
 exports[`Apply propositions settings snapshots > round trips view name settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "alloy",
-    "viewName": "hello",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "alloy",
     "viewName": "hello",

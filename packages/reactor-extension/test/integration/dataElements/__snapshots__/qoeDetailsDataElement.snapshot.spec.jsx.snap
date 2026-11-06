@@ -3,13 +3,7 @@
 exports[`Quality of experience settings snapshots > accepts a negative bitrate without a visible validation error 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "bitrate": -1,
-    "droppedFrames": 2,
-    "framesPerSecond": 29.97,
-    "timeToStart": 500,
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "bitrate": -1,
     "droppedFrames": 2,
@@ -36,13 +30,7 @@ exports[`Quality of experience settings snapshots > serializes a cleared bitrate
       "testId": "bitrateNumberField",
     },
   ],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "bitrate": NaN,
-    "droppedFrames": 2,
-    "framesPerSecond": 29.97,
-    "timeToStart": 500,
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "bitrate": NaN,
     "droppedFrames": 2,

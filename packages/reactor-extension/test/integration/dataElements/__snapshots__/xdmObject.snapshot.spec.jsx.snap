@@ -17,27 +17,7 @@ exports[`XDM object settings snapshots > adds an array item 1`] = `
       "message": "This field contains an error",
     },
   ],
-  "settingsAfterValidate": {
-    "data": {
-      "count": 3,
-      "flag": true,
-      "nested": {
-        "label": "Hello",
-      },
-      "tags": [
-        "a",
-        "%tag%",
-      ],
-      "testField": "%field%",
-    },
-    "sandbox": {
-      "name": "prod",
-    },
-    "schema": {
-      "id": "https://ns.adobe.com/test/schemas/sch123",
-      "version": "1.0",
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "data": {
       "count": 3,
@@ -66,19 +46,7 @@ exports[`XDM object settings snapshots > adds an array item 1`] = `
 exports[`XDM object settings snapshots > round trips schema without sandbox settings 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "data": {
-      "testField": "Legacy",
-    },
-    "sandbox": {
-      "name": "prod",
-    },
-    "schema": {
-      "id": "https://ns.adobe.com/test/schemas/sch123",
-      "version": "1.0",
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "data": {
       "testField": "Legacy",
@@ -104,27 +72,7 @@ exports[`XDM object settings snapshots > shows display names without changing se
       "message": "This field contains an error",
     },
   ],
-  "settingsAfterValidate": {
-    "data": {
-      "count": 3,
-      "flag": true,
-      "nested": {
-        "label": "Hello",
-      },
-      "tags": [
-        "a",
-        "%tag%",
-      ],
-      "testField": "%field%",
-    },
-    "sandbox": {
-      "name": "prod",
-    },
-    "schema": {
-      "id": "https://ns.adobe.com/test/schemas/sch123",
-      "version": "1.0",
-    },
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "data": {
       "count": 3,

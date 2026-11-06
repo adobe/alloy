@@ -3,11 +3,7 @@
 exports[`Create media tracker settings snapshots > round trips the saved API export and restores the default when its name is cleared 1`] = `
 {
   "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "instanceName": "secondary",
-    "objectName": "LegacyMedia",
-  },
+  "settingsAfterValidate": "<same as before validation>",
   "settingsBeforeValidate": {
     "instanceName": "secondary",
     "objectName": "LegacyMedia",
