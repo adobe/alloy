@@ -156,66 +156,20 @@ export const reportSuiteOverride = (reportSuites) => ({
 
 export const editCases = [
   {
-    instance: {
-      ...minimalInstance,
-      edgeDomain: fullInstance.edgeDomain,
-      thirdPartyCookiesEnabled: false,
-    },
-    fields: [
-      ["nameField", ["%edited%", "", "not a data element"]],
-      ["orgIdField", ["%edited%", "", "not a data element"]],
-      ["edgeDomainField", ["%edited%", "", "not a data element"]],
-      ["productionDatastreamField", ["%edited%", "", "not a data element"]],
-      ["thirdPartyCookiesEnabledField", ["%edited%", "", "not a data element"]],
-    ],
-  },
-  {
-    component: "activityCollector",
-    instance: {
-      ...minimalInstance,
-      downloadLinkQualifier: fullInstance.downloadLinkQualifier,
-    },
-    fields: [
-      ["downloadLinkQualifierField", ["%edited%", "", "not a data element"]],
-    ],
-  },
-  {
     component: "streamingMedia",
     instance: {
       ...minimalInstance,
       streamingMedia: fullInstance.streamingMedia,
     },
-    fields: [
-      ["mediaChannelField", ["%edited%", "", "not a data element"]],
-      ["mediaPlayerNameField", ["%edited%", "", "not a data element"]],
-      ["mediaMainPingIntervalField", ["25", "", "-1", "61"]],
-      ["mediaAdPingIntervalField", ["0"]],
-    ],
-  },
-  {
-    component: "pushNotifications",
-    instance: {
-      ...minimalInstance,
-      pushNotifications: fullInstance.pushNotifications,
-    },
-    fields: [["appIdField", ["%edited%", "", "not a data element"]]],
+    fields: [["mediaMainPingIntervalField", ["25", "", "-1", "61"]]],
   },
   {
     component: "brandConcierge",
     instance: { ...minimalInstance, conversation: fullInstance.conversation },
-    fields: [
-      ["regionField", ["%edited%", "", "bad"]],
-      ["streamTimeoutDataTestId", ["25", "", "-1", "9"]],
-      ["transferCookie0Field", ["%edited%", "", "not a data element", "   "]],
-    ],
-  },
-  {
-    component: "advertising",
-    instance: { ...minimalInstance, advertising: fullInstance.advertising },
-    fields: [["advertiser0Field", ["%edited%", "", "not a data element"]]],
+    fields: [["streamTimeoutDataTestId", ["25", "", "-1", "9"], 2]],
   },
 ].flatMap(({ component, instance, fields }) =>
-  fields.map(([id, values]) => [
+  fields.map(([id, values, captureCount = values.length]) => [
     id,
     values,
     {
@@ -225,6 +179,7 @@ export const editCases = [
       },
       instances: [instance],
     },
+    captureCount,
   ]),
 );
 

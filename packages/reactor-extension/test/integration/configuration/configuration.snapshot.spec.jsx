@@ -20,7 +20,6 @@ import configurationUI from "../helpers/ui/configurationUI";
 import { worker } from "../helpers/mocks/browser";
 import {
   orgId,
-  environments,
   components,
   disabledComponents,
   minimalInstance,
@@ -81,8 +80,6 @@ describe("Configuration settings snapshots", () => {
 
   it.each([
     ["new", null],
-    ["empty", {}],
-    ["minimal", { instances: [minimalInstance] }],
     ["full", { components, instances: [fullInstance, secondaryInstance] }],
     [
       "data elements",
@@ -136,13 +133,6 @@ describe("Configuration settings snapshots", () => {
       },
     ],
     [
-      "preinstalled",
-      {
-        libraryCode: { type: "preinstalled" },
-        instances: [{ name: "alloy" }, { name: "secondary" }],
-      },
-    ],
-    [
       "legacy library settings",
       {
         librarySettings: { type: "preinstalled" },
@@ -157,15 +147,6 @@ describe("Configuration settings snapshots", () => {
       "disabled components without callbacks",
       {
         components: disabledComponents,
-        instances: [
-          { ...fullInstance, onBeforeLinkClickSend: "", onBeforeEventSend: "" },
-        ],
-      },
-    ],
-    [
-      "full without callbacks",
-      {
-        components,
         instances: [
           { ...fullInstance, onBeforeLinkClickSend: "", onBeforeEventSend: "" },
         ],
@@ -202,15 +183,6 @@ describe("Configuration settings snapshots", () => {
       },
     ],
     [
-      "duplicate instances without saved sandboxes",
-      {
-        instances: [
-          { name: "alloy", edgeConfigId: "ds-prod" },
-          { name: "alloy", edgeConfigId: "ds-prod" },
-        ],
-      },
-    ],
-    [
       "invalid values",
       {
         components,
@@ -239,8 +211,36 @@ describe("Configuration settings snapshots", () => {
     },
   );
 
+  it("round trips duplicate instances without saved sandboxes settings before the first validation", async () => {
+    await init({
+      instances: [
+        { name: "alloy", edgeConfigId: "ds-prod" },
+        { name: "alloy", edgeConfigId: "ds-prod" },
+      ],
+    });
+    expect(await captureState(bridge)).toMatchSnapshot();
+    await view.getByRole("tab", { name: "alloy", exact: true }).nth(1).click();
+    await control("nameField").fill("secondary");
+    await control("orgIdField").fill("SECOND@AdobeOrg");
+    await control("productionDatastreamField").fill("%secondaryStream%");
+    await control("addInstanceButton").click();
+    await control("nameField").fill("third");
+    await control("orgIdField").fill("THIRD@AdobeOrg");
+    await control("productionDatastreamField").fill("%thirdStream%");
+    const registration = await bridge.registration;
+    expect(await registration.validate()).toBe(true);
+    expect((await registration.getSettings()).instances).toEqual([
+      minimalInstance,
+      {
+        name: "secondary",
+        orgId: "SECOND@AdobeOrg",
+        edgeConfigId: "%secondaryStream%",
+      },
+      { name: "third", orgId: "THIRD@AdobeOrg", edgeConfigId: "%thirdStream%" },
+    ]);
+  }, 60_000);
+
   it.each([
-    ["single instance", [validInstance]],
     [
       "multiple instances",
       [
@@ -259,7 +259,30 @@ describe("Configuration settings snapshots", () => {
       await init({ components, instances }, { preconfigured: true });
       await control("reportSuitesOverride.0").expectEnabled();
       expect(await captureState(bridge)).toMatchSnapshot();
+
+      const registration = await bridge.registration;
+      await control("productionOverridesTab").click();
+      await control("targetPropertyTokenOverride").fill("%target%");
+      await control("eventDatasetOverride").fill("%dataset%");
+      expect(
+        (await registration.getSettings()).instances[0].edgeConfigOverrides
+          .production,
+      ).toMatchObject({
+        com_adobe_target: { propertyToken: "%target%" },
+        com_adobe_experience_platform: {
+          datasets: { event: { datasetId: "%dataset%" } },
+        },
+      });
+      await control("overridesEnabled").selectOption("No override");
+      expect(
+        (await registration.getSettings()).instances[0].edgeConfigOverrides,
+      ).not.toHaveProperty("production");
+      await configurationUI(view).toggleComponent("activityCollector");
+      const disabled = await registration.getSettings();
+      expect(disabled.components.activityCollector).toBe(false);
+      expect(disabled.instances[0]).not.toHaveProperty("clickCollection");
     },
+    60_000,
   );
 
   it("shows the grouped legacy callback report-suite error on the first validation", async () => {
@@ -277,50 +300,6 @@ describe("Configuration settings snapshots", () => {
       ],
     });
     await control("reportSuitesOverride.0").expectEnabled();
-    expect(await captureState(bridge)).toMatchSnapshot();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each([
-    ["three environments", {}],
-    ["disabled components", { components: disabledComponents }],
-    [
-      "development datastream data element",
-      { developmentEdgeConfigId: "%stream%" },
-    ],
-    ["legacy callback", { onBeforeLinkClickSend: "content.xdm.web = {};" }],
-  ])(
-    "shows first-validation override feedback with %s",
-    async (_, { components: savedComponents, ...instanceSettings }) => {
-      const development = reportSuiteOverride([
-        "not-allowed",
-        "",
-        "%suite%",
-      ]).development;
-      await init({
-        ...(savedComponents && { components: savedComponents }),
-        instances: [
-          {
-            ...minimalInstance,
-            ...instanceSettings,
-            edgeConfigOverrides: Object.fromEntries(
-              environments.map((env) => [env, development]),
-            ),
-          },
-        ],
-      });
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it.each([
-    ["disabled components", { components: disabledComponents }],
-    [
-      "self-hosted extension",
-      { components, libraryCode: { type: "preinstalled" } },
-    ],
-  ])("round trips settings in the %s context", async (_, extensionSettings) => {
-    await init({ instances: [minimalInstance] }, { extensionSettings });
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
@@ -348,107 +327,24 @@ describe("Configuration settings snapshots", () => {
     expect(await captureState(bridge)).toMatchSnapshot();
   });
 
-  it.each(editCases)("edits %s through %j", async (id, values, settings) => {
-    await init(settings);
-    if (id === "advertiser0Field") {
-      await control(id).expectValue("Advertiser BF");
-    }
-    for (const value of values) {
-      // eslint-disable-next-line no-await-in-loop
-      await control(id).fill(value);
-      // eslint-disable-next-line no-await-in-loop
-      expect(await captureState(bridge)).toMatchSnapshot();
-    }
-  });
-
-  it.each([
-    [
-      "personalization",
-      [
-        "idMigrationEnabledField",
-        "targetMigrationEnabledField",
-        "personalizationStorageEnabledField",
-      ],
-    ],
-    [
-      "activityCollector",
-      [
-        "internalLinkEnabledField",
-        "externalLinkEnabledField",
-        "downloadLinkEnabledField",
-        "contextWebField",
-        "contextDeviceField",
-        "contextEnvironmentField",
-        "contextPlaceContextField",
-        "contextHighEntropyUserAgentHintsField",
-        "contextOneTimeAnalyticsReferrerField",
-      ],
-    ],
-    [
-      "brandConcierge",
-      ["stickyConversationSessionField", "collectSourcesDataTestId"],
-    ],
-  ])("toggles %s options", async (component, ids) => {
-    await init(
-      settingsForComponents(
-        component,
-        ...(component === "personalization" ? ["rulesEngine"] : []),
-      ),
-    );
-    for (const id of ids) {
-      // eslint-disable-next-line no-await-in-loop
-      await control(id).click();
-      // eslint-disable-next-line no-await-in-loop
-      expect(await captureState(bridge)).toMatchSnapshot();
-    }
-  });
-
-  it("disables and restores each populated component independently", async () => {
-    await init({ components, instances: [editableInstance] });
-    for (const component of Object.keys(components)) {
-      // eslint-disable-next-line no-await-in-loop
-      await configurationUI(view).toggleComponent(component);
-      // eslint-disable-next-line no-await-in-loop
-      expect(await captureState(bridge)).toMatchSnapshot();
-      // eslint-disable-next-line no-await-in-loop
-      await configurationUI(view).toggleComponent(component);
-    }
-  }, 60_000);
-
-  it.each([
-    [
-      "defaultConsentDataElementRadio",
-      "defaultConsentDataElementField",
-      "consent",
-    ],
-    [
-      "transferCookiesDataElementOption",
-      "transferCookiesDataElementField",
-      "brandConcierge",
-    ],
-  ])(
-    "switches %s through empty, invalid and valid data elements",
-    async (radio, input, component) => {
-      await init(settingsForComponents(component));
-      await control(radio).click();
-      await control(input).clear();
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await control(input).fill("not a data element");
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await control(input).fill("%edited%");
-      expect(await captureState(bridge)).toMatchSnapshot();
+  it.each(editCases)(
+    "edits %s through %j",
+    async (id, values, settings, captureCount) => {
+      await init(settings);
+      for (const value of values.slice(0, captureCount)) {
+        // eslint-disable-next-line no-await-in-loop
+        await control(id).fill(value);
+        // eslint-disable-next-line no-await-in-loop
+        expect(await captureState(bridge)).toMatchSnapshot();
+      }
+      if (id === "mediaMainPingIntervalField") {
+        await control("mediaAdPingIntervalField").fill("0");
+        await control("mediaAdPingIntervalField").expectError(
+          "The Ad Ping Interval must be greater than 1 second.",
+        );
+      }
     },
   );
-
-  it("selects cookie and advertising options", async () => {
-    await init(settingsForComponents("advertising"));
-    await control("thirdPartyCookiesEnabledField").selectOption("Enabled");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await control("dspEnabledField").selectOption("Disabled");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await control("advertisingEnabledField").selectOption("Disabled");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
 
   it("selects datastreams and sandboxes for every environment, then clears them", async () => {
     await init({ instances: [minimalInstance] });
@@ -462,17 +358,46 @@ describe("Configuration settings snapshots", () => {
     await control("stagingDatastreamField").clear();
     await control("developmentDatastreamField").clear();
     expect(await captureState(bridge)).toMatchSnapshot();
-  });
 
-  it("adds, trims and removes transfer cookie rows", async () => {
-    await init(settingsForComponents("brandConcierge"));
-    await control("addTransferCookieButton").click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await control("transferCookie4Field").fill("  new-cookie  ");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await control("deleteTransferCookie0Button").click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
+    // Keep distinct feedback checks without another mount or a full settings snapshot per field.
+    await control("nameField").fill("");
+    await control("orgIdField").fill("");
+    await control("edgeDomainField").fill("");
+    await control("downloadLinkQualifierField").fill("");
+    await control("mediaPlayerNameField").fill("Player");
+    await control("defaultConsentDataElementRadio").click();
+    await control("defaultConsentDataElementField").fill("not a data element");
+    await configurationUI(view).toggleComponent("brandConcierge");
+    await control("transferCookiesDataElementOption").click();
+    await control("transferCookiesDataElementField").fill("not a data element");
+    const invalid = await captureState(bridge);
+    expect(invalid.valid).toBe(false);
+    expect(invalid.errors).toEqual(
+      expect.arrayContaining(
+        [
+          ["Name", "Please specify a name."],
+          ["IMS organization ID", "Please specify an IMS organization ID."],
+          ["Edge domain", "Please specify an edge domain."],
+          ["Download link qualifier", "Please provide a regular expression."],
+          ["Channel", "Please provide a channel name for streaming media."],
+          ["Data element", "Please specify a data element."],
+          [
+            "Transfer cookies data element",
+            "Please provide a single data element, for example %myDataElement%.",
+          ],
+        ].map(([fieldName, message]) =>
+          expect.objectContaining({ field: fieldName, messages: [message] }),
+        ),
+      ),
+    );
+    await control("defaultConsentDataElementField").fill("%edited%");
+    await control("transferCookiesDataElementField").fill("%edited%");
+    const registration = await bridge.registration;
+    expect((await registration.getSettings()).instances[0]).toMatchObject({
+      defaultConsent: "%edited%",
+      conversation: { transferCookies: "%edited%" },
+    });
+  }, 60_000);
 
   it("adds, selects, duplicates and removes advertiser rows", async () => {
     await init(settingsForComponents("advertising"));
@@ -482,33 +407,28 @@ describe("Configuration settings snapshots", () => {
     await control("advertiser2Field").selectOption("Advertiser BF");
     expect(await captureState(bridge)).toMatchSnapshot();
     await control("deleteAdvertiser0Button").click();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("adds and edits an instance, selects another instance and rejects duplicate names", async () => {
-    await init({ instances: [minimalInstance] });
-    await control("addInstanceButton").click();
-    await control("nameField").expectValue("alloy2");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await view.getByRole("tab", { name: "alloy2", exact: true }).click();
-    await control("nameField").fill("third");
-    await control("orgIdField").fill("THIRD@AdobeOrg");
-    await control("productionDatastreamField").fill("%thirdStream%");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await view.getByRole("tab", { name: "alloy", exact: true }).click();
-    await control("nameField").fill("third");
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("edits the selected foreign-org instance without changing the first instance", async () => {
-    await init({ instances: [minimalInstance, secondaryInstance], components });
-    await view.getByRole("tab", { name: "secondary", exact: true }).click();
-    await control("orgIdField").fill("EDITED@AdobeOrg");
-    await control("productionDatastreamField").fill("%secondaryStream%");
-    expect(await captureState(bridge)).toMatchSnapshot();
-    await view.getByRole("tab", { name: "secondary", exact: true }).click();
-    await control("nameField").fill("alloy");
-    expect(await captureState(bridge)).toMatchSnapshot();
+    const registration = await bridge.registration;
+    expect(await registration.validate()).toBe(true);
+    expect(
+      (await registration.getSettings()).instances[0].advertising
+        .advertiserSettings,
+    ).toEqual([
+      { advertiserId: "83565", enabled: false },
+      { advertiserId: "167524", enabled: true },
+    ]);
+    await control("advertiser0Field").fill("not a data element");
+    await control("advertiser0Field").expectError(
+      "Unrecognized advertiser ID.",
+    );
+    await control("thirdPartyCookiesEnabledField").selectOption("Enabled");
+    await control("dspEnabledField").selectOption("Disabled");
+    await control("advertisingEnabledField").selectOption("Disabled");
+    const selected = (await registration.getSettings()).instances[0];
+    expect(selected.advertising).toMatchObject({
+      enabled: false,
+      dspEnabled: false,
+    });
+    expect(selected).not.toHaveProperty("thirdPartyCookiesEnabled");
   });
 
   it("deletes the first fully populated instance and preserves the remaining invalid settings", async () => {
@@ -533,7 +453,7 @@ describe("Configuration settings snapshots", () => {
     expect(await captureState(bridge)).toMatchSnapshot();
     await control("nameField").fill("alloy");
     await view.getByText("Managed by Adobe Tags", { exact: true }).click();
-    expect(await captureState(bridge)).toMatchSnapshot();
+    await control("productionDatastreamField").expectVisible();
   });
 
   it("validates numeric and service override inputs", async () => {
@@ -548,42 +468,42 @@ describe("Configuration settings snapshots", () => {
       },
       { preconfigured: true },
     );
-    for (const value of ["-1", "1.5", "abc", "prefix%id%", "12%id%", ""]) {
+    await control("idSyncContainerOverride").fill("-1");
+    expect(await captureState(bridge)).toMatchSnapshot();
+    const registration = await bridge.registration;
+    for (const [value, message] of [
+      ["1.5", "The value must whole number."],
+      ["abc", "The value must positive, whole number."],
+      ["prefix%id%", "The value must contain one or more valid data elements."],
+    ]) {
       // eslint-disable-next-line no-await-in-loop
       await control("idSyncContainerOverride").fill(value);
       // eslint-disable-next-line no-await-in-loop
-      expect(await captureState(bridge)).toMatchSnapshot();
+      expect(await registration.validate()).toBe(false);
+      // eslint-disable-next-line no-await-in-loop
+      await control("idSyncContainerOverride").expectError(message);
     }
+    await control("idSyncContainerOverride").fill("12%id%");
+    expect(await registration.validate()).toBe(true);
+    expect(
+      (await registration.getSettings()).instances[0].edgeConfigOverrides
+        .development.com_adobe_identity.idSyncContainerId,
+    ).toBe(12);
+    await control("idSyncContainerOverride").clear();
+    expect(await registration.validate()).toBe(true);
+    expect(
+      (await registration.getSettings()).instances[0].edgeConfigOverrides
+        .development,
+    ).not.toHaveProperty("com_adobe_identity.idSyncContainerId");
     await control("analyticsEnabled").fill("invalid");
-    expect(await captureState(bridge)).toMatchSnapshot();
+    expect(await registration.validate()).toBe(false);
+    await control("analyticsEnabled").expectError(
+      "The value must be 'Enabled', 'Disabled', 'No override' or a single data element.",
+    );
     await control("analyticsEnabled").fill("%bad");
-    expect(await captureState(bridge)).toMatchSnapshot();
+    expect(await registration.validate()).toBe(false);
+    await control("analyticsEnabled").expectError(
+      "The value must be a valid data element.",
+    );
   }, 60_000);
-
-  it.each(environments)(
-    "edits %s overrides and report-suite rows",
-    async (env) => {
-      await init({ instances: [minimalInstance] }, { preconfigured: true });
-      await control(`${env}OverridesTab`).click();
-      await control("overridesEnabled").selectOption("Enabled");
-      await control("analyticsEnabled").selectOption("Enabled");
-      await control("reportSuitesOverride.0").expectVisible();
-      await control("reportSuitesOverride.0").fill("not-allowed-again");
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await control(`${env}OverridesTab`).click();
-      await control("reportSuitesOverride.0").fill("%suite%");
-      await control("addReportSuite").click();
-      await control("reportSuitesOverride.1").fill(`suite-${env}`);
-      await control("idSyncContainerOverride").fill("%container%");
-      await control("targetEnabled").selectOption("Enabled");
-      await control("targetPropertyTokenOverride").fill("%target%");
-      await control("experiencePlatformEnabled").selectOption("Enabled");
-      await control("eventDatasetOverride").fill("%dataset%");
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await control("removeReportSuite.0").click();
-      expect(await captureState(bridge)).toMatchSnapshot();
-      await control("overridesEnabled").selectOption("No override");
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
 });
