@@ -10,18 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
+import { it, expect, vi } from "vitest";
 import { http, HttpResponse } from "msw";
-import useView from "../helpers/useView";
 import loadEntryView from "../helpers/entryView";
-import captureState from "../helpers/captureState";
 import field from "../helpers/field";
-import { suppressReactErrorBoundaryMessage } from "../helpers/errorSuppression";
 import { worker } from "../helpers/mocks/browser";
 import {
-  extensionSettings,
-  extensionModes,
   mediaSettings,
+  extensionSettings,
+  snapshotMediaEventsCases,
+  expectMediaEventsSettings,
 } from "../helpers/mediaEventsFixtures";
 
 vi.mock("../../../src/view/render", async () => ({
@@ -32,236 +30,312 @@ const View = await loadEntryView(
   () => import("../../../src/view/actions/sendStreamingMediaEvent"),
 );
 
-let view;
-let bridge;
-let driver;
-let cleanup;
-
-describe("Send streaming media event settings snapshots", () => {
-  beforeEach(async () => {
-    ({ view, bridge, driver, cleanup } = await useView(View));
-  });
-
-  afterEach(() => cleanup());
-
-  it.each([
-    ["new", null],
-    ["empty", {}],
-    ...Object.entries(mediaSettings),
+const verifyEmptyMediaDetails = async ({ bridge, driver, view }) => {
+  const registration = await bridge.registration;
+  await [
     [
-      "data elements",
-      {
-        eventType: "media.chapterStart",
-        playerId: "%player%",
-        xdm: {
-          mediaCollection: {
-            chapterDetails: "%chapter%",
-            customMetadata: "%metadata%",
-          },
-        },
-      },
+      "sessionStart",
+      "sessionDetails",
+      { playerName: undefined, appVersion: undefined, channel: undefined },
+      [
+        ["playheadTextField", "Please provide a playhead."],
+        ["sessionDetails.contentTypeField", "Please choose a content type."],
+        [
+          "sessionDetails.lengthNumberField",
+          "Please provide the clip length/runtime (seconds) as a number.",
+        ],
+        ["sessionDetails.nameTextField", "Please provide a content id."],
+      ],
     ],
     [
-      "negative chapter length",
-      {
-        eventType: "media.chapterStart",
-        playerId: "player",
-        xdm: {
-          mediaCollection: {
-            chapterDetails: { length: -1, index: 1, offset: 0 },
+      "adStart",
+      "advertisingDetails",
+      { playerName: undefined },
+      [
+        ["advertisingDetails.nameTextField", "Please provide a ad id."],
+        [
+          "advertisingDetails.lengthNumberField",
+          "Please provide the ad length (seconds) as a number.",
+        ],
+        [
+          "advertisingDetails.podPositionNumberField",
+          "Please provide the pod position as a number.",
+        ],
+      ],
+    ],
+    [
+      "adBreakStart",
+      "advertisingPodDetails",
+      {},
+      [
+        [
+          "advertisingPodDetails.offsetNumberField",
+          "Please provide the ad break offset (seconds) as a number.",
+        ],
+        [
+          "advertisingPodDetails.indexNumberField",
+          "Please provide the ad break index as a number.",
+        ],
+      ],
+    ],
+    [
+      "chapterStart",
+      "chapterDetails",
+      {},
+      [
+        [
+          "chapterDetails.lengthNumberField",
+          "Please provide the chapter length as a number.",
+        ],
+        [
+          "chapterDetails.indexNumberField",
+          "Please provide the chapter index as a number.",
+        ],
+        [
+          "chapterDetails.offsetNumberField",
+          "Please provide the chapter offset as a number.",
+        ],
+      ],
+    ],
+    [
+      "error",
+      "errorDetails",
+      {},
+      [
+        ["errorDetails.nameTextField", "Please provide a error name."],
+        ["errorDetails.sourceTextField", "Please provide a source."],
+      ],
+    ],
+    ["statesUpdate", null, null, []],
+  ].reduce(async (previous, [type, details, settings, errors]) => {
+    await previous;
+    const eventType = `media.${type}`;
+    await driver.init({
+      extensionSettings,
+      settings: {
+        ...mediaSettings.minimal,
+        eventType,
+        handleMediaSessionAutomatically: type === "sessionStart",
+      },
+    });
+    if (type === "sessionStart") {
+      await field(
+        view.getByTestId("handleMediaSessionAutomaticallyCheckbox"),
+      ).uncheck();
+    }
+    const before = await registration.getSettings();
+    expect(before.handleMediaSessionAutomatically).toBe(false);
+    expect(before.xdm.eventType).toBe(eventType);
+    if (details) {
+      expect(before.xdm.mediaCollection[details]).toEqual(settings);
+    } else {
+      expect(before.xdm.mediaCollection).toHaveProperty(
+        "statesStart",
+        undefined,
+      );
+      expect(before.xdm.mediaCollection).toHaveProperty("statesEnd", undefined);
+    }
+    expect(await registration.validate()).toBe(errors.length === 0);
+    expect(await registration.getSettings()).toEqual(before);
+    await errors.reduce(async (earlier, [testId, message]) => {
+      await earlier;
+      await field(view.getByTestId(testId)).expectError(message);
+    }, Promise.resolve());
+  }, Promise.resolve());
+};
+
+it("Send streaming media event settings snapshots", async () => {
+  expect.hasAssertions();
+  let sessionSettings;
+  await snapshotMediaEventsCases(View, [
+    ...[
+      ["new", null],
+      ...Object.entries(mediaSettings).filter(
+        ([name]) => name === "session" || name === "states",
+      ),
+      [
+        "data elements",
+        {
+          eventType: "media.chapterStart",
+          playerId: "%player%",
+          xdm: {
+            mediaCollection: {
+              chapterDetails: "%chapter%",
+              customMetadata: "%metadata%",
+            },
           },
         },
+      ],
+      [
+        "negative chapter length",
+        {
+          eventType: "media.chapterStart",
+          playerId: "player",
+          xdm: {
+            mediaCollection: {
+              chapterDetails: { length: -1, index: 1, offset: 0 },
+            },
+          },
+        },
+      ],
+    ].map(([name, settings]) => ({
+      name: `round trips ${name} settings`,
+      settings,
+      fresh: true,
+      snapshot: name !== "states",
+      verify:
+        name === "session"
+          ? async (mounted) => {
+              sessionSettings = mounted.state.settingsAfterValidate;
+              await verifyEmptyMediaDetails(mounted);
+            }
+          : name === "states"
+            ? async ({ bridge }) => {
+                await expectMediaEventsSettings(bridge, {
+                  ...mediaSettings.states,
+                  instanceName: "alloy",
+                  handleMediaSessionAutomatically: false,
+                  edgeConfigOverrides: undefined,
+                  xdm: {
+                    eventType: "media.statesUpdate",
+                    mediaCollection: {
+                      ...mediaSettings.states.xdm.mediaCollection,
+                      playhead: undefined,
+                    },
+                  },
+                });
+              }
+            : undefined,
+    })),
+    ...["not a data element"].map((value) => ({
+      name: `session eventTypeField > sets the value to ${JSON.stringify(value)}`,
+      settings: mediaSettings.session,
+      edit: async ({ view }) => {
+        const control = field(view.getByTestId("eventTypeField"));
+        await control.fill(value);
+        return () => control.selectOption("Session start");
       },
-    ],
-  ])("round trips %s settings", async (_, settings) => {
-    await driver.init({
-      extensionSettings,
-      settings: structuredClone(settings),
-    });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each([
-    "media.sessionStart",
-    "media.adStart",
-    "media.adBreakStart",
-    "media.chapterStart",
-    "media.error",
-    "media.statesUpdate",
-    "media.bitrateChange",
-  ])("validates empty %s details", async (eventType) => {
-    await driver.init({
-      extensionSettings,
-      settings: { ...mediaSettings.minimal, eventType },
-    });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  describe.each([
-    ["eventTypeField", ["%edited%", "", "not a data element"]],
-    ["playerIdTextField", ["%edited%", "", "not a data element"]],
-    ["playheadTextField", ["%edited%", "", "not a data element"]],
-    ["sessionDetails.contentTypeField", ["%edited%", "", "not a data element"]],
-    ["sessionDetails.lengthNumberField", ["25", "", "-1"]],
-    ["sessionDetails.nameTextField", ["%edited%", "", "not a data element"]],
-  ])("session %s", (testId, values) => {
-    it.each(values)("sets the value to %j", async (value) => {
-      await driver.init({
-        extensionSettings,
-        settings: structuredClone(mediaSettings.session),
-      });
-      await field(view.getByTestId(testId)).fill(value);
-      expect(await captureState(bridge)).toMatchSnapshot();
-    });
-  });
-
-  it("turns off automatic media session handling", async () => {
-    await driver.init({
-      extensionSettings,
-      settings: structuredClone(mediaSettings.session),
-    });
-    await field(
-      view.getByTestId("handleMediaSessionAutomaticallyCheckbox"),
-    ).uncheck();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(["sessionDetails", "customMetadata"])(
-    "provides %s through a data element",
-    async (name) => {
-      if (name === "sessionDetails") {
-        suppressReactErrorBoundaryMessage();
-      }
-      await driver.init({
-        extensionSettings,
-        settings: structuredClone(mediaSettings.session),
-      });
-      await field(view.getByTestId(`${name}DataElementOption`)).check();
-      await field(view.getByTestId(`${name}DataElementField`)).fill("%edited%");
-      expect(await captureState(bridge)).toMatchSnapshot();
+      verify: async ({ view, bridge, state }) => {
+        const control = field(view.getByTestId("eventTypeField"));
+        await control.fill("%edited%");
+        const expected = structuredClone(state.settingsAfterValidate);
+        expected.eventType = "%edited%";
+        expected.xdm.eventType = "%edited%";
+        await expectMediaEventsSettings(bridge, expected);
+        await control.expectNotInvalid();
+      },
+    })),
+    {
+      name: 'session sessionDetails.lengthNumberField > sets the value to "-1"',
+      reuse: true,
+      edit: async ({ view }) => {
+        const control = field(
+          view.getByTestId("sessionDetails.lengthNumberField"),
+        );
+        await control.fill("-1");
+      },
+      verify: async ({ view, bridge, state }) => {
+        await field(view.getByTestId("sessionDetails.lengthNumberField")).fill(
+          "120",
+        );
+        await field(
+          view.getByTestId("sessionDetails.lengthDataElementOption"),
+        ).check();
+        await field(
+          view.getByTestId("sessionDetails.lengthDataElementField"),
+        ).fill("%edited%");
+        const expected = structuredClone(state.settingsAfterValidate);
+        expected.xdm.mediaCollection.sessionDetails.length = "%edited%";
+        await expectMediaEventsSettings(bridge, expected);
+        await field(
+          view.getByTestId("sessionDetails.lengthDataElementField"),
+        ).expectNotInvalid();
+      },
     },
-  );
-
-  it.each(["", "not a data element", "%edited%"])(
-    "provides session length through data element %j",
-    async (value) => {
-      await driver.init({
-        extensionSettings,
-        settings: structuredClone(mediaSettings.session),
-      });
-      await field(
-        view.getByTestId("sessionDetails.lengthDataElementOption"),
-      ).check();
-      await field(
-        view.getByTestId("sessionDetails.lengthDataElementField"),
-      ).fill(value);
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
-  );
-
-  it.each([
-    ["eventTypeField", "Chapter start"],
-    ["sessionDetails.contentTypeField", "Video-on-demand"],
-    ["sessionDetails.adLoadField", "Other (custom/dynamic ads)"],
-  ])("selects %s option %s", async (testId, option) => {
-    await driver.init({
-      extensionSettings,
-      settings: structuredClone(mediaSettings.session),
-    });
-    await field(view.getByTestId(testId)).selectOption(option);
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("switches SDK instances", async () => {
-    const datastream = (id, title) => ({
-      data: {
-        title,
-        enabled: true,
-        settings: {
-          com_adobe_analytics: { enabled: true, reportSuites: ["suite"] },
-          com_adobe_target: { enabled: true },
-          com_adobe_experience_platform: {
+    {
+      name: "switches SDK instances",
+      settings: mediaSettings.session,
+      initInfo: { company: { orgId: "PARITY@AdobeOrg" } },
+      fresh: true,
+      snapshot: false,
+      edit: async ({ view }) => {
+        const datastream = (id, title) => ({
+          data: {
+            title,
             enabled: true,
-            datasets: { event: [{ datasetId: "dataset", primary: true }] },
+            settings: {
+              com_adobe_analytics: { enabled: true, reportSuites: ["suite"] },
+              com_adobe_target: { enabled: true },
+              com_adobe_experience_platform: {
+                enabled: true,
+                datasets: { event: [{ datasetId: "dataset", primary: true }] },
+              },
+            },
           },
-        },
+          sandboxName: "prod",
+          _system: { id },
+        });
+        const recordsUrl =
+          "https://edge.adobe.io/metadata/namespaces/edge/datasets/datastreams/records/";
+        worker.use(
+          http.get(recordsUrl, ({ request }) =>
+            HttpResponse.json({
+              _embedded: {
+                records:
+                  request.headers.get("x-sandbox-name") === "prod"
+                    ? [
+                        datastream("ds-prod", "Production stream"),
+                        datastream("ds-staging", "Staging stream"),
+                        datastream("ds-development", "Development stream"),
+                      ]
+                    : [],
+              },
+            }),
+          ),
+          http.get(`${recordsUrl}:id`, ({ params }) =>
+            HttpResponse.json(datastream(params.id, `${params.id} stream`)),
+          ),
+        );
+        await field(view.getByTestId("instanceNamePicker")).selectOption(
+          "alloy",
+        );
+        await field(
+          view.getByTestId("sessionDetails.channelTextField"),
+        ).expectValue("Web");
+        await field(view.getByTestId("datastreamId")).expectValue(
+          "Development stream",
+        );
+        await expect
+          .element(
+            view.getByRole("combobox", {
+              name: "Report suite override #3",
+              exact: true,
+            }),
+          )
+          .toHaveAccessibleDescription(/Overrides report suites: "suite"/);
       },
-      sandboxName: "prod",
-      _system: { id },
-    });
-    const recordsUrl =
-      "https://edge.adobe.io/metadata/namespaces/edge/datasets/datastreams/records/";
-    worker.use(
-      http.get(recordsUrl, ({ request }) =>
-        HttpResponse.json({
-          _embedded: {
-            records:
-              request.headers.get("x-sandbox-name") === "prod"
-                ? [
-                    datastream("ds-prod", "Production stream"),
-                    datastream("ds-staging", "Staging stream"),
-                    datastream("ds-development", "Development stream"),
-                  ]
-                : [],
-          },
-        }),
-      ),
-      http.get(`${recordsUrl}:id`, ({ params }) =>
-        HttpResponse.json(datastream(params.id, `${params.id} stream`)),
-      ),
-    );
-    await driver.init({
-      company: { orgId: "PARITY@AdobeOrg" },
-      extensionSettings,
-      settings: structuredClone(mediaSettings.session),
-    });
-    await field(view.getByTestId("instanceNamePicker")).selectOption("alloy");
-    await field(
-      view.getByTestId("sessionDetails.channelTextField"),
-    ).expectValue("Web");
-    await field(view.getByTestId("datastreamId")).expectValue(
-      "Development stream",
-    );
-    await expect
-      .element(
-        view.getByRole("combobox", {
-          name: "Report suite override #3",
-          exact: true,
-        }),
-      )
-      .toHaveAccessibleDescription(/Overrides report suites: "suite"/);
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("adds an empty custom metadata row", async () => {
-    await driver.init({
-      extensionSettings,
-      settings: structuredClone(mediaSettings.session),
-    });
-    await view.getByTestId("customMetadataAddButton").click();
-    await expect
-      .element(view.getByTestId("customMetadata.2.nameTextField"))
-      .toBeVisible();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it("removes the first custom metadata row", async () => {
-    await driver.init({
-      extensionSettings,
-      settings: structuredClone(mediaSettings.session),
-    });
-    await view.getByTestId("customMetadata0RemoveButton").click();
-    await field(view.getByTestId("customMetadata.0.nameTextField")).expectValue(
-      "country",
-    );
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(extensionModes)("round trips with %s", async (_, context) => {
-    await driver.init({
-      extensionSettings: context,
-      settings: structuredClone(mediaSettings.minimal),
-    });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-});
+      verify: async ({ bridge, view }) => {
+        await expectMediaEventsSettings(
+          bridge,
+          { ...sessionSettings, instanceName: "alloy" },
+          false,
+        );
+        await field(view.getByTestId("reportSuitesOverride.0")).expectError(
+          "The value must be one of the preconfigured report suites.",
+        );
+      },
+    },
+    ...["customMetadata", "sessionDetails"].map((name) => ({
+      name: `provides ${name} through a data element`,
+      settings: mediaSettings.session,
+      fresh: true,
+      boundaryError: name === "sessionDetails",
+      edit: async ({ view }) => {
+        await field(view.getByTestId(`${name}DataElementOption`)).check();
+        await field(view.getByTestId(`${name}DataElementField`)).fill(
+          "%edited%",
+        );
+      },
+    })),
+  ]);
+}, 90_000);

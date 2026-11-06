@@ -10,13 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
-import useView from "../helpers/useView";
+import { it, expect, vi } from "vitest";
 import loadEntryView from "../helpers/entryView";
-import captureState from "../helpers/captureState";
 import {
-  extensionSettings,
   extensionModes,
+  snapshotMediaEventsCases,
+  expectMediaEventsSettings,
 } from "../helpers/mediaEventsFixtures";
 
 vi.mock("../../../src/view/render", async () => ({
@@ -28,45 +27,44 @@ const View = await loadEntryView(
 );
 
 const saved = { cacheId: "11111111-1111-4111-8111-111111111111" };
-let view;
-let bridge;
-let driver;
-let cleanup;
 
-describe("Event merge ID settings snapshots", () => {
-  beforeEach(async () => {
-    vi.spyOn(crypto, "randomUUID").mockReturnValue(
-      "00000000-0000-4000-8000-000000000001",
-    );
-    ({ view, bridge, driver, cleanup } = await useView(View));
-  });
-
-  afterEach(() => {
-    cleanup();
+it("Event merge ID settings snapshots", async () => {
+  expect.hasAssertions();
+  vi.spyOn(crypto, "randomUUID").mockReturnValue(
+    "00000000-0000-4000-8000-000000000001",
+  );
+  try {
+    await snapshotMediaEventsCases(View, [
+      {
+        name: "round trips minimal settings without editable fields",
+        settings: saved,
+      },
+      {
+        name: "with components disabled > captures new settings",
+        context: extensionModes[0][1],
+        settings: null,
+        snapshot: false,
+        verify: async ({ bridge }) => {
+          await expectMediaEventsSettings(
+            bridge,
+            { cacheId: "00000000-0000-4000-8000-000000000001" },
+            false,
+          );
+        },
+      },
+      {
+        name: "with components disabled > captures empty settings",
+        context: extensionModes[0][1],
+        settings: {},
+        snapshot: false,
+        verify: async ({ bridge }) => {
+          await expectMediaEventsSettings(bridge, {
+            cacheId: "00000000-0000-4000-8000-000000000001",
+          });
+        },
+      },
+    ]);
+  } finally {
     vi.restoreAllMocks();
-  });
-
-  it.each([
-    ["new", null],
-    ["empty", {}],
-    ["minimal", saved],
-    ["populated", { cacheId: "22222222-2222-4222-8222-222222222222" }],
-  ])("round trips %s settings without editable fields", async (_, settings) => {
-    await driver.init({ extensionSettings, settings });
-    await expect
-      .element(view.getByText("No configuration necessary."))
-      .toBeVisible();
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  describe.each(extensionModes)("with %s", (_, context) => {
-    it.each([
-      ["new", null],
-      ["empty", {}],
-      ["saved", saved],
-    ])("captures %s settings", async (_, settings) => {
-      await driver.init({ extensionSettings: context, settings });
-      expect(await captureState(bridge)).toMatchSnapshot();
-    });
-  });
+  }
 });

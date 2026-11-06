@@ -10,14 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
-import useView from "../helpers/useView";
+import { it, expect, vi } from "vitest";
 import loadEntryView from "../helpers/entryView";
-import captureState from "../helpers/captureState";
 import field from "../helpers/field";
 import {
-  extensionSettings,
   extensionModes,
+  snapshotMediaEventsCases,
+  expectMediaEventsSettings,
 } from "../helpers/mediaEventsFixtures";
 
 vi.mock("../../../src/view/render", async () => ({
@@ -28,60 +27,60 @@ const View = await loadEntryView(
   () => import("../../../src/view/actions/resetEventMergeId"),
 );
 
-let view;
-let bridge;
-let driver;
-let cleanup;
-
-describe("Reset event merge ID settings snapshots", () => {
-  beforeEach(async () => {
-    ({ view, bridge, driver, cleanup } = await useView(View));
-  });
-
-  afterEach(() => cleanup());
-
-  it.each([
-    ["new", null],
-    ["empty", {}],
-    ["minimal", { eventMergeId: "%merge%" }],
-    ["populated", { eventMergeId: "%event.id%" }],
-    ["invalid", { eventMergeId: "not a data element" }],
-  ])("round trips %s settings", async (_, settings) => {
-    await driver.init({ extensionSettings, settings });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(["%edited%", "", "not a data element"])(
-    "sets the event merge ID to %j",
-    async (value) => {
-      await driver.init({
-        extensionSettings,
-        settings: { eventMergeId: "%event.id%" },
-      });
-      await field(view.getByTestId("eventMergeIdTextField")).fill(value);
-      expect(await captureState(bridge)).toMatchSnapshot();
+it("Reset event merge ID settings snapshots", async () => {
+  expect.hasAssertions();
+  await snapshotMediaEventsCases(View, [
+    {
+      name: "round trips new settings",
+      settings: null,
+      snapshot: false,
+      verify: async ({ view, bridge }) => {
+        await expectMediaEventsSettings(bridge, {}, false);
+        await field(view.getByTestId("eventMergeIdTextField")).expectError(
+          "Please provide a event merge id.",
+        );
+      },
     },
-  );
-
-  it("selects a data element through the bridge", async () => {
-    await driver.init({
-      extensionSettings,
+    {
+      name: "round trips populated settings",
       settings: { eventMergeId: "%event.id%" },
-    });
-    await view
-      .getByRole("button", { name: "Select data element", exact: true })
-      .click();
-    await field(view.getByTestId("eventMergeIdTextField")).expectValue(
-      "%data element name%",
-    );
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(extensionModes)("round trips with %s", async (_, context) => {
-    await driver.init({
-      extensionSettings: context,
+      fresh: true,
+    },
+    {
+      name: "round trips invalid settings",
+      settings: { eventMergeId: "not a data element" },
+      snapshot: false,
+      verify: async ({ view, bridge }) => {
+        await expectMediaEventsSettings(
+          bridge,
+          { eventMergeId: "not a data element" },
+          false,
+        );
+        await field(view.getByTestId("eventMergeIdTextField")).expectError(
+          "Please specify a data element.",
+        );
+        await view
+          .getByRole("button", { name: "Select data element", exact: true })
+          .click();
+        await field(view.getByTestId("eventMergeIdTextField")).expectValue(
+          "%data element name%",
+        );
+        await expectMediaEventsSettings(bridge, {
+          eventMergeId: "%data element name%",
+        });
+        await field(
+          view.getByTestId("eventMergeIdTextField"),
+        ).expectNotInvalid();
+      },
+    },
+    {
+      name: "round trips with components disabled",
       settings: { eventMergeId: "%merge%" },
-    });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
+      context: extensionModes[0][1],
+      snapshot: false,
+      verify: async ({ bridge }) => {
+        await expectMediaEventsSettings(bridge, {});
+      },
+    },
+  ]);
 });

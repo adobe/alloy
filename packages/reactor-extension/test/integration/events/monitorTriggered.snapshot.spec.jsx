@@ -10,14 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
-import useView from "../helpers/useView";
+import { it, expect, vi } from "vitest";
 import loadEntryView from "../helpers/entryView";
-import captureState from "../helpers/captureState";
 import field from "../helpers/field";
 import {
-  extensionSettings,
-  extensionModes,
+  snapshotMediaEventsCases,
+  expectMediaEventsSettings,
 } from "../helpers/mediaEventsFixtures";
 
 vi.mock("../../../src/view/render", async () => ({
@@ -28,58 +26,40 @@ const View = await loadEntryView(
   () => import("../../../src/view/events/monitorTriggered"),
 );
 
-let view;
-let bridge;
-let driver;
-let cleanup;
-
-describe("Monitor triggered settings snapshots", () => {
-  beforeEach(async () => {
-    ({ view, bridge, driver, cleanup } = await useView(View));
-  });
-
-  afterEach(() => cleanup());
-
-  it.each([
-    ["new", null],
-    ["empty", {}],
-    ["minimal", { name: "onBeforeCommand" }],
-    ["populated", { name: "onNetworkResponse" }],
-    ["data element", { name: "%hook%" }],
-    ["invalid", { name: "not-a-hook" }],
-  ])("round trips %s settings", async (_, settings) => {
-    await driver.init({ extensionSettings, settings });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(["%edited%", "", "not a data element"])(
-    "sets the monitoring hook to %j",
-    async (value) => {
-      await driver.init({
-        extensionSettings,
-        settings: { name: "onNetworkResponse" },
-      });
-      await field(view.getByTestId("nameField")).fill(value);
-      expect(await captureState(bridge)).toMatchSnapshot();
-    },
+it("Monitor triggered settings snapshots", async () => {
+  expect.hasAssertions();
+  await snapshotMediaEventsCases(
+    View,
+    [
+      ["new", null],
+      ["data element", { name: "%hook%" }],
+      ["invalid", { name: "not-a-hook" }],
+    ].map(([name, settings]) => ({
+      name: `round trips ${name} settings`,
+      settings,
+      snapshot: name === "data element",
+      verify:
+        name !== "data element"
+          ? async ({ view, bridge }) => {
+              const control = field(view.getByTestId("nameField"));
+              await expectMediaEventsSettings(
+                bridge,
+                name === "new" ? {} : { name: "not-a-hook" },
+                false,
+              );
+              await control.expectError(
+                name === "new"
+                  ? "Please choose a monitoring hook."
+                  : "Please choose a monitoring hook from the list or specify a single data element.",
+              );
+              if (name === "new") return;
+              await control.selectOption("onNetworkResponse");
+              await expectMediaEventsSettings(bridge, {
+                name: "onNetworkResponse",
+              });
+              await control.expectNotInvalid();
+            }
+          : undefined,
+    })),
   );
-
-  it("selects another monitoring hook", async () => {
-    await driver.init({
-      extensionSettings,
-      settings: { name: "onNetworkResponse" },
-    });
-    await field(view.getByTestId("nameField")).selectOption(
-      "onCommandRejected",
-    );
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
-
-  it.each(extensionModes)("round trips with %s", async (_, context) => {
-    await driver.init({
-      extensionSettings: context,
-      settings: { name: "onBeforeCommand" },
-    });
-    expect(await captureState(bridge)).toMatchSnapshot();
-  });
 });
