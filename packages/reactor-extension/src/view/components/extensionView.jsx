@@ -13,34 +13,41 @@ governing permissions and limitations under the License.
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { useFormik, FormikProvider } from "formik";
-import { object } from "yup";
+import { useForm } from "@tanstack/react-form";
 import { ProgressCircle } from "@react-spectrum/s2";
 import useExtensionBridge from "../utils/useExtensionBridge";
 import useReportAsyncError from "../utils/useReportAsyncError";
 import FillParentAndCenterChildren from "./fillParentAndCenterChildren";
+import {
+  formContext,
+  getFieldValidatorErrors,
+  submitForm,
+  validateOnChangeBlurAndSubmit,
+} from "../forms/formContext";
+import {
+  flattenErrors,
+  getErrors as getSchemaErrors,
+} from "../forms/validation";
 
 const ExtensionView = ({
   render,
   getInitialValues,
   getSettings,
-  validateFormikState,
-  formikStateValidationSchema,
-  getFormikStateValidationSchema,
-  validateNonFormikState,
+  validateFormState,
+  validationSchema,
+  getValidationSchema,
+  validateNonFormState,
 }) => {
   const reportAsyncError = useReportAsyncError();
   const [initInfo, setInitInfo] = useState();
   const [canRenderView, setCanRenderView] = useState(false);
   const viewRegistrationRef = useRef();
-  const formikPropsRef = useRef();
   const getInitialValuesPromiseRef = useRef();
+  const hasValuesRef = useRef(false);
 
-  const getValidationSchema = () => {
-    const {
-      getFormikStateValidationSchema: getSchema,
-      formikStateValidationSchema: schema,
-    } = viewRegistrationRef.current ?? {};
+  const resolveValidationSchema = () => {
+    const { getValidationSchema: getSchema, validationSchema: schema } =
+      viewRegistrationRef.current ?? {};
 
     if (schema) {
       return schema;
@@ -48,79 +55,69 @@ const ExtensionView = ({
     if (getSchema && initInfo) {
       try {
         const newSchema = getSchema({ initInfo });
-        viewRegistrationRef.current.formikStateValidationSchema = newSchema;
+        viewRegistrationRef.current.validationSchema = newSchema;
+        return newSchema;
       } catch (e) {
         reportAsyncError(e);
       }
     }
-    return object();
+    return undefined;
   };
 
-  formikPropsRef.current = useFormik({
-    onSubmit: () => {},
-    validate: (values) => {
-      let errors;
+  const getErrors = (values) => {
+    try {
+      const schema = resolveValidationSchema();
+      return {
+        ...getFieldValidatorErrors(form, values),
+        ...(schema ? getSchemaErrors(schema, values) : {}),
+        ...flattenErrors(
+          viewRegistrationRef.current?.validateFormState?.({ values }),
+        ),
+      };
+    } catch {
+      reportAsyncError(
+        new Error("An error occurred while validating the view."),
+      );
+      return {};
+    }
+  };
 
-      // Formik swallows errors that occur during validation, but we want
-      // to handle them in a proper manner.
-      try {
-        if (viewRegistrationRef.current?.validateFormikState) {
-          errors = viewRegistrationRef.current.validateFormikState({ values });
-        }
-      } catch {
-        reportAsyncError(
-          new Error("An error occurred while validating the view."),
-        );
-      }
-
-      return errors;
+  const form = useForm({
+    validationLogic: validateOnChangeBlurAndSubmit,
+    validators: {
+      onDynamic: ({ value }) => {
+        const errors = getErrors(value);
+        return Object.keys(errors).length > 0
+          ? { form: errors, fields: {} }
+          : undefined;
+      },
     },
-    validationSchema: getValidationSchema(),
   });
 
-  const myValidateFormikState = async () => {
-    // The view hasn't yet initialized formik with initialValues.
-    if (!formikPropsRef.current.values) {
+  const myValidateFormState = async () => {
+    // The view hasn't yet initialized the form with initial values.
+    if (!hasValuesRef.current) {
       return false;
     }
 
-    try {
-      await formikPropsRef.current.submitForm();
+    await submitForm(form);
 
-      // The docs say that the promise submitForm returns
-      // will be rejected if there are errors, but that is not the case.
-      // Therefore, after the promise is resolved, we manually validate
-      // to see if the form is valid.
-      // https://github.com/jaredpalmer/formik/issues/1580
-      formikPropsRef.current.setSubmitting(false);
-
-      // Setting context to the values so you can use "$..." in when conditions
-      const validationSchema = getValidationSchema();
-      await validationSchema.validate(formikPropsRef.current.values, {
-        abortEarly: false,
-        context: formikPropsRef.current.values,
-      });
-
-      // validate the formik state
-      const formikErrors = await formikPropsRef.current.validateForm();
-      return Object.keys(formikErrors).length === 0;
-    } catch {
-      return false;
-    }
+    // Setting context to the values so you can use "$..." in when conditions
+    return Object.keys(getErrors(form.state.values)).length === 0;
   };
 
-  const myValidateNonFormikState = async () => {
+  const myValidateNonFormState = async () => {
     if (!viewRegistrationRef.current) {
       // If the view hasn't registered yet, we don't want to consider
       // it valid.
       return false;
     }
 
-    if (!viewRegistrationRef.current.validateNonFormikState) {
+    if (!viewRegistrationRef.current.validateNonFormState) {
       return true;
     }
 
-    return viewRegistrationRef.current.validateNonFormikState();
+    return viewRegistrationRef.current.validateNonFormState();
   };
 
   useExtensionBridge({
@@ -129,14 +126,14 @@ const ExtensionView = ({
       setInitInfo(_initInfo);
     },
     async getSettings() {
-      if (!viewRegistrationRef.current || !formikPropsRef?.current?.values) {
+      if (!viewRegistrationRef.current || !hasValuesRef.current) {
         return {};
       }
 
       try {
         return await viewRegistrationRef.current.getSettings({
           initInfo,
-          values: formikPropsRef.current.values,
+          values: form.state.values,
         });
       } catch (e) {
         // This will update the UI to show that an error has occurred.
@@ -150,8 +147,8 @@ const ExtensionView = ({
         await getInitialValuesPromiseRef.current;
       }
       const results = await Promise.all([
-        myValidateFormikState(),
-        myValidateNonFormikState(),
+        myValidateFormState(),
+        myValidateNonFormState(),
       ]);
       return results.every((result) => result);
     },
@@ -160,23 +157,20 @@ const ExtensionView = ({
   const registerImperativeFormApi = (api) => {
     viewRegistrationRef.current = viewRegistrationRef.current || {};
     viewRegistrationRef.current.getSettings = api.getSettings;
-    viewRegistrationRef.current.validateFormikState = api.validateFormikState;
-    viewRegistrationRef.current.formikStateValidationSchema =
-      api.formikStateValidationSchema;
-    viewRegistrationRef.current.getFormikStateValidationSchema =
-      api.getFormikStateValidationSchema;
-    viewRegistrationRef.current.validateNonFormikState =
-      api.validateNonFormikState;
+    viewRegistrationRef.current.validateFormState = api.validateFormState;
+    viewRegistrationRef.current.validationSchema = api.validationSchema;
+    viewRegistrationRef.current.getValidationSchema = api.getValidationSchema;
+    viewRegistrationRef.current.validateNonFormState = api.validateNonFormState;
   };
 
   if (getSettings) {
     useEffect(() => {
       registerImperativeFormApi({
         getSettings,
-        validateFormikState,
-        formikStateValidationSchema,
-        getFormikStateValidationSchema,
-        validateNonFormikState,
+        validateFormState,
+        validationSchema,
+        getValidationSchema,
+        validateNonFormState,
       });
     }, []);
   }
@@ -187,9 +181,11 @@ const ExtensionView = ({
           try {
             const getInitialValuesPromise = getInitialValues({ initInfo });
             getInitialValuesPromiseRef.current = getInitialValuesPromise;
-            formikPropsRef.current.resetForm({
-              values: await getInitialValuesPromise,
-            });
+            form.reset(await getInitialValuesPromise);
+            // Form parts such as requiredComponent decide which settings to
+            // save while building the schema, so build it before any read.
+            resolveValidationSchema();
+            hasValuesRef.current = true;
             setCanRenderView(true);
             window.loaded = true;
           } catch (e) {
@@ -219,13 +215,13 @@ const ExtensionView = ({
 
   return (
     <div>
-      <FormikProvider value={formikPropsRef.current}>
+      <formContext.Provider value={form}>
         {render({
           initInfo,
-          formikProps: formikPropsRef.current,
+          form,
           registerImperativeFormApi,
         })}
-      </FormikProvider>
+      </formContext.Provider>
     </div>
   );
 };
@@ -234,10 +230,10 @@ ExtensionView.propTypes = {
   render: PropTypes.func,
   getInitialValues: PropTypes.func,
   getSettings: PropTypes.func,
-  validateFormikState: PropTypes.func,
-  formikStateValidationSchema: PropTypes.object,
-  getFormikStateValidationSchema: PropTypes.func,
-  validateNonFormikState: PropTypes.func,
+  validateFormState: PropTypes.func,
+  validationSchema: PropTypes.object,
+  getValidationSchema: PropTypes.func,
+  validateNonFormState: PropTypes.func,
 };
 
 export default ExtensionView;

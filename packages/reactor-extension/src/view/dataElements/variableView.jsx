@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 
 import { useRef } from "react";
 import PropTypes from "prop-types";
-import { useField } from "formik";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Link, Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import ExtensionView from "../components/extensionView";
@@ -22,7 +22,7 @@ import XdmVariable, {
 import DataVariable, {
   bridge as dataVariableBridge,
 } from "./variable/components/dataVariable";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
+import FormRadioGroup from "../forms/fields/RadioGroup";
 import { XDM, DATA } from "./variable/constants/variableTypes";
 
 const getInitialValues =
@@ -50,13 +50,13 @@ const getSettings = ({ values }) => {
   return settings;
 };
 
-const validateFormikState = ({ values }) => ({
-  ...xdmVariableBridge.validateFormikState(values),
-  ...dataVariableBridge.validateFormikState(values),
+const validateFormState = ({ values }) => ({
+  ...xdmVariableBridge.validateFormState(values),
+  ...dataVariableBridge.validateFormState(values),
 });
 
 const Schema = ({ xdmVariableContext, initInfo }) => {
-  const [{ value: type }] = useField("type");
+  const type = useFieldValue("type");
 
   return (
     <>
@@ -81,7 +81,7 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
         </Link>
         .
       </div>
-      <FormikRadioGroup
+      <FormRadioGroup
         label="Choose the property you want to populate"
         name="type"
         orientation="horizontal"
@@ -92,7 +92,7 @@ const Schema = ({ xdmVariableContext, initInfo }) => {
         <Radio data-test-id="dataRadioButton" value={DATA}>
           Data
         </Radio>
-      </FormikRadioGroup>
+      </FormRadioGroup>
 
       {type === XDM && (
         <XdmVariable context={xdmVariableContext} initInfo={initInfo} />
@@ -113,7 +113,7 @@ const VariableView = () => {
     <ExtensionView
       getInitialValues={getInitialValues({ xdmVariableContext })}
       getSettings={getSettings}
-      validateFormikState={validateFormikState}
+      validateFormState={validateFormState}
       render={({ initInfo }) => (
         <FormElementContainer>
           <Schema xdmVariableContext={xdmVariableContext} initInfo={initInfo} />

@@ -1,0 +1,104 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Identity map settings snapshots > adds a custom namespace 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": false,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+    "NewNamespace": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "%id%",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Identity map settings snapshots > makes an identifier in another namespace primary 1`] = `
+{
+  "errors": [
+    {
+      "field": "Primary",
+      "messages": [],
+      "testId": "identity1primaryField0",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "CRM": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "123",
+        "primary": true,
+      },
+    ],
+    "Email": [
+      {
+        "authenticatedState": "authenticated",
+        "id": "%email%",
+        "primary": true,
+      },
+      {
+        "authenticatedState": "loggedOut",
+        "id": "other@example.com",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Identity map settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Namespace",
+      "messages": [
+        "Please select a namespace.",
+      ],
+      "testId": "namespace0Combobox",
+    },
+    {
+      "field": "ID",
+      "messages": [
+        "Please specify an ID.",
+      ],
+      "testId": "identity0idField0",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "": [
+      {
+        "authenticatedState": "ambiguous",
+        "id": "",
+        "primary": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;

@@ -14,14 +14,15 @@ import { Radio, Button, ActionButton } from "@react-spectrum/s2";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import { FieldArray, useField } from "formik";
-import { object, string } from "yup";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
-import FormikTextField from "../forms/fields/TextField";
+import { useFormField } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
+import FormRadioGroup from "../forms/fields/RadioGroup";
+import FormTextField from "../forms/fields/TextField";
 import DataElementSelector from "./dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FieldSubset from "./fieldSubset";
+import { matches, parentOf, shape, when } from "../forms/validation";
 
 const CONSTANT = "constant";
 const DATA_ELEMENT = "dataElement";
@@ -75,22 +76,24 @@ export const bridge = {
     }
     return undefined;
   },
-  formikStateValidationSchema: object().shape({
-    decisionScopesDataElement: string().when("decisionsInputMethod", {
-      is: DATA_ELEMENT,
-      then: (schema) =>
-        schema.matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
-    }),
+  validationSchema: shape({
+    decisionScopesDataElement: when(
+      (value, ctx) => parentOf(ctx).decisionsInputMethod === DATA_ELEMENT,
+      matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
+    ),
   }),
 };
 
 const DecisionScopes = () => {
-  const [{ value: decisionsInputMethod }] = useField("decisionsInputMethod");
-  const [{ value: decisionScopesArray }] = useField("decisionScopesArray");
+  const decisionsInputMethod = useFieldValue("decisionsInputMethod");
+  const decisionScopesArrayField = useFormField("decisionScopesArray", {
+    mode: "array",
+  });
+  const decisionScopesArray = decisionScopesArrayField.state.value;
 
   return (
     <div>
-      <FormikRadioGroup
+      <FormRadioGroup
         name="decisionsInputMethod"
         orientation="horizontal"
         label="Decision scopes"
@@ -101,11 +104,11 @@ const DecisionScopes = () => {
         <Radio data-test-id="scopeDataElementOptionField" value={DATA_ELEMENT}>
           Provide a data element
         </Radio>
-      </FormikRadioGroup>
+      </FormRadioGroup>
       {decisionsInputMethod === DATA_ELEMENT && (
         <FieldSubset>
           <DataElementSelector>
-            <FormikTextField
+            <FormTextField
               data-test-id="scopeDataElementField"
               label="Data element"
               name="decisionScopesDataElement"
@@ -125,56 +128,49 @@ const DecisionScopes = () => {
               alignItems: "start",
             })}
           >
-            <FieldArray
-              name="decisionScopesArray"
-              render={(arrayHelpers) => {
+            <div>
+              {decisionScopesArray.map((scope, index) => {
                 return (
-                  <div>
-                    {decisionScopesArray.map((scope, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className={style({
-                            display: "flex",
-                            alignItems: "end",
-                          })}
-                        >
-                          <FormikTextField
-                            data-test-id={`scope${index}Field`}
-                            label="Scope"
-                            name={`decisionScopesArray.${index}`}
-                            width="size-5000"
-                            aria-label="Decision scope"
-                            marginTop="size-0"
-                          />
-                          <ActionButton
-                            data-test-id={`deleteScope${index}Button`}
-                            isQuiet
-                            isDisabled={decisionScopesArray.length === 1}
-                            onPress={() => {
-                              arrayHelpers.remove(index);
-                            }}
-                            aria-label="Remove decision scope"
-                          >
-                            <Delete />
-                          </ActionButton>
-                        </div>
-                      );
+                  <div
+                    key={index}
+                    className={style({
+                      display: "flex",
+                      alignItems: "end",
                     })}
-                    <Button
-                      variant="secondary"
-                      fillStyle="outline"
-                      data-test-id="addDecisionScopeButton"
+                  >
+                    <FormTextField
+                      data-test-id={`scope${index}Field`}
+                      label="Scope"
+                      name={`decisionScopesArray.${index}`}
+                      width="size-5000"
+                      aria-label="Decision scope"
+                      marginTop="size-0"
+                    />
+                    <ActionButton
+                      data-test-id={`deleteScope${index}Button`}
+                      isQuiet
+                      isDisabled={decisionScopesArray.length === 1}
                       onPress={() => {
-                        arrayHelpers.push("");
+                        decisionScopesArrayField.removeValue(index);
                       }}
+                      aria-label="Remove decision scope"
                     >
-                      Add scope
-                    </Button>
+                      <Delete />
+                    </ActionButton>
                   </div>
                 );
-              }}
-            />
+              })}
+              <Button
+                variant="secondary"
+                fillStyle="outline"
+                data-test-id="addDecisionScopeButton"
+                onPress={() => {
+                  decisionScopesArrayField.pushValue("");
+                }}
+              >
+                Add scope
+              </Button>
+            </div>
           </div>
         </FieldSubset>
       )}

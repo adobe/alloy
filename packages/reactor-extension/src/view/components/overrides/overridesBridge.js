@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { array, lazy, mixed, number, object, string } from "yup";
 import deepSet from "../../utils/deepSet";
 import deepGet from "../../utils/deepGet";
 import { ENVIRONMENTS as OVERRIDE_ENVIRONMENTS } from "../../configuration/constants/environmentType";
@@ -27,9 +26,17 @@ import {
 } from "./utils";
 import clone from "../../utils/clone";
 import deepDelete from "../../utils/deepDelete";
+import {
+  all,
+  isEmpty,
+  matches,
+  rule,
+  shape,
+  when,
+} from "../../forms/validation";
 
 /**
- * @typedef {Object} EnvironmentConfigOverrideFormikState
+ * @typedef {Object} EnvironmentConfigOverrideFormState
  * @property {string} [sandbox]
  * @property {string} [datastreamId]
  * @property {Object} [com_adobe_experience_platform]
@@ -45,10 +52,10 @@ import deepDelete from "../../utils/deepDelete";
  * @property {Object} [com_adobe_target]
  * @property {string} [com_adobe_target.propertyToken]
  *
- * @typedef {Object} ConfigOverridesFormikState
- * @property {EnvironmentConfigOverrideFormikState} [development]
- * @property {EnvironmentConfigOverrideFormikState} [staging]
- * @property {EnvironmentConfigOverrideFormikState} [production]
+ * @typedef {Object} ConfigOverridesFormState
+ * @property {EnvironmentConfigOverrideFormState} [development]
+ * @property {EnvironmentConfigOverrideFormState} [staging]
+ * @property {EnvironmentConfigOverrideFormState} [production]
  *
  * @typedef {Object} EnvironmentConfigOverrideLaunchSettings
  * @property {string} [sandbox]
@@ -72,38 +79,108 @@ import deepDelete from "../../utils/deepDelete";
  * @property {EnvironmentConfigOverrideLaunchSettings} [production]
  */
 
-const enabledDisabledMatchOrDataElementValidator = lazy((value) =>
-  typeof value === "string" && (value.includes("%") || value === "")
-    ? string()
-        .matches(isDataElementRegex, {
-          message: "Please enter a valid data element.",
-          excludeEmptyString: true,
-        })
-        .nullable()
-    : mixed()
-        .oneOf(Object.values(ENABLED_DISABLED_MATCH_FIELD_VALUES))
-        .nullable(),
+const isDataElementOrEmpty = (value) =>
+  typeof value === "string" && (value.includes("%") || value === "");
+
+const oneOfOrDataElement = (values) =>
+  when(
+    isDataElementOrEmpty,
+    matches(isDataElementRegex, "Please enter a valid data element."),
+    rule(
+      (value) => isEmpty(value) || values.includes(value),
+      (value, ctx) =>
+        `${ctx.propString} must be one of the following values: ${values.join(", ")}`,
+    ),
+  );
+
+const enabledDisabledMatchOrDataElementValidator = oneOfOrDataElement(
+  Object.values(ENABLED_DISABLED_MATCH_FIELD_VALUES),
 );
-const enabledDisabledOrDataElementValidator = lazy((value) =>
-  typeof value === "string" && (value.includes("%") || value === "")
-    ? string()
-        .matches(isDataElementRegex, {
-          message: "Please enter a valid data element.",
-          excludeEmptyString: true,
-        })
-        .nullable()
-    : mixed().oneOf(Object.values(ENABLED_DISABLED_FIELD_VALUES)).nullable(),
+const enabledDisabledOrDataElementValidator = oneOfOrDataElement(
+  Object.values(ENABLED_DISABLED_FIELD_VALUES),
 );
-const enabledMatchOrDataElementValidator = lazy((value) =>
-  typeof value === "string" && (value.includes("%") || value === "")
-    ? string()
-        .matches(isDataElementRegex, {
-          message: "Please enter a valid data element.",
-          excludeEmptyString: true,
-        })
-        .nullable()
-    : mixed().oneOf(Object.values(ENABLED_MATCH_FIELD_VALUES)).nullable(),
+const enabledMatchOrDataElementValidator = oneOfOrDataElement(
+  Object.values(ENABLED_MATCH_FIELD_VALUES),
 );
+
+const idSyncContainerIdValidator = when(
+  isDataElementOrEmpty,
+  matches(containsDataElementsRegex, "Please enter a valid data element."),
+  all(
+    rule(
+      (value) => isEmpty(value) || !Number.isNaN(Number(value)),
+      "Please enter a number.",
+    ),
+    rule(
+      (value) => isEmpty(value) || Number(value) > 0,
+      "Please enter a positive number.",
+    ),
+    rule(
+      (value) => isEmpty(value) || Number.isInteger(Number(value)),
+      "Please enter a whole number.",
+    ),
+  ),
+);
+
+const createEnvironmentOverridesSchema = (idSyncContainerIdSchema) =>
+  shape({
+    enabled: enabledMatchOrDataElementValidator,
+    com_adobe_experience_platform: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
+      com_adobe_edge_ode: shape({
+        enabled: enabledDisabledOrDataElementValidator,
+      }),
+      com_adobe_edge_segmentation: shape({
+        enabled: enabledDisabledOrDataElementValidator,
+      }),
+      com_adobe_edge_destinations: shape({
+        enabled: enabledDisabledOrDataElementValidator,
+      }),
+      com_adobe_edge_ajo: shape({
+        enabled: enabledDisabledOrDataElementValidator,
+      }),
+    }),
+    com_adobe_analytics: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
+    }),
+    com_adobe_identity: shape({ idSyncContainerId: idSyncContainerIdSchema }),
+    com_adobe_target: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
+    }),
+    com_adobe_audiencemanager: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
+    }),
+    com_adobe_launch_ssf: shape({
+      enabled: enabledDisabledMatchOrDataElementValidator,
+    }),
+  });
+
+const createEdgeConfigOverridesSchema = (idSyncContainerIdSchema) =>
+  shape(
+    Object.fromEntries(
+      OVERRIDE_ENVIRONMENTS.map((env) => [
+        env,
+        createEnvironmentOverridesSchema(idSyncContainerIdSchema),
+      ]),
+    ),
+  );
+
+const edgeConfigOverridesSchema = createEdgeConfigOverridesSchema(
+  idSyncContainerIdValidator,
+);
+
+// The send event action's guided modes validated overrides two Yup
+// conditions deep, where Yup does not convert the ID sync container's text to
+// a number, so only an empty value or a data element passed. Kept so those
+// actions accept exactly what they did before.
+const edgeConfigOverridesWithoutIdSyncNumbersSchema =
+  createEdgeConfigOverridesSchema(
+    when(
+      isDataElementOrEmpty,
+      matches(containsDataElementsRegex, "Please enter a valid data element."),
+      rule(isEmpty, "Please enter a number."),
+    ),
+  );
 
 /**
  * Convert older versions of settings to newer versions of settings.
@@ -182,8 +259,8 @@ const migrations = [
 
 export const bridge = {
   /**
-   * Get the default formik state for the overrides form.
-   * @returns {ConfigOverridesFormikState}
+   * Get the default form state for the overrides form.
+   * @returns {ConfigOverridesFormState}
    */
   getInstanceDefaults: () => ({
     edgeConfigOverrides: OVERRIDE_ENVIRONMENTS.reduce(
@@ -236,9 +313,9 @@ export const bridge = {
     ),
   }),
   /**
-   * Converts the saved Launch instance settings to the formik state.
+   * Converts the saved Launch instance settings to the form state.
    * @param {{ edgeConfigOverrides: ConfigOverridesLaunchSettings }} params
-   * @returns {ConfigOverridesFormikState}
+   * @returns {ConfigOverridesFormState}
    */
   getInitialInstanceValues: ({ instanceSettings }) => {
     const instanceValues = {};
@@ -332,8 +409,8 @@ export const bridge = {
     return instanceValues;
   },
   /**
-   * Converts the formik state to the Launch instance settings.
-   * @param {{ instanceValues: { edgeConfigOverrides: ConfigOverridesFormikState }}} params
+   * Converts the form state to the Launch instance settings.
+   * @param {{ instanceValues: { edgeConfigOverrides: ConfigOverridesFormState }}} params
    * @returns {{ edgeConfigOverrides: ConfigOverridesLaunchSettings }}
    */
   getInstanceSettings: ({ instanceValues }) => {
@@ -436,73 +513,7 @@ export const bridge = {
 
     return instanceSettings;
   },
-  formikStateValidationSchema: object({
-    edgeConfigOverrides: object(
-      OVERRIDE_ENVIRONMENTS.reduce(
-        (acc, env) => ({
-          ...acc,
-          [env]: object({
-            enabled: enabledMatchOrDataElementValidator,
-            datastreamId: string().nullable(),
-            sandbox: string().nullable(),
-            com_adobe_experience_platform: object({
-              enabled: enabledDisabledMatchOrDataElementValidator,
-              datasets: object({
-                event: object({
-                  datasetId: string().nullable(),
-                }),
-                profile: object({
-                  datasetId: string().nullable(),
-                }),
-              }),
-              com_adobe_edge_ode: object({
-                enabled: enabledDisabledOrDataElementValidator,
-              }),
-              com_adobe_edge_segmentation: object({
-                enabled: enabledDisabledOrDataElementValidator,
-              }),
-              com_adobe_edge_destinations: object({
-                enabled: enabledDisabledOrDataElementValidator,
-              }),
-              com_adobe_edge_ajo: object({
-                enabled: enabledDisabledOrDataElementValidator,
-              }),
-            }),
-            com_adobe_analytics: object({
-              enabled: enabledDisabledMatchOrDataElementValidator,
-              reportSuites: array(string()).nullable(),
-            }),
-            com_adobe_identity: object({
-              idSyncContainerId: lazy((value) =>
-                typeof value === "string" &&
-                (value.includes("%") || value === "")
-                  ? string()
-                      .matches(containsDataElementsRegex, {
-                        message: "Please enter a valid data element.",
-                        excludeEmptyString: true,
-                      })
-                      .nullable()
-                  : number()
-                      .typeError("Please enter a number.")
-                      .positive("Please enter a positive number.")
-                      .integer("Please enter a whole number.")
-                      .nullable(),
-              ),
-            }),
-            com_adobe_target: object({
-              enabled: enabledDisabledMatchOrDataElementValidator,
-              propertyToken: string().nullable(),
-            }),
-            com_adobe_audiencemanager: object({
-              enabled: enabledDisabledMatchOrDataElementValidator,
-            }),
-            com_adobe_launch_ssf: object({
-              enabled: enabledDisabledMatchOrDataElementValidator,
-            }),
-          }),
-        }),
-        {},
-      ),
-    ),
-  }),
+  edgeConfigOverridesSchema,
+  edgeConfigOverridesWithoutIdSyncNumbersSchema,
+  validationSchema: shape({ edgeConfigOverrides: edgeConfigOverridesSchema }),
 };

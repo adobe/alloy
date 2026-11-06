@@ -1,0 +1,195 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.actionTypeField 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "%edited%",
+        "selector": ".cart",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.actionTypeField 2`] = `
+{
+  "errors": [
+    {
+      "field": "Action Type",
+      "messages": [
+        "Please provide an action type.",
+      ],
+      "testId": "metadata.0.actionTypeField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "selector": ".cart",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.actionTypeField 3`] = `
+{
+  "errors": [
+    {
+      "field": "Action Type",
+      "messages": [
+        "Please choose a action type from the list or specify a single data element.",
+      ],
+      "testId": "metadata.0.actionTypeField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "not a data element",
+        "selector": ".cart",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.scopeTextField 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "%edited%": {
+        "actionType": "appendHtml",
+        "selector": ".cart",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > edits, clears, and invalidates metadata.0.scopeTextField 2`] = `
+{
+  "errors": [
+    {
+      "field": "Scope",
+      "messages": [
+        "Please provide a scope.",
+      ],
+      "testId": "metadata.0.scopeTextField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > keeps a blank metadata row before an invalid row 1`] = `
+{
+  "errors": [
+    {
+      "field": "Selector",
+      "messages": [
+        "Please provide a selector.",
+      ],
+      "testId": "metadata.1.selectorTextField",
+    },
+    {
+      "field": "Action Type",
+      "messages": [
+        "Please provide an action type.",
+      ],
+      "testId": "metadata.1.actionTypeField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "metadata": {
+      "home": {},
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > rejects duplicate scopes 1`] = `
+{
+  "errors": [
+    {
+      "field": "Scope",
+      "messages": [
+        "Duplicate scopes are not allowed",
+      ],
+      "testId": "metadata.1.scopeTextField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "metadata": {
+      "checkout": {
+        "actionType": "setHtml",
+        "selector": "#home",
+      },
+    },
+    "propositions": "%event.propositions%",
+    "viewName": "checkout",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips data elements settings 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "metadata": "%metadata%",
+    "propositions": "%props%",
+    "viewName": "%view%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply propositions settings snapshots > round trips view name settings 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "viewName": "hello",
+  },
+  "valid": true,
+}
+`;

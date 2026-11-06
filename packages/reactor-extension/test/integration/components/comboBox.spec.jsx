@@ -12,10 +12,10 @@ governing permissions and limitations under the License.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Formik } from "formik";
+import TestForm from "../helpers/TestForm";
 import { ComboBoxItem } from "@react-spectrum/s2";
-import FormikComboBox from "../../../src/view/forms/fields/ComboBox";
-import FormikKeyedComboBox from "../../../src/view/forms/fields/KeyedComboBox";
+import FormComboBox from "../../../src/view/forms/fields/ComboBox";
+import FormKeyedComboBox from "../../../src/view/forms/fields/KeyedComboBox";
 import renderView from "../helpers/renderView";
 
 const items = [
@@ -30,15 +30,15 @@ const renderItem = (item) => (
 );
 
 describe.each([
-  ["ComboBox", FormikComboBox],
-  ["KeyedComboBox", FormikKeyedComboBox],
+  ["ComboBox", FormComboBox],
+  ["KeyedComboBox", FormKeyedComboBox],
 ])("%s data element input", (name, Component) => {
   let view;
   let input;
 
   const setup = async () => {
     const keyedProps =
-      Component === FormikKeyedComboBox
+      Component === FormKeyedComboBox
         ? {
             items,
             getKey: (item) => item.value,
@@ -47,7 +47,7 @@ describe.each([
         : {};
 
     view = await renderView(() => (
-      <Formik initialValues={{ setting: "" }} onSubmit={() => {}}>
+      <TestForm initialValues={{ setting: "" }}>
         {({ values }) => (
           <>
             <Component
@@ -57,14 +57,14 @@ describe.each([
               allowsCustomValue
               width="size-5000"
             >
-              {Component === FormikKeyedComboBox
+              {Component === FormKeyedComboBox
                 ? renderItem
                 : items.map(renderItem)}
             </Component>
             <output data-test-id="value">{values.setting}</output>
           </>
         )}
-      </Formik>
+      </TestForm>
     ));
     input = view.getByRole("combobox", { name: "Setting" });
   };

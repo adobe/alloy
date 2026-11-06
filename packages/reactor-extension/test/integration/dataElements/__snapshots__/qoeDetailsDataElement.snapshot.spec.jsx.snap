@@ -1,0 +1,42 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Quality of experience settings snapshots > accepts a negative bitrate without a visible validation error 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "bitrate": -1,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > serializes a cleared bitrate as NaN and reports its number error 1`] = `
+{
+  "errors": [
+    {
+      "field": "DIV",
+      "messages": [],
+      "testId": "bitrateNumberField",
+    },
+    {
+      "field": "Average bitrate (in kbps) number field",
+      "messages": [
+        "Please provide the average bitrate (in kbps) as a number.",
+      ],
+      "testId": "bitrateNumberField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "bitrate": NaN,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": false,
+}
+`;

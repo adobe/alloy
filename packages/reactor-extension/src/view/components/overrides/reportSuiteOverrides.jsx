@@ -13,9 +13,8 @@ governing permissions and limitations under the License.
 import { ActionButton, PickerItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import { FieldArray } from "formik";
+import { useFormField } from "../../forms/formContext";
 import PropTypes from "prop-types";
-import { useFieldValue } from "../../utils/useFieldValue";
 import OverrideInput from "./overrideInput";
 import { FIELD_NAMES } from "./utils";
 
@@ -27,7 +26,7 @@ const FIRST_ROW_MARGIN_TOP_STYLE = style({ marginTop: 24 });
  *
  * @param {Object} props
  * @param {string} props.prefix The common prefix for all the data input
- * fields in the Formik state object.
+ * fields in the form state object.
  * @param {{ value: string, label: string }} props.items The list of items to
  * display in the dropdown.
  * @param {string[]} props.primaryItem The list of report suites that are being
@@ -49,7 +48,8 @@ const ReportSuitesOverride = ({
   isDisabled,
 }) => {
   const fieldName = `${prefix}.com_adobe_analytics.reportSuites`;
-  const rsids = useFieldValue(fieldName);
+  const rsidsField = useFormField(fieldName, { mode: "array" });
+  const rsids = rsidsField.state.value;
   let reportSuiteDescription =
     "The IDs for the destination report suites in Adobe Analytics. The value must be a preconfigured override report suite (or a comma-separated list of report suites) from your datastream configuration and overrides the primary report suites.";
   if (primaryItem && primaryItem.length > 0) {
@@ -58,72 +58,66 @@ const ReportSuitesOverride = ({
       .join(", ")}. ${reportSuiteDescription}`;
   }
   return (
-    <FieldArray name={fieldName}>
-      {({ remove, push }) => (
-        <>
+    <>
+      <div
+        className={style({
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+        })}
+      >
+        {rsids.map((rsid, index) => (
           <div
+            key={index}
             className={style({
               display: "flex",
-              flexDirection: "column",
-              gap: 8,
+              flexDirection: "row",
             })}
           >
-            {rsids.map((rsid, index) => (
-              <div
-                key={index}
-                className={style({
-                  display: "flex",
-                  flexDirection: "row",
-                })}
-              >
-                <OverrideInput
-                  useManualEntry={useManualEntry || items.length === 0}
-                  data-test-id={`${FIELD_NAMES.reportSuitesOverride}.${index}`}
-                  aria-label={`Report suite override #${index + 1}`}
-                  label={index === 0 && "Report suites"}
-                  allowsCustomValue
-                  overrideType="report suites"
-                  primaryItem={primaryItem}
-                  validate={validate}
-                  defaultItems={items}
-                  isDisabled={isDisabled}
-                  name={`${fieldName}.${index}`}
-                  description={
-                    index === rsids.length - 1 && reportSuiteDescription
-                  }
-                  width="size-5000"
-                  key={index}
-                >
-                  {({ value, label }) => (
-                    <PickerItem key={value} id={value}>
-                      {label}
-                    </PickerItem>
-                  )}
-                </OverrideInput>
-                <ActionButton
-                  isQuiet
-                  isDisabled={isDisabled || rsids.length < 2}
-                  styles={index === 0 ? FIRST_ROW_MARGIN_TOP_STYLE : undefined}
-                  data-test-id={`removeReportSuite.${index}`}
-                  aria-label={`Remove report suite #${index + 1}`}
-                  onPress={() => remove(index)}
-                >
-                  <Delete />
-                </ActionButton>
-              </div>
-            ))}
+            <OverrideInput
+              useManualEntry={useManualEntry || items.length === 0}
+              data-test-id={`${FIELD_NAMES.reportSuitesOverride}.${index}`}
+              aria-label={`Report suite override #${index + 1}`}
+              label={index === 0 && "Report suites"}
+              allowsCustomValue
+              overrideType="report suites"
+              primaryItem={primaryItem}
+              validate={validate}
+              defaultItems={items}
+              isDisabled={isDisabled}
+              name={`${fieldName}.${index}`}
+              description={index === rsids.length - 1 && reportSuiteDescription}
+              width="size-5000"
+              key={index}
+            >
+              {({ value, label }) => (
+                <PickerItem key={value} id={value}>
+                  {label}
+                </PickerItem>
+              )}
+            </OverrideInput>
+            <ActionButton
+              isQuiet
+              isDisabled={isDisabled || rsids.length < 2}
+              styles={index === 0 ? FIRST_ROW_MARGIN_TOP_STYLE : undefined}
+              data-test-id={`removeReportSuite.${index}`}
+              aria-label={`Remove report suite #${index + 1}`}
+              onPress={() => rsidsField.removeValue(index)}
+            >
+              <Delete />
+            </ActionButton>
           </div>
-          <ActionButton
-            data-test-id="addReportSuite"
-            onPress={() => push("")}
-            isDisabled={isDisabled}
-            styles={style({ maxWidth: "fit" })}
-          >
-            Add Report Suite
-          </ActionButton>
-        </>
-      )}
-    </FieldArray>
+        ))}
+      </div>
+      <ActionButton
+        data-test-id="addReportSuite"
+        onPress={() => rsidsField.pushValue("")}
+        isDisabled={isDisabled}
+        styles={style({ maxWidth: "fit" })}
+      >
+        Add Report Suite
+      </ActionButton>
+    </>
   );
 };
 

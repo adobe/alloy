@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useField } from "formik";
+import { useFieldValue } from "../utils/useFieldValue";
 import { InlineAlert, Heading, Content, Link } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../forms/fields/TextField";
+import FormTextField from "../forms/fields/TextField";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import FormElementContainer from "../components/formElementContainer";
 import { bridge } from "./basicSectionBridge";
@@ -23,13 +23,17 @@ import { bridge } from "./basicSectionBridge";
 export { bridge };
 
 const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
-  const [{ value: instanceValues }] = useField(instanceFieldName);
+  const isRenamed = useFieldValue(
+    instanceFieldName,
+    ({ name, persistedName }) =>
+      Boolean(persistedName) && name !== persistedName,
+  );
   const instanceDefaults = bridge.getInstanceDefaults({ initInfo });
 
   return (
     <FormElementContainer>
       <DataElementSelector>
-        <FormikTextField
+        <FormTextField
           data-test-id="nameField"
           label="Name"
           name={`${instanceFieldName}.name`}
@@ -50,8 +54,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
           width="size-5000"
         />
       </DataElementSelector>
-      {instanceValues.persistedName &&
-      instanceValues.name !== instanceValues.persistedName ? (
+      {isRenamed ? (
         <InlineAlert
           data-test-id="nameChangeAlert"
           variant="notice"
@@ -76,7 +79,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
             })}
           >
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id="orgIdField"
                 label="IMS organization ID"
                 name={`${instanceFieldName}.orgId`}
@@ -97,7 +100,7 @@ const BasicSection = ({ instanceFieldName, initInfo, isPreinstalled }) => {
             })}
           >
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id="edgeDomainField"
                 label="Edge domain"
                 name={`${instanceFieldName}.edgeDomain`}

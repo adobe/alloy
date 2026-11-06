@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import PropTypes from "prop-types";
 import CodeField from "../components/codeField";
+import { all, required } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
  * This creates a form field for a code field.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  * @param {boolean} [options.isRequired] - Whether or not the field is
  * required.
  * @param {string} options.label - The label to use for the field.
@@ -35,12 +35,11 @@ export default function codeField({
   placeholder,
   buttonLabelSuffix,
 }) {
-  let validationSchema = string();
-  if (isRequired) {
-    validationSchema = validationSchema.required(
-      `Please provide a ${label.toLowerCase()}.`,
-    );
-  }
+  const validationSchema = all(
+    ...(isRequired
+      ? [required(`Please provide a ${label.toLowerCase()}.`)]
+      : []),
+  );
 
   const Component = ({ namePrefix = "" }) => (
     <CodeField

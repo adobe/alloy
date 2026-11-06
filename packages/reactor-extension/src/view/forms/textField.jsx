@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "./fields/TextField";
+import FormTextField from "./fields/TextField";
+import { all, required } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
  * This creates a form field for a text field and supports data elements.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  * @param {boolean} [options.isRequired] - Whether or not the field is
  * required.
  * @param {boolean} [options.dataElementSupported] - Whether or not a data
@@ -36,16 +36,16 @@ export default function textField({
   label,
   description,
   width = "size-5000",
-  validationSchemaBase = string(),
+  validationSchemaBase,
   ariaLabel = label,
   isDisabled = false,
 }) {
-  let validationSchema = validationSchemaBase;
-  if (isRequired) {
-    validationSchema = validationSchema.required(
-      `Please provide a ${label.toLowerCase()}.`,
-    );
-  }
+  const validationSchema = all(
+    ...[
+      isRequired && required(`Please provide a ${label.toLowerCase()}.`),
+      validationSchemaBase,
+    ].filter(Boolean),
+  );
 
   let Component;
   if (dataElementSupported) {
@@ -55,7 +55,7 @@ export default function textField({
     }) => {
       return (
         <DataElementSelector>
-          <FormikTextField
+          <FormTextField
             data-test-id={`${namePrefix}${name}TextField`}
             name={`${namePrefix}${name}`}
             label={hideLabel ? undefined : label}
@@ -79,7 +79,7 @@ export default function textField({
       hideLabel = false,
     }) => {
       return (
-        <FormikTextField
+        <FormTextField
           data-test-id={`${namePrefix}${name}TextField`}
           name={`${namePrefix}${name}`}
           label={hideLabel ? undefined : label}

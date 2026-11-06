@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useFormContext } from "../forms/formContext";
 import PropTypes from "prop-types";
 
 const MARGIN_TOP_STYLE = style({ marginTop: 24 });
@@ -24,13 +24,13 @@ const RestoreDefaultValueButton = ({
   fieldHasLabel = true,
   ...otherProps
 }) => {
-  const [, , { setValue }] = useField(name);
+  const form = useFormContext();
   return (
     <ActionButton
       {...otherProps}
       data-test-id={dataTestId}
       onPress={() => {
-        setValue(defaultValue, true);
+        form.setFieldValue(name, defaultValue);
       }}
       styles={fieldHasLabel ? MARGIN_TOP_STYLE : undefined}
     >

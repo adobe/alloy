@@ -10,17 +10,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { mixed } from "yup";
-import { useField } from "formik";
+import { getBy } from "@tanstack/react-form";
+import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import form from "./form";
+import { parentOf, when } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
  * This function is used to create a form that conditionally renders
  * other form based on a conditional function.
  * @param {object} options The options for the conditional form.
- * @param {Array | string} options.args The name of the formik state field or fields
+ * @param {Array | string} options.args The name of the form state field or fields
  * that will be passed to the conditional function as arguments.
  * @param {Function} options.condition If this function returns true, the part's
  * Components will be rendered, the part's schema will be used, and the part's
@@ -38,7 +39,7 @@ export default function conditional({ args, condition }, children) {
 
   const parts = {
     // getInitialValues should run regardless of the condition so that the
-    // default formik state can be set up.
+    // default form state can be set up.
     getInitialValues,
     getSettings({ values }) {
       const conditionalArgValues = argsArray.map((arg) => values[arg]);
@@ -52,21 +53,11 @@ export default function conditional({ args, condition }, children) {
         initInfo,
         existingValidationShape: {},
       });
+      const conditionHolds = (value, ctx) =>
+        condition(...argsArray.map((arg) => getBy(parentOf(ctx), arg)));
       return Object.keys(validationShape).reduce(
         (memo, key) => {
-          const existingValidation = memo[key];
-          if (existingValidation) {
-            memo[key] = mixed().when(args, {
-              is: condition,
-              then: () => validationShape[key],
-              otherwise: () => existingValidation,
-            });
-          } else {
-            memo[key] = mixed().when(args, {
-              is: condition,
-              then: () => validationShape[key],
-            });
-          }
+          memo[key] = when(conditionHolds, validationShape[key], memo[key]);
           return memo;
         },
         { ...existingValidationShape },
@@ -74,10 +65,9 @@ export default function conditional({ args, condition }, children) {
     },
     Component: (props) => {
       const { namePrefix = "" } = props;
-      const conditionalArgValues = argsArray.map((arg) => {
-        const [{ value }] = useField(`${namePrefix}${arg}`);
-        return value;
-      });
+      const conditionalArgValues = argsArray.map((arg) =>
+        useFieldValue(`${namePrefix}${arg}`),
+      );
       if (!condition(...conditionalArgValues)) {
         return null;
       }

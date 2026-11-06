@@ -1,0 +1,88 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Evaluate rulesets settings snapshots > keeps a blank row before an invalid context item 1`] = `
+{
+  "errors": [
+    {
+      "field": "Key",
+      "messages": [
+        "Please provide a key.",
+      ],
+      "testId": "Key1Field",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Evaluate rulesets settings snapshots > rejects duplicate keys 1`] = `
+{
+  "errors": [
+    {
+      "field": "Key",
+      "messages": [
+        "Duplicate keys are not allowed",
+      ],
+      "testId": "Key1Field",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "personalization": {
+      "decisionContext": {
+        "country": "%cart%",
+        "empty": "",
+      },
+    },
+    "renderDecisions": true,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Evaluate rulesets settings snapshots > round trips data element settings 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "personalization": {
+      "decisionContext": "%context%",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Evaluate rulesets settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "personalization": {
+      "decisionContext": {
+        "cart": "%cart%",
+        "country": "US",
+        "empty": "",
+      },
+    },
+    "renderDecisions": true,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Evaluate rulesets settings snapshots > round trips with components disabled 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {},
+  "valid": true,
+}
+`;

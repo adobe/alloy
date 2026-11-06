@@ -14,15 +14,16 @@ import { Radio, Button, ActionButton } from "@react-spectrum/s2";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import { FieldArray, useField } from "formik";
-import { object, string } from "yup";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
-import FormikTextField from "../forms/fields/TextField";
+import { useFormField } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
+import FormRadioGroup from "../forms/fields/RadioGroup";
+import FormTextField from "../forms/fields/TextField";
 import DataElementSelector from "./dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import FieldSubset from "./fieldSubset";
 import { validateSurface } from "../utils/surfaceUtils";
+import { matches, parentOf, shape, when } from "../forms/validation";
 
 const CONSTANT = "constant";
 const DATA_ELEMENT = "dataElement";
@@ -71,22 +72,22 @@ export const bridge = {
     }
     return undefined;
   },
-  formikStateValidationSchema: object().shape({
-    surfacesDataElement: string().when("surfacesInputMethod", {
-      is: DATA_ELEMENT,
-      then: (schema) =>
-        schema.matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
-    }),
+  validationSchema: shape({
+    surfacesDataElement: when(
+      (value, ctx) => parentOf(ctx).surfacesInputMethod === DATA_ELEMENT,
+      matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
+    ),
   }),
 };
 
 const Surfaces = () => {
-  const [{ value: surfacesInputMethod }] = useField("surfacesInputMethod");
-  const [{ value: surfacesArray }] = useField("surfacesArray");
+  const surfacesInputMethod = useFieldValue("surfacesInputMethod");
+  const surfacesArrayField = useFormField("surfacesArray", { mode: "array" });
+  const surfacesArray = surfacesArrayField.state.value;
 
   return (
     <div>
-      <FormikRadioGroup
+      <FormRadioGroup
         name="surfacesInputMethod"
         orientation="horizontal"
         label="Surfaces"
@@ -100,11 +101,11 @@ const Surfaces = () => {
         >
           Provide a data element
         </Radio>
-      </FormikRadioGroup>
+      </FormRadioGroup>
       {surfacesInputMethod === DATA_ELEMENT && (
         <FieldSubset>
           <DataElementSelector>
-            <FormikTextField
+            <FormTextField
               data-test-id="surfaceDataElementField"
               label="Data element"
               name="surfacesDataElement"
@@ -124,60 +125,53 @@ const Surfaces = () => {
               alignItems: "start",
             })}
           >
-            <FieldArray
-              name="surfacesArray"
-              render={(arrayHelpers) => {
+            <div>
+              {surfacesArray.map((surface, index) => {
                 return (
-                  <div>
-                    {surfacesArray.map((surface, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className={style({
-                            display: "flex",
-                            alignItems: "end",
-                          })}
-                        >
-                          <FormikTextField
-                            data-test-id={`surface${index}Field`}
-                            label="Surface"
-                            name={`surfacesArray.${index}`}
-                            width="size-5000"
-                            aria-label="Surface"
-                            marginTop="size-0"
-                            validate={validateSurface}
-                          />
-                          <ActionButton
-                            data-test-id={`deleteSurface${index}Button`}
-                            isQuiet
-                            isDisabled={surfacesArray.length === 1}
-                            onPress={() => {
-                              arrayHelpers.remove(index);
-                            }}
-                            aria-label="Remove surface"
-                          >
-                            <Delete />
-                          </ActionButton>
-                        </div>
-                      );
+                  <div
+                    key={index}
+                    className={style({
+                      display: "flex",
+                      alignItems: "end",
                     })}
-                    <Button
-                      variant="secondary"
-                      fillStyle="outline"
-                      data-test-id="addSurfaceButton"
+                  >
+                    <FormTextField
+                      data-test-id={`surface${index}Field`}
+                      label="Surface"
+                      name={`surfacesArray.${index}`}
+                      width="size-5000"
+                      aria-label="Surface"
+                      marginTop="size-0"
+                      validate={validateSurface}
+                    />
+                    <ActionButton
+                      data-test-id={`deleteSurface${index}Button`}
+                      isQuiet
+                      isDisabled={surfacesArray.length === 1}
                       onPress={() => {
-                        arrayHelpers.push("");
+                        surfacesArrayField.removeValue(index);
                       }}
-                      styles={style({
-                        marginTop: 8,
-                      })}
+                      aria-label="Remove surface"
                     >
-                      Add surface
-                    </Button>
+                      <Delete />
+                    </ActionButton>
                   </div>
                 );
-              }}
-            />
+              })}
+              <Button
+                variant="secondary"
+                fillStyle="outline"
+                data-test-id="addSurfaceButton"
+                onPress={() => {
+                  surfacesArrayField.pushValue("");
+                }}
+                styles={style({
+                  marginTop: 8,
+                })}
+              >
+                Add surface
+              </Button>
+            </div>
           </div>
         </FieldSubset>
       )}

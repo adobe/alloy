@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 /**
  * Extract the edge config ids from the object, which could be either the
- * instance settings as stored by Launch or the form state as stored by Formik.
+ * instance settings as stored by Launch or the form state.
  *
  * @param {Object} instanceSettings
  * @returns {{

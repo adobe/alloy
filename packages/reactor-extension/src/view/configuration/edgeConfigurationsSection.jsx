@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { Link, Content, InlineAlert, Heading } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { object, string } from "yup";
+import { getBy } from "@tanstack/react-form";
+import { all, required, rule, shape } from "../forms/validation";
 import SectionHeader from "../components/sectionHeader";
 import FormElementContainer from "../components/formElementContainer";
 import DatastreamField from "../components/datastreamField";
@@ -61,33 +62,18 @@ export const bridge = {
     });
     return instanceSettings;
   },
-  instanceValidationSchema: object()
-    .shape({
-      edgeConfigId: string().required("Please specify a datastream."),
-    })
-    // TestCafe doesn't allow this to be an arrow function because of
-    // how it scopes "this".
-    .test("uniqueEdgeConfigId", function (instance, testContext) {
-      const { path: instancePath, parent: instances } = testContext;
-      const { edgeConfigId } = instance;
-
-      if (!edgeConfigId) {
-        return true;
-      }
-
-      const firstInstanceWithSameEdgeConfigId = instances.find(
-        (candidateInstance) => candidateInstance.edgeConfigId === edgeConfigId,
-      );
-
-      return (
-        firstInstanceWithSameEdgeConfigId === instance ||
-        this.createError({
-          path: `${instancePath}.edgeConfigId`,
-          message:
-            "Please provide a value unique from those used for other instances.",
-        })
-      );
-    }),
+  instanceValidationSchema: shape({
+    edgeConfigId: all(
+      required("Please specify a datastream."),
+      rule(
+        (edgeConfigId, ctx) =>
+          getBy(ctx.root, ctx.path.slice(0, -2)).findIndex(
+            (instance) => instance.edgeConfigId === edgeConfigId,
+          ) === ctx.path.at(-2),
+        "Please provide a value unique from those used for other instances.",
+      ),
+    ),
+  }),
 };
 
 const EdgeConfigurationsSection = ({
@@ -96,13 +82,15 @@ const EdgeConfigurationsSection = ({
   initInfo,
   datastreamCatalog,
 }) => {
-  const instanceOrgId = useFieldValue(`${instanceFieldName}.orgId`);
   // Datastreams can only be listed for the user's active org, so suggesting
   // them for an instance configured for another org would be misleading.
-  const catalog =
-    instanceIndex === 0 || instanceOrgId === initInfo.company.orgId
-      ? datastreamCatalog
-      : { ...datastreamCatalog, groups: [], isLoading: false, error: null };
+  const showSuggestions = useFieldValue(
+    `${instanceFieldName}.orgId`,
+    (orgId) => instanceIndex === 0 || orgId === initInfo.company.orgId,
+  );
+  const catalog = showSuggestions
+    ? datastreamCatalog
+    : { ...datastreamCatalog, groups: [], isLoading: false, error: null };
   const isCatalogUnavailable =
     !catalog.isLoading &&
     (Boolean(catalog.error) ||
