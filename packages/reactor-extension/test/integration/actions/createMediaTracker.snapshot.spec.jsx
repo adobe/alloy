@@ -10,13 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { it, expect, vi } from "vitest";
+import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
+import useView from "../helpers/useView";
 import loadEntryView from "../helpers/entryView";
+import captureState from "../helpers/captureState";
 import field from "../helpers/field";
-import {
-  snapshotMediaEventsCases,
-  expectMediaEventsSettings,
-} from "../helpers/mediaEventsFixtures";
+import { extensionSettings } from "../helpers/mediaEventsFixtures";
 
 vi.mock("../../../src/view/render", async () => ({
   default: (await import("../helpers/entryView")).captureRender,
@@ -26,19 +25,33 @@ const View = await loadEntryView(
   () => import("../../../src/view/actions/createMediaTracker"),
 );
 
-const populated = { instanceName: "secondary", objectName: "LegacyMedia" };
+let view;
+let bridge;
+let driver;
+let cleanup;
 
-it("Create media tracker settings snapshots", async () => {
-  expect.hasAssertions();
-  await snapshotMediaEventsCases(View, [
-    {
-      name: "round trips populated settings",
-      settings: populated,
-      fresh: true,
-      verify: async ({ view, bridge }) => {
-        await field(view.getByTestId("objectNameTextField")).fill("");
-        await expectMediaEventsSettings(bridge, { instanceName: "secondary" });
-      },
-    },
-  ]);
+describe("Create media tracker settings snapshots", () => {
+  beforeEach(async () => {
+    ({ view, bridge, driver, cleanup } = await useView(View));
+  });
+
+  afterEach(() => cleanup());
+
+  it("round trips the saved API export and restores the default when its name is cleared", async () => {
+    await driver.init({
+      extensionSettings,
+      settings: { instanceName: "secondary", objectName: "LegacyMedia" },
+    });
+    expect(await captureState(bridge)).toMatchSnapshot();
+
+    await field(view.getByTestId("objectNameTextField")).clear();
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+    });
+    expect(await registration.validate()).toBe(true);
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+    });
+  });
 });

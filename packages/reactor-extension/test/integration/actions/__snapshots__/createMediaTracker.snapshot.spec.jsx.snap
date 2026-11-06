@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Create media tracker settings snapshots > round trips populated settings 1`] = `
+exports[`Create media tracker settings snapshots > round trips the saved API export and restores the default when its name is cleared 1`] = `
 {
   "errors": [],
   "schemaTreeErrors": [],

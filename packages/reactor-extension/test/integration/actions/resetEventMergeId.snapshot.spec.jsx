@@ -10,13 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { it, expect, vi } from "vitest";
+import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
+import useView from "../helpers/useView";
 import loadEntryView from "../helpers/entryView";
+import captureState from "../helpers/captureState";
 import field from "../helpers/field";
 import {
-  extensionModes,
-  snapshotMediaEventsCases,
-  expectMediaEventsSettings,
+  extensionSettings,
+  disabledExtensionSettings,
 } from "../helpers/mediaEventsFixtures";
 
 vi.mock("../../../src/view/render", async () => ({
@@ -27,60 +28,78 @@ const View = await loadEntryView(
   () => import("../../../src/view/actions/resetEventMergeId"),
 );
 
-it("Reset event merge ID settings snapshots", async () => {
-  expect.hasAssertions();
-  await snapshotMediaEventsCases(View, [
-    {
-      name: "round trips new settings",
-      settings: null,
-      snapshot: false,
-      verify: async ({ view, bridge }) => {
-        await expectMediaEventsSettings(bridge, {}, false);
-        await field(view.getByTestId("eventMergeIdTextField")).expectError(
-          "Please provide a event merge id.",
-        );
-      },
-    },
-    {
-      name: "round trips populated settings",
+let view;
+let bridge;
+let driver;
+let cleanup;
+
+describe("Reset event merge ID settings snapshots", () => {
+  beforeEach(async () => {
+    ({ view, bridge, driver, cleanup } = await useView(View));
+  });
+
+  afterEach(() => cleanup());
+
+  it("requires an event merge ID for a new action", async () => {
+    await driver.init({ extensionSettings, settings: null });
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({});
+    expect(await registration.validate()).toBe(false);
+    expect(await registration.getSettings()).toEqual({});
+    await field(view.getByTestId("eventMergeIdTextField")).expectError(
+      "Please provide a event merge id.",
+    );
+  });
+
+  it("round trips a saved event merge ID before the first validation", async () => {
+    await driver.init({
+      extensionSettings,
       settings: { eventMergeId: "%event.id%" },
-      fresh: true,
-    },
-    {
-      name: "round trips invalid settings",
+    });
+    expect(await captureState(bridge)).toMatchSnapshot();
+  });
+
+  it("rejects an invalid data element and replaces it through the bridge selector", async () => {
+    await driver.init({
+      extensionSettings,
       settings: { eventMergeId: "not a data element" },
-      snapshot: false,
-      verify: async ({ view, bridge }) => {
-        await expectMediaEventsSettings(
-          bridge,
-          { eventMergeId: "not a data element" },
-          false,
-        );
-        await field(view.getByTestId("eventMergeIdTextField")).expectError(
-          "Please specify a data element.",
-        );
-        await view
-          .getByRole("button", { name: "Select data element", exact: true })
-          .click();
-        await field(view.getByTestId("eventMergeIdTextField")).expectValue(
-          "%data element name%",
-        );
-        await expectMediaEventsSettings(bridge, {
-          eventMergeId: "%data element name%",
-        });
-        await field(
-          view.getByTestId("eventMergeIdTextField"),
-        ).expectNotInvalid();
-      },
-    },
-    {
-      name: "round trips with components disabled",
+    });
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({
+      eventMergeId: "not a data element",
+    });
+    expect(await registration.validate()).toBe(false);
+    expect(await registration.getSettings()).toEqual({
+      eventMergeId: "not a data element",
+    });
+    await field(view.getByTestId("eventMergeIdTextField")).expectError(
+      "Please specify a data element.",
+    );
+
+    await view
+      .getByRole("button", { name: "Select data element", exact: true })
+      .click();
+    await field(view.getByTestId("eventMergeIdTextField")).expectValue(
+      "%data element name%",
+    );
+    expect(await registration.getSettings()).toEqual({
+      eventMergeId: "%data element name%",
+    });
+    expect(await registration.validate()).toBe(true);
+    expect(await registration.getSettings()).toEqual({
+      eventMergeId: "%data element name%",
+    });
+    await field(view.getByTestId("eventMergeIdTextField")).expectNotInvalid();
+  });
+
+  it("returns empty settings for an existing action when event merge is disabled", async () => {
+    await driver.init({
+      extensionSettings: disabledExtensionSettings,
       settings: { eventMergeId: "%merge%" },
-      context: extensionModes[0][1],
-      snapshot: false,
-      verify: async ({ bridge }) => {
-        await expectMediaEventsSettings(bridge, {});
-      },
-    },
-  ]);
+    });
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({});
+    expect(await registration.validate()).toBe(true);
+    expect(await registration.getSettings()).toEqual({});
+  });
 });

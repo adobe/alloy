@@ -10,12 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { it, expect, vi } from "vitest";
+import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
+import useView from "../helpers/useView";
 import loadEntryView from "../helpers/entryView";
+import captureState from "../helpers/captureState";
 import {
-  extensionModes,
-  snapshotMediaEventsCases,
-  expectMediaEventsSettings,
+  extensionSettings,
+  disabledExtensionSettings,
 } from "../helpers/mediaEventsFixtures";
 
 vi.mock("../../../src/view/render", async () => ({
@@ -26,45 +27,49 @@ const View = await loadEntryView(
   () => import("../../../src/view/dataElements/eventMergeId"),
 );
 
-const saved = { cacheId: "11111111-1111-4111-8111-111111111111" };
+let bridge;
+let driver;
+let cleanup;
 
-it("Event merge ID settings snapshots", async () => {
-  expect.hasAssertions();
-  vi.spyOn(crypto, "randomUUID").mockReturnValue(
-    "00000000-0000-4000-8000-000000000001",
-  );
-  try {
-    await snapshotMediaEventsCases(View, [
-      {
-        name: "round trips minimal settings without editable fields",
-        settings: saved,
-      },
-      {
-        name: "with components disabled > captures new settings",
-        context: extensionModes[0][1],
-        settings: null,
-        snapshot: false,
-        verify: async ({ bridge }) => {
-          await expectMediaEventsSettings(
-            bridge,
-            { cacheId: "00000000-0000-4000-8000-000000000001" },
-            false,
-          );
-        },
-      },
-      {
-        name: "with components disabled > captures empty settings",
-        context: extensionModes[0][1],
-        settings: {},
-        snapshot: false,
-        verify: async ({ bridge }) => {
-          await expectMediaEventsSettings(bridge, {
-            cacheId: "00000000-0000-4000-8000-000000000001",
-          });
-        },
-      },
-    ]);
-  } finally {
+describe("Event merge ID settings snapshots", () => {
+  beforeEach(async () => {
+    vi.spyOn(crypto, "randomUUID").mockReturnValue(
+      "00000000-0000-4000-8000-000000000001",
+    );
+    ({ bridge, driver, cleanup } = await useView(View));
+  });
+
+  afterEach(() => {
+    cleanup();
     vi.restoreAllMocks();
-  }
+  });
+
+  it("preserves a saved cache ID without generating a replacement", async () => {
+    await driver.init({
+      extensionSettings,
+      settings: { cacheId: "11111111-1111-4111-8111-111111111111" },
+    });
+    expect(await captureState(bridge)).toMatchSnapshot();
+  });
+
+  it.each([
+    ["rejects a new", null, false],
+    ["accepts an existing empty", {}, true],
+  ])(
+    "%s data element when event merge is disabled",
+    async (_, settings, valid) => {
+      await driver.init({
+        extensionSettings: disabledExtensionSettings,
+        settings,
+      });
+      const registration = await bridge.registration;
+      expect(await registration.getSettings()).toEqual({
+        cacheId: "00000000-0000-4000-8000-000000000001",
+      });
+      expect(await registration.validate()).toBe(valid);
+      expect(await registration.getSettings()).toEqual({
+        cacheId: "00000000-0000-4000-8000-000000000001",
+      });
+    },
+  );
 });

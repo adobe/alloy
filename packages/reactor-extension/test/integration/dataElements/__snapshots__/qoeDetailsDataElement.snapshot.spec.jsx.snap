@@ -1,6 +1,26 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Quality of experience settings snapshots > bitrate > sets the numeric value to "" 1`] = `
+exports[`Quality of experience settings snapshots > accepts a negative bitrate without a visible validation error 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [],
+  "settingsAfterValidate": {
+    "bitrate": -1,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "settingsBeforeValidate": {
+    "bitrate": -1,
+    "droppedFrames": 2,
+    "framesPerSecond": 29.97,
+    "timeToStart": 500,
+  },
+  "valid": true,
+}
+`;
+
+exports[`Quality of experience settings snapshots > serializes a cleared bitrate as NaN and reports its number error 1`] = `
 {
   "errors": [
     {
@@ -30,25 +50,5 @@ exports[`Quality of experience settings snapshots > bitrate > sets the numeric v
     "timeToStart": 500,
   },
   "valid": false,
-}
-`;
-
-exports[`Quality of experience settings snapshots > bitrate > sets the numeric value to "-1" 1`] = `
-{
-  "errors": [],
-  "schemaTreeErrors": [],
-  "settingsAfterValidate": {
-    "bitrate": -1,
-    "droppedFrames": 2,
-    "framesPerSecond": 29.97,
-    "timeToStart": 500,
-  },
-  "settingsBeforeValidate": {
-    "bitrate": -1,
-    "droppedFrames": 2,
-    "framesPerSecond": 29.97,
-    "timeToStart": 500,
-  },
-  "valid": true,
 }
 `;

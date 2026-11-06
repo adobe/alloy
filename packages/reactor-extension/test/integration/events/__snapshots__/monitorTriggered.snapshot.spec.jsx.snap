@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Monitor triggered settings snapshots > round trips data element settings 1`] = `
+exports[`Monitor triggered settings snapshots > round trips a monitoring hook supplied by a data element 1`] = `
 {
   "errors": [],
   "schemaTreeErrors": [],

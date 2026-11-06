@@ -10,13 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { it, expect, vi } from "vitest";
+import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
+import useView from "../helpers/useView";
 import loadEntryView from "../helpers/entryView";
+import captureState from "../helpers/captureState";
 import field from "../helpers/field";
-import {
-  snapshotMediaEventsCases,
-  expectMediaEventsSettings,
-} from "../helpers/mediaEventsFixtures";
+import { extensionSettings } from "../helpers/mediaEventsFixtures";
 
 vi.mock("../../../src/view/render", async () => ({
   default: (await import("../helpers/entryView")).captureRender,
@@ -34,105 +33,120 @@ const populated = {
   ],
   surfaces: ["web://example.com/cart", "#hero"],
 };
+let view;
+let bridge;
+let driver;
+let cleanup;
 
-it("Subscribe ruleset items settings snapshots", async () => {
-  expect.hasAssertions();
-  await snapshotMediaEventsCases(View, [
-    {
-      name: "round trips populated settings",
-      settings: populated,
-      fresh: true,
-      verify: async ({ view, bridge }) => {
-        await view.getByTestId("schemas0RemoveButton").click();
-        await expect
-          .element(view.getByTestId("schemas1Field"))
-          .not.toBeInTheDocument();
-        await expectMediaEventsSettings(bridge, {
-          ...populated,
-          schemas: [populated.schemas[1]],
-        });
-      },
-    },
-    {
-      name: 'surfaces > row 0 > sets the value to "not a data element"',
-      settings: populated,
-      snapshot: false,
-      edit: async ({ view }) => {
-        const control = field(view.getByTestId("surfaces0Field"));
-        await control.fill("not a data element");
-        return () => control.fill("web://example.com/cart");
-      },
-      verify: async ({ view, bridge }) => {
-        await expectMediaEventsSettings(
-          bridge,
-          { ...populated, surfaces: ["not a data element", "#hero"] },
-          false,
-        );
-        await field(view.getByTestId("surfaces0Field")).expectError(
-          "Invalid surface",
-        );
-      },
-    },
-    {
-      name: 'sets the schemas data element to "not a data element"',
-      reuse: true,
-      snapshot: false,
-      edit: async ({ view }) => {
-        await field(view.getByTestId("schemasDataElementOption")).check();
-        await field(view.getByTestId("schemasDataElementField")).fill(
-          "not a data element",
-        );
-      },
-      verify: async ({ view, bridge }) => {
-        await expectMediaEventsSettings(
-          bridge,
-          { ...populated, schemas: "not a data element" },
-          false,
-        );
-        await field(view.getByTestId("schemasDataElementField")).expectError(
-          "Please specify a data element.",
-        );
-        await field(view.getByTestId("schemasDataElementField")).fill(
-          "%schemas%",
-        );
-        await field(view.getByTestId("surfacesDataElementOption")).check();
-        await field(view.getByTestId("surfacesDataElementField")).fill(
-          "%surfaces%",
-        );
-        await expectMediaEventsSettings(bridge, {
-          instanceName: "secondary",
-          schemas: "%schemas%",
-          surfaces: "%surfaces%",
-        });
-        await field(
-          view.getByTestId("schemasDataElementField"),
-        ).expectNotInvalid();
-        await field(
-          view.getByTestId("surfacesDataElementField"),
-        ).expectNotInvalid();
-      },
-    },
-    {
-      name: "keeps surface error feedback on the second row after a blank first row",
-      settings: null,
-      snapshot: false,
-      edit: async ({ view }) => {
-        await view.getByTestId("surfacesAddButton").click();
-        await field(view.getByTestId("surfaces1Field")).fill(
-          "ftp://example.com",
-        );
-      },
-      verify: async ({ view, bridge }) => {
-        await expectMediaEventsSettings(
-          bridge,
-          { instanceName: "alloy", surfaces: ["ftp://example.com"] },
-          false,
-        );
-        await field(view.getByTestId("surfaces1Field")).expectError(
-          "Unsupported surface type ftp",
-        );
-        await field(view.getByTestId("surfaces0Field")).expectNotInvalid();
-      },
-    },
-  ]);
+describe("Subscribe ruleset items settings snapshots", () => {
+  beforeEach(async () => {
+    ({ view, bridge, driver, cleanup } = await useView(View));
+  });
+
+  afterEach(() => cleanup());
+
+  it("round trips saved filters and removes only the first schema", async () => {
+    await driver.init({ extensionSettings, settings: populated });
+    expect(await captureState(bridge)).toMatchSnapshot();
+
+    await view.getByTestId("schemas0RemoveButton").click();
+    await expect
+      .element(view.getByTestId("schemas1Field"))
+      .not.toBeInTheDocument();
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+      schemas: ["https://ns.adobe.com/personalization/json-content-item"],
+      surfaces: ["web://example.com/cart", "#hero"],
+    });
+    expect(await registration.validate()).toBe(true);
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+      schemas: ["https://ns.adobe.com/personalization/json-content-item"],
+      surfaces: ["web://example.com/cart", "#hero"],
+    });
+  });
+
+  it("rejects an invalid surface without changing the saved schema filters", async () => {
+    await driver.init({ extensionSettings, settings: populated });
+    const control = field(view.getByTestId("surfaces0Field"));
+    await control.fill("not a data element");
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+      schemas: [
+        "https://ns.adobe.com/personalization/dom-action",
+        "https://ns.adobe.com/personalization/json-content-item",
+      ],
+      surfaces: ["not a data element", "#hero"],
+    });
+    expect(await registration.validate()).toBe(false);
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+      schemas: [
+        "https://ns.adobe.com/personalization/dom-action",
+        "https://ns.adobe.com/personalization/json-content-item",
+      ],
+      surfaces: ["not a data element", "#hero"],
+    });
+    await control.expectError("Invalid surface");
+  });
+
+  it("corrects an invalid schemas data element and supplies both arrays through data elements", async () => {
+    await driver.init({ extensionSettings, settings: populated });
+    await field(view.getByTestId("schemasDataElementOption")).check();
+    const schemas = field(view.getByTestId("schemasDataElementField"));
+    await schemas.fill("not a data element");
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+      schemas: "not a data element",
+      surfaces: ["web://example.com/cart", "#hero"],
+    });
+    expect(await registration.validate()).toBe(false);
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+      schemas: "not a data element",
+      surfaces: ["web://example.com/cart", "#hero"],
+    });
+    await schemas.expectError("Please specify a data element.");
+
+    await schemas.fill("%schemas%");
+    await field(view.getByTestId("surfacesDataElementOption")).check();
+    const surfaces = field(view.getByTestId("surfacesDataElementField"));
+    await surfaces.fill("%surfaces%");
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+      schemas: "%schemas%",
+      surfaces: "%surfaces%",
+    });
+    expect(await registration.validate()).toBe(true);
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "secondary",
+      schemas: "%schemas%",
+      surfaces: "%surfaces%",
+    });
+    await schemas.expectNotInvalid();
+    await surfaces.expectNotInvalid();
+  });
+
+  it("keeps unsupported-surface feedback on the second row after a blank first row", async () => {
+    await driver.init({ extensionSettings, settings: null });
+    await view.getByTestId("surfacesAddButton").click();
+    await field(view.getByTestId("surfaces1Field")).fill("ftp://example.com");
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "alloy",
+      surfaces: ["ftp://example.com"],
+    });
+    expect(await registration.validate()).toBe(false);
+    expect(await registration.getSettings()).toEqual({
+      instanceName: "alloy",
+      surfaces: ["ftp://example.com"],
+    });
+    await field(view.getByTestId("surfaces1Field")).expectError(
+      "Unsupported surface type ftp",
+    );
+    await field(view.getByTestId("surfaces0Field")).expectNotInvalid();
+  });
 });

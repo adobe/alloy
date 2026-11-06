@@ -10,92 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import useView from "./useView";
-import { expect } from "vitest";
-import captureState from "./captureState";
-import {
-  suppressReactErrorBoundaryMessage,
-  resetErrorSuppression,
-} from "./errorSuppression";
-
-const useMediaEventsView = async (View) => {
-  const result = await useView(View);
-  return {
-    ...result,
-    cleanup: async () => {
-      await result.view.unmount();
-      delete window.extensionBridge;
-    },
-    driver: {
-      ...result.driver,
-      init: async (initInfo) => {
-        const ready = new Promise((resolve) => {
-          window.addEventListener("extension-reactor-alloy:rendered", resolve, {
-            once: true,
-          });
-        });
-        await result.driver.init(initInfo);
-        await ready;
-      },
-    },
-  };
-};
-
-export const snapshotMediaEventsCases = async (View, cases) => {
-  let mounted;
-  let context;
-  try {
-    await cases.reduce(async (previous, testCase) => {
-      await previous;
-      const nextContext = testCase.context ?? extensionSettings;
-      if (!mounted || testCase.fresh || context !== nextContext) {
-        await mounted?.cleanup();
-        mounted = await useMediaEventsView(View);
-        context = nextContext;
-      }
-      if (!testCase.reuse) {
-        await mounted.driver.init({
-          extensionSettings: context,
-          settings: structuredClone(testCase.settings),
-          ...testCase.initInfo,
-        });
-      }
-      const restore = await testCase.edit?.(mounted);
-      if (testCase.boundaryError) {
-        suppressReactErrorBoundaryMessage();
-      }
-      try {
-        let state;
-        if (testCase.snapshot !== false) {
-          state = await captureState(mounted.bridge);
-          expect(state).toMatchSnapshot(testCase.name);
-        }
-        await testCase.verify?.({ ...mounted, state });
-      } finally {
-        await restore?.();
-        if (testCase.boundaryError) {
-          resetErrorSuppression();
-          await mounted.cleanup();
-          mounted = undefined;
-        }
-      }
-    }, Promise.resolve());
-  } finally {
-    await mounted?.cleanup();
-  }
-};
-
-export const expectMediaEventsSettings = async (
-  bridge,
-  settings,
-  valid = true,
-) => {
-  const registration = await bridge.registration;
-  expect(await registration.getSettings()).toEqual(settings);
-  expect(await registration.validate()).toBe(valid);
-  expect(await registration.getSettings()).toEqual(settings);
-};
-
 export const extensionSettings = {
   components: {
     activityCollector: true,
@@ -135,21 +49,12 @@ export const extensionSettings = {
   ],
 };
 
-export const extensionModes = [
-  [
-    "components disabled",
-    {
-      ...extensionSettings,
-      components: Object.fromEntries(
-        Object.keys(extensionSettings.components).map((name) => [name, false]),
-      ),
-    },
-  ],
-  [
-    "self hosted",
-    { ...extensionSettings, libraryCode: { type: "preinstalled" } },
-  ],
-];
+export const disabledExtensionSettings = {
+  ...extensionSettings,
+  components: Object.fromEntries(
+    Object.keys(extensionSettings.components).map((name) => [name, false]),
+  ),
+};
 
 export const mediaSettings = {
   minimal: { eventType: "media.play", playerId: "player" },

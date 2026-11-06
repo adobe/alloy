@@ -10,13 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { it, expect, vi } from "vitest";
+import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
+import useView from "../helpers/useView";
 import loadEntryView from "../helpers/entryView";
+import captureState from "../helpers/captureState";
 import field from "../helpers/field";
-import {
-  snapshotMediaEventsCases,
-  expectMediaEventsSettings,
-} from "../helpers/mediaEventsFixtures";
+import { extensionSettings } from "../helpers/mediaEventsFixtures";
 
 vi.mock("../../../src/view/render", async () => ({
   default: (await import("../helpers/entryView")).captureRender,
@@ -26,40 +25,53 @@ const View = await loadEntryView(
   () => import("../../../src/view/events/monitorTriggered"),
 );
 
-it("Monitor triggered settings snapshots", async () => {
-  expect.hasAssertions();
-  await snapshotMediaEventsCases(
-    View,
-    [
-      ["new", null],
-      ["data element", { name: "%hook%" }],
-      ["invalid", { name: "not-a-hook" }],
-    ].map(([name, settings]) => ({
-      name: `round trips ${name} settings`,
-      settings,
-      snapshot: name === "data element",
-      verify:
-        name !== "data element"
-          ? async ({ view, bridge }) => {
-              const control = field(view.getByTestId("nameField"));
-              await expectMediaEventsSettings(
-                bridge,
-                name === "new" ? {} : { name: "not-a-hook" },
-                false,
-              );
-              await control.expectError(
-                name === "new"
-                  ? "Please choose a monitoring hook."
-                  : "Please choose a monitoring hook from the list or specify a single data element.",
-              );
-              if (name === "new") return;
-              await control.selectOption("onNetworkResponse");
-              await expectMediaEventsSettings(bridge, {
-                name: "onNetworkResponse",
-              });
-              await control.expectNotInvalid();
-            }
-          : undefined,
-    })),
-  );
+let view;
+let bridge;
+let driver;
+let cleanup;
+
+describe("Monitor triggered settings snapshots", () => {
+  beforeEach(async () => {
+    ({ view, bridge, driver, cleanup } = await useView(View));
+  });
+
+  afterEach(() => cleanup());
+
+  it("requires a monitoring hook for a new event", async () => {
+    await driver.init({ extensionSettings, settings: null });
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({});
+    expect(await registration.validate()).toBe(false);
+    expect(await registration.getSettings()).toEqual({});
+    await field(view.getByTestId("nameField")).expectError(
+      "Please choose a monitoring hook.",
+    );
+  });
+
+  it("round trips a monitoring hook supplied by a data element", async () => {
+    await driver.init({ extensionSettings, settings: { name: "%hook%" } });
+    expect(await captureState(bridge)).toMatchSnapshot();
+  });
+
+  it("rejects an unknown hook and accepts a hook selected from the list", async () => {
+    await driver.init({ extensionSettings, settings: { name: "not-a-hook" } });
+    const registration = await bridge.registration;
+    expect(await registration.getSettings()).toEqual({ name: "not-a-hook" });
+    expect(await registration.validate()).toBe(false);
+    expect(await registration.getSettings()).toEqual({ name: "not-a-hook" });
+    const control = field(view.getByTestId("nameField"));
+    await control.expectError(
+      "Please choose a monitoring hook from the list or specify a single data element.",
+    );
+
+    await control.selectOption("onNetworkResponse");
+    expect(await registration.getSettings()).toEqual({
+      name: "onNetworkResponse",
+    });
+    expect(await registration.validate()).toBe(true);
+    expect(await registration.getSettings()).toEqual({
+      name: "onNetworkResponse",
+    });
+    await control.expectNotInvalid();
+  });
 });
