@@ -30,12 +30,13 @@ const monorepoRoot = path.resolve(cwd, "../..");
 // @adobe/alloy depends on @adobe/alloy-core via workspace:^. Both must be
 // vendored as tarballs so `npm install` succeeds inside the unzipped
 // extension regardless of whether either is published yet.
+// Core comes first because the browser build needs its dist declarations.
 const VENDORED_PACKAGES = [
-  { name: "@adobe/alloy", dir: path.join(monorepoRoot, "packages/browser") },
   {
     name: "@adobe/alloy-core",
     dir: path.join(monorepoRoot, "packages/core"),
   },
+  { name: "@adobe/alloy", dir: path.join(monorepoRoot, "packages/browser") },
 ];
 const VENDOR_DIR = "vendor";
 
