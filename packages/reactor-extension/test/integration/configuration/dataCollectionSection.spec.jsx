@@ -35,6 +35,7 @@ let contextEnvironmentField;
 let contextPlaceContextField;
 let contextHighEntropyUserAgentHintsField;
 let contextOneTimeAnalyticsReferrerField;
+let contextServerSideTimestampField;
 let eventGroupingNoneField;
 let eventGroupingSessionStorageField;
 let eventGroupingMemoryField;
@@ -80,6 +81,9 @@ describe("Config data collection section", () => {
     );
     contextOneTimeAnalyticsReferrerField = field(
       view.getByTestId("contextOneTimeAnalyticsReferrerField"),
+    );
+    contextServerSideTimestampField = field(
+      view.getByTestId("contextServerSideTimestampField"),
     );
     eventGroupingNoneField = field(view.getByTestId("eventGroupingNoneField"));
     eventGroupingSessionStorageField = field(
@@ -142,6 +146,7 @@ describe("Config data collection section", () => {
     await contextCheckbox("PlaceContext").expectUnchecked();
     await contextHighEntropyUserAgentHintsField.expectUnchecked();
     await contextOneTimeAnalyticsReferrerField.expectUnchecked();
+    await contextServerSideTimestampField.expectUnchecked();
   });
 
   it("sets form values from settings with event grouping session storage", async () => {
@@ -411,6 +416,7 @@ describe("Config data collection section", () => {
     await contextPlaceContextField.expectVisible();
     await contextHighEntropyUserAgentHintsField.expectVisible();
     await contextOneTimeAnalyticsReferrerField.expectVisible();
+    await contextServerSideTimestampField.expectVisible();
   });
 
   it("saves non-default context when specific is selected", async () => {
@@ -435,6 +441,46 @@ describe("Config data collection section", () => {
       ]);
   });
 
+  it("saves serverSideTimestamp in context when its checkbox is checked", async () => {
+    await driver.init(buildSettings());
+
+    await contextGranularitySpecificField.click();
+
+    await contextServerSideTimestampField.expectUnchecked();
+
+    await contextServerSideTimestampField.click();
+
+    await driver
+      .expectSettings((s) => s.instances[0].context)
+      .toEqual([
+        "web",
+        "device",
+        "environment",
+        "placeContext",
+        "serverSideTimestamp",
+      ]);
+  });
+
+  it("loads serverSideTimestamp from settings and saves it again", async () => {
+    await driver.init(
+      buildSettings({
+        instances: [
+          {
+            name: "alloy",
+            context: ["web", "serverSideTimestamp"],
+          },
+        ],
+      }),
+    );
+
+    await contextGranularitySpecificField.expectChecked();
+    await contextServerSideTimestampField.expectChecked();
+
+    await driver
+      .expectSettings((s) => s.instances[0].context)
+      .toEqual(["web", "serverSideTimestamp"]);
+  });
+
   it("loads context options from settings", async () => {
     await driver.init(
       buildSettings({
@@ -455,6 +501,7 @@ describe("Config data collection section", () => {
     await contextPlaceContextField.expectUnchecked();
     await contextHighEntropyUserAgentHintsField.expectUnchecked();
     await contextOneTimeAnalyticsReferrerField.expectChecked();
+    await contextServerSideTimestampField.expectUnchecked();
   });
 
   it("disables click collection when all link types are disabled", async () => {

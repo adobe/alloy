@@ -107,6 +107,34 @@ test("Sends an event", async () => {
   await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(1);
 });
 
+test("Sends the device time as xdm.timestamp by default", async () => {
+  await appendLaunchLibrary(container);
+  await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(1);
+  const [request] = networkLogger.edgeEndpointLogs.requests;
+  const body = JSON.parse(request.request.body);
+  await t.expect(typeof body.events[0].xdm.timestamp).eql("string");
+});
+
+test("Leaves xdm.timestamp out when the server-side timestamp context is checked", async () => {
+  const containerWithServerSideTimestamp = structuredClone(container);
+  containerWithServerSideTimestamp.extensions[
+    "adobe-alloy"
+  ].settings.instances[0].context = [
+    "web",
+    "device",
+    "environment",
+    "placeContext",
+    "serverSideTimestamp",
+  ];
+  await appendLaunchLibrary(containerWithServerSideTimestamp);
+  await t.expect(networkLogger.edgeEndpointLogs.count(() => true)).eql(1);
+  const [request] = networkLogger.edgeEndpointLogs.requests;
+  await t.expect(request.response.statusCode).eql(200);
+  const body = JSON.parse(request.request.body);
+  await t.expect(body.events[0].xdm.web).ok();
+  await t.expect("timestamp" in body.events[0].xdm).eql(false);
+});
+
 test("Sends an event with empty strings as data element in the config overrides", async () => {
   const containerWithConfigOverrides = structuredClone(container);
   containerWithConfigOverrides.extensions[
