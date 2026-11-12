@@ -1,5 +1,16 @@
 # @adobe/alloy
 
+## 2.38.0-beta.1
+
+### Minor Changes
+
+- [#1607](https://github.com/adobe/alloy/pull/1607) [`7162959`](https://github.com/adobe/alloy/commit/7162959cc6d7d1e7451729581f2dd924e497018b) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Added a `serverSideTimestamp` option to the `context` configuration. It is off by default. When you add it to `context`, Web SDK leaves `xdm.timestamp` out of the events it sends to Edge Network, and Edge Network stamps each event with its own time. Use it when your visitors' device clocks are unreliable. This applies to `sendEvent`, link clicks, personalization notifications, media session starts, advertising conversions, and push notification tracking. Media events sent after the session starts keep the device time, because the media endpoint requires it. A timestamp you set yourself, in the XDM you pass or in `onBeforeEventSend`, is still sent as is.
+
+### Patch Changes
+
+- Updated dependencies [[`7162959`](https://github.com/adobe/alloy/commit/7162959cc6d7d1e7451729581f2dd924e497018b), [`7162959`](https://github.com/adobe/alloy/commit/7162959cc6d7d1e7451729581f2dd924e497018b)]:
+  - @adobe/alloy-core@1.5.0-beta.1
+
 ## 2.38.0-beta.0
 
 ### Minor Changes
