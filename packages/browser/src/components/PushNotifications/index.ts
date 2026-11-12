@@ -19,6 +19,7 @@ import { objectOf, string } from "@adobe/alloy-core/utils/validation";
 import { sanitizeOrgIdForCookieName } from "@adobe/alloy-core/utils";
 import makeSendPushSubscriptionRequest from "./request/makeSendPushSubscriptionRequest.js";
 import saveToIndexedDb from "./helpers/saveToIndexedDb.js";
+import isServerSideTimestampEnabled from "@adobe/alloy-core/utils/isServerSideTimestampEnabled.js";
 
 /** The computed configuration, with the options `configValidators` adds. */
 interface PushNotificationsConfig extends Config {
@@ -93,6 +94,7 @@ const createPushNotifications: ComponentCreator<PushNotificationsOptions> = ({
               edgeBasePath,
               datasetId: trackingDatasetId,
               browser: getBrowser(),
+              serverSideTimestamp: isServerSideTimestampEnabled(config),
             },
             logger,
           );

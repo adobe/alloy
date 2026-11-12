@@ -218,4 +218,24 @@ describe("makeSendServiceWorkerTrackingData", () => {
     ).toBe("https://ns.adobe.com/xdm/channels/push");
     expect(experienceData.otherExperienceData.someProperty).toBe("someValue");
   });
+
+  describe("timestamp", () => {
+    const sentXdm = async () => {
+      mockFetch.mockResolvedValue({ ok: true });
+      await makeSendServiceWorkerTrackingData({
+        xdm: { _experience: { customerJourneyManagement: {} } },
+      });
+      return JSON.parse(mockFetch.mock.calls[0][1].body).events[0].xdm;
+    };
+
+    it("stamps the client time by default", async () => {
+      expect((await sentXdm()).timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    });
+
+    it("leaves the timestamp out when the page configured serverSideTimestamp", async () => {
+      mockConfigData.serverSideTimestamp = true;
+
+      expect(await sentXdm()).not.toHaveProperty("timestamp");
+    });
+  });
 });

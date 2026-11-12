@@ -69,7 +69,7 @@ export interface TrackingDataPayload {
   events: {
     xdm: {
       identityMap: { ECID: { id: string }[] };
-      timestamp: string;
+      timestamp?: string;
       pushNotificationTracking: {
         pushProviderMessageID: string;
         pushProvider: string;
@@ -99,6 +99,8 @@ export interface PushServiceWorkerConfig {
   edgeBasePath?: string;
   datastreamId?: string;
   datasetId?: string;
+  /** Leave xdm.timestamp out of tracking calls. */
+  serverSideTimestamp?: boolean;
   id?: string;
   timestamp?: number;
 }

@@ -18,6 +18,7 @@ import createStreamingMediaComponent from "./createStreamingMediaComponent.js";
 import createTrackMediaSession from "./createTrackMediaSession.js";
 import createMediaResponseHandler from "./createMediaResponseHandler.js";
 import injectTimestamp from "../../utils/injectTimestamp.js";
+import injectEdgeTimestamp from "../../utils/injectEdgeTimestamp.js";
 import type { ComponentCreator, ComponentTools } from "../../core/types.js";
 import type { MediaSessionCacheManager } from "./createMediaSessionCacheManager.js";
 
@@ -46,6 +47,7 @@ const createStreamingMedia = ({
     consent,
     sendEdgeNetworkRequest,
     setTimestamp: injectTimestamp(() => new Date()),
+    setSessionStartTimestamp: injectEdgeTimestamp(config, () => new Date()),
   });
 
   const trackMediaEvent = createTrackMediaEvent({
