@@ -1,5 +1,11 @@
 # reactor-extension-alloy
 
+## 2.39.2-beta.1
+
+### Patch Changes
+
+- [#1632](https://github.com/adobe/alloy/pull/1632) [`bf23176`](https://github.com/adobe/alloy/commit/bf23176291b0b658f40a03594a4f7f49c0ecd143) Thanks [@carterworks](https://github.com/carterworks)! - Fixed slow typing in the extension views. Each keystroke used to re-render the whole form, taking roughly 140–210ms in the extension configuration; fields now update on their own, at around 8–15ms per keystroke. Validation errors in lists, such as metadata and header rows, now appear on the row that caused them.
+
 ## 2.39.2-beta.0
 
 ### Patch Changes
