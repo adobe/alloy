@@ -1,5 +1,11 @@
 # reactor-extension-alloy
 
+## 2.40.0-beta.3
+
+### Minor Changes
+
+- [#1608](https://github.com/adobe/alloy/pull/1608) [`da1a8f4`](https://github.com/adobe/alloy/commit/da1a8f49e614d10487ba1f99ee40ebe98eac0c41) Thanks [@jonsnyder](https://github.com/jonsnyder)! - Added a "Use server-side timestamp" checkbox to the context options in the extension configuration. It is off by default. When you check it, Web SDK leaves `xdm.timestamp` out of the events it sends to Edge Network, and Edge Network stamps each event with its own time instead of the visitor's device clock. Media events sent after a session starts keep the device time. To see the checkbox, select "Specific context information".
+
 ## 2.39.2-beta.2
 
 ### Patch Changes
