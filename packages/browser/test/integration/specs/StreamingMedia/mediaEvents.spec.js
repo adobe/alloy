@@ -132,6 +132,12 @@ describe("Streaming Media Events", () => {
       playerId: "player1",
       xdm: { eventType: "media.play" },
     });
+    // End the session before asserting: an open session keeps pinging after
+    // the test, when the mocks are gone, and Edge rejects the mocked session ID.
+    await alloy("sendMediaEvent", {
+      playerId: "player1",
+      xdm: { eventType: "media.sessionComplete" },
+    });
 
     const sessionCall = (
       await networkRecorder.findCalls(/edge\.adobedc\.net\/ee\/.*interact/)

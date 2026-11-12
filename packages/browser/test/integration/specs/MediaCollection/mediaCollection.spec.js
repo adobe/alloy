@@ -452,6 +452,9 @@ describe("MediaCollection - serverSideTimestamp", () => {
         .map((call) => call.request && getEventFromCall(call, eventType))
         .find(Boolean);
     await expect.poll(() => findEvent("media.play")).toBeTruthy();
+    // End the session before asserting: an open session keeps pinging after
+    // the test, when the mocks are gone, and Edge rejects the mocked session ID.
+    await tracker.trackComplete();
 
     expect(findEvent("media.sessionStart").xdm).not.toHaveProperty("timestamp");
     expect(findEvent("media.play").xdm.timestamp).toMatch(
