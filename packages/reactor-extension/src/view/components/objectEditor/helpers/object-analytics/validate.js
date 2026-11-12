@@ -10,77 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { object } from "yup";
+import { setBy } from "@tanstack/react-form";
+import { getErrors, shape } from "../../../../forms/validation";
 import analyticsForm from "./analyticsForm";
 
-const validator = object().shape(analyticsForm.validationShape);
-
-// Parse strings like "evars[1].evar" into objects like { evars: [undefined, { evar: "foo" }] }
-const addValueToPath = (existing, path, value) => {
-  let returnValue = existing;
-  if (path[0] === "[") {
-    const indexOfEndBracket = path.indexOf("]");
-    const index = parseInt(path.slice(1, indexOfEndBracket), 10);
-    if (!existing) {
-      returnValue = [];
-    }
-    returnValue[index] = addValueToPath(
-      returnValue[index],
-      path.slice(indexOfEndBracket + 1),
-      value,
-    );
-  } else if (path[0] === ".") {
-    returnValue = addValueToPath(existing, path.slice(1), value);
-  } else {
-    if (!existing) {
-      returnValue = {};
-    }
-    const indexOfDot = path.indexOf(".");
-    const indexOfBracket = path.indexOf("[");
-    if (indexOfDot === -1) {
-      if (indexOfBracket === -1) {
-        returnValue[path] = value;
-      } else {
-        const key = path.slice(0, indexOfBracket);
-        returnValue[key] = addValueToPath(
-          returnValue[key],
-          path.slice(indexOfBracket),
-          value,
-        );
-      }
-    } else if (indexOfBracket === -1 || indexOfDot < indexOfBracket) {
-      const key = path.slice(0, indexOfDot);
-      returnValue[key] = addValueToPath(
-        returnValue[key],
-        path.slice(indexOfDot + 1),
-        value,
-      );
-    } else {
-      const key = path.slice(0, indexOfBracket);
-      returnValue[key] = addValueToPath(
-        returnValue[key],
-        path.slice(indexOfBracket),
-        value,
-      );
-    }
-  }
-  return returnValue;
-};
+const validator = shape(analyticsForm.validationShape);
 
 export default ({ formStateNode }) => {
-  let errors = {};
-
-  try {
-    validator.validateSync(formStateNode, { abortEarly: false });
-  } catch (error) {
-    error.inner.forEach(({ path, message }) => {
-      errors = addValueToPath(errors, path, message);
-    });
-  }
-
-  if (Object.keys(errors).length > 0) {
-    return errors;
-  }
-
-  return undefined;
+  const errors = Object.entries(getErrors(validator, formStateNode)).reduce(
+    (nested, [path, message]) => setBy(nested, path, message),
+    {},
+  );
+  return Object.keys(errors).length > 0 ? errors : undefined;
 };

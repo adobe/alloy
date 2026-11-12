@@ -11,14 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import FormikCheckbox from "./fields/Checkbox";
+import FormCheckbox from "./fields/Checkbox";
 import BetaBadge from "../components/betaBadge";
 
 /** @typedef {import("./form").Form} Form */
 /**
  * This creates a form checkbox field.
  * @param {object} options - Options for the checkbox.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  * @param {string} options.label - The label to use for the field.
  * @param {string} options.description - The description to use for the field.
  * @param {boolean} [options.defaultValue] - The default value for the
@@ -46,7 +46,7 @@ export default function checkbox({
       return settings;
     },
     Component: ({ namePrefix = "" }) => (
-      <FormikCheckbox
+      <FormCheckbox
         data-test-id={`${namePrefix}${name}Checkbox`}
         name={`${namePrefix}${name}`}
         description={description}
@@ -54,7 +54,7 @@ export default function checkbox({
       >
         {label}
         {beta && <BetaBadge />}
-      </FormikCheckbox>
+      </FormCheckbox>
     ),
   };
   part.Component.propTypes = {

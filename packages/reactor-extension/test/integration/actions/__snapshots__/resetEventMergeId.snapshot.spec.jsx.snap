@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Reset event merge ID settings snapshots > round trips a saved event merge ID before the first validation 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "eventMergeId": "%event.id%",
+  },
+  "valid": true,
+}
+`;

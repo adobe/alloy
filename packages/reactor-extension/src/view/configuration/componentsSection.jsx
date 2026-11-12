@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import camelCaseToTitleCase from "../utils/camelCaseToTitleCase";
-import FormikCheckbox from "../forms/fields/Checkbox";
+import FormCheckbox from "../forms/fields/Checkbox";
 import BetaBadge from "../components/betaBadge";
 import valueOrDefault from "../utils/valueOrDefault";
 import alloyComponents, {
@@ -78,7 +78,7 @@ const ComponentsSection = () => {
 
       {webSdkComponents.map(({ label, value, description, beta }) => {
         return (
-          <FormikCheckbox
+          <FormCheckbox
             name={`components.${value}`}
             data-test-id={`${value}ComponentCheckbox`}
             width="size-5000"
@@ -87,7 +87,7 @@ const ComponentsSection = () => {
           >
             {label}
             {beta && <BetaBadge />}
-          </FormikCheckbox>
+          </FormCheckbox>
         );
       })}
     </div>

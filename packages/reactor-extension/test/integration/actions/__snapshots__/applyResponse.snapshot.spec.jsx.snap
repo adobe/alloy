@@ -1,0 +1,76 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Apply response settings snapshots > round trips invalid settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Response headers",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "responseHeadersField",
+    },
+    {
+      "field": "Response body",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "responseBodyField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+    "responseBody": "plain",
+    "responseHeaders": "%broken",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply response settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Response body",
+      "messages": [
+        "Please provide a response body.",
+      ],
+      "testId": "responseBodyField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "alloy",
+  },
+  "valid": false,
+}
+`;
+
+exports[`Apply response settings snapshots > round trips populated settings 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%body%",
+    "responseHeaders": "%headers%",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Apply response settings snapshots > selects a response body through the bridge 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "renderDecisions": true,
+    "responseBody": "%data element name%",
+    "responseHeaders": "%headers%",
+  },
+  "valid": true,
+}
+`;

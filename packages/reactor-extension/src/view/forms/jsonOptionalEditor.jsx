@@ -11,22 +11,23 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect, useRef } from "react";
-import { string, object } from "yup";
 import { Radio } from "@react-spectrum/s2";
-import { useField, useFormikContext } from "formik";
+import { submitForm, useFormContext } from "./formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
-import FormikRadioGroup from "./fields/RadioGroup";
+import FormRadioGroup from "./fields/RadioGroup";
 import FieldSubset from "../components/fieldSubset";
 import form from "./form";
 import FormElementContainer from "../components/formElementContainer";
-import FormikTextArea from "./fields/TextArea";
+import FormTextArea from "./fields/TextArea";
 
 import {
   PARTS,
   WHOLE,
 } from "../components/objectEditor/constants/populationStrategy";
+import { getErrors, isEmpty, parentOf, rule, shape, when } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -58,30 +59,21 @@ export default function jsonOptionalEditor(
   } = form({}, children);
 
   const validationShape = {};
-  validationShape[`${name}Whole`] = string().when(optionName, {
-    is: WHOLE,
-    then: (schema) =>
-      schema.test(
-        "is-json-or-data-element",
-        "Please provide a valid JSON object or a data element.",
-        (value, context) => {
-          if (value === "" || value.match(singleDataElementRegex)) {
-            return true;
-          }
-          try {
-            JSON.parse(value);
-            return true;
-          } catch ({ message = "" }) {
-            context.createError({
-              path: `${name}DataElement`,
-              message: `Please provide a valid JSON object or a data element. ${message}`,
-            });
-            return false;
-          }
-        },
-      ),
-  });
-  validationShape[name] = object().shape(
+  validationShape[`${name}Whole`] = when(
+    (value, ctx) => parentOf(ctx)[optionName] === WHOLE,
+    rule((value) => {
+      if (isEmpty(value) || singleDataElementRegex.test(value)) {
+        return true;
+      }
+      try {
+        JSON.parse(value);
+        return true;
+      } catch {
+        return false;
+      }
+    }, "Please provide a valid JSON object or a data element."),
+  );
+  validationShape[name] = shape(
     childrenGetValidationShape({ initInfo: {}, existingValidationShape: {} }),
   );
 
@@ -123,12 +115,14 @@ export default function jsonOptionalEditor(
     Component: ({ namePrefix = "" }) => {
       // We use submitForm so that when you switch population strategies,
       // we can mark all the fields as touched and it will show the errors.
-      const { submitForm } = useFormikContext();
-      const [{ value: optionValue }] = useField(`${namePrefix}${optionName}`);
-      const [{ value }, , { setValue }] = useField(`${namePrefix}${name}`);
-      const [{ value: wholeValue }, , { setValue: setWholeValue }] = useField(
-        `${namePrefix}${name}Whole`,
-      );
+      const form = useFormContext();
+      const optionValue = useFieldValue(`${namePrefix}${optionName}`);
+      const value = useFieldValue(`${namePrefix}${name}`);
+      const wholeValue = useFieldValue(`${namePrefix}${name}Whole`);
+      const setValue = (newValue) =>
+        form.setFieldValue(`${namePrefix}${name}`, newValue);
+      const setWholeValue = (newValue) =>
+        form.setFieldValue(`${namePrefix}${name}Whole`, newValue);
       const lastOptionValue = useRef(optionValue);
       useEffect(() => {
         if (optionValue === PARTS && lastOptionValue.current === WHOLE) {
@@ -150,31 +144,27 @@ export default function jsonOptionalEditor(
                 getChildrenInitialValues({ initInfo: { settings: {} } }),
               );
             })
-            .then(() => submitForm());
+            .then(() => submitForm(form));
         } else if (optionValue === WHOLE && lastOptionValue.current === PARTS) {
-          validationShape[name]
-            .validate(value)
-            .then(() => {
-              const v = JSON.stringify(
-                getChildrenSettings({ values: value }),
-                null,
-                2,
-              );
-              if (v !== "{}") {
-                return setWholeValue(v);
-              }
-              return Promise.resolve();
-            })
-            .catch(() => {
-              return setWholeValue("");
-            })
-            .then(() => submitForm());
+          const isValid =
+            Object.keys(getErrors(validationShape[name], value)).length === 0;
+          const childrenJson = JSON.stringify(
+            getChildrenSettings({ values: value }),
+            null,
+            2,
+          );
+          if (!isValid) {
+            setWholeValue("");
+          } else if (childrenJson !== "{}") {
+            setWholeValue(childrenJson);
+          }
+          submitForm(form);
         }
         lastOptionValue.current = optionValue;
       }, [optionValue]);
       return (
         <FormElementContainer>
-          <FormikRadioGroup
+          <FormRadioGroup
             data-test-id={`${namePrefix}${name}Field`}
             name={`${namePrefix}${optionName}`}
             label={label}
@@ -194,11 +184,11 @@ export default function jsonOptionalEditor(
             >
               Provide JSON or Data Element
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
           {optionValue === WHOLE && (
             <FieldSubset>
               <DataElementSelector>
-                <FormikTextArea
+                <FormTextArea
                   data-test-id={`${namePrefix}${name}Whole`}
                   name={`${namePrefix}${name}Whole`}
                   aria-label="Value"

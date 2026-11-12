@@ -13,9 +13,9 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
-import FormikRadioGroup from "../../forms/fields/RadioGroup";
-import FormikTextField from "../../forms/fields/TextField";
+import { useFieldValue } from "../../utils/useFieldValue";
+import FormRadioGroup from "../../forms/fields/RadioGroup";
+import FormTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 import { PARTS, WHOLE } from "./constants/populationStrategy";
 import FormElementContainer from "../formElementContainer";
@@ -29,7 +29,7 @@ const ObjectEdit = ({
   verticalLayout = false,
   nodeDescription,
 }) => {
-  const [{ value: formStateNode }] = useField(fieldName);
+  const formStateNode = useFieldValue(fieldName);
 
   const { isPartsPopulationStrategySupported, populationStrategy } =
     formStateNode;
@@ -37,7 +37,7 @@ const ObjectEdit = ({
   return (
     <FormElementContainer>
       {isPartsPopulationStrategySupported && (
-        <FormikRadioGroup
+        <FormRadioGroup
           label={displayName}
           name={`${fieldName}.populationStrategy`}
           orientation="horizontal"
@@ -49,11 +49,11 @@ const ObjectEdit = ({
           <Radio data-test-id="wholePopulationStrategyField" value={WHOLE}>
             Provide entire object
           </Radio>
-        </FormikRadioGroup>
+        </FormRadioGroup>
       )}
       {populationStrategy === WHOLE ? (
         <DataElementSelector clearable>
-          <FormikTextField
+          <FormTextField
             data-test-id="valueField"
             name={`${fieldName}.value`}
             label={isPartsPopulationStrategySupported ? "" : displayName}

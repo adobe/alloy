@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { PickerItem } from "@react-spectrum/s2";
 import getInstanceOptions from "../utils/getInstanceOptions";
-import FormikPicker from "../forms/fields/Picker";
+import FormPicker from "../forms/fields/Picker";
 
 const InstanceNamePicker = ({
   "data-test-id": dataTestId,
@@ -26,7 +26,7 @@ const InstanceNamePicker = ({
   const items = getInstanceOptions(initInfo);
   const isDisabled = items.length <= 1;
   return (
-    <FormikPicker
+    <FormPicker
       data-test-id={dataTestId}
       name={name}
       label="Instance"
@@ -43,7 +43,7 @@ const InstanceNamePicker = ({
           {item.label}
         </PickerItem>
       )}
-    </FormikPicker>
+    </FormPicker>
   );
 };
 

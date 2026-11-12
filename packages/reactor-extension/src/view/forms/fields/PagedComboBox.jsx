@@ -13,14 +13,14 @@ governing permissions and limitations under the License.
 import { ComboBoxItem, ComboBox } from "@react-spectrum/s2";
 import { useEffect } from "react";
 import PropTypes from "prop-types";
-import { useField } from "formik";
+import { useFieldError, useFormField } from "../formContext";
 import usePagedComboBox from "../../utils/usePagedComboBox";
 
 import useIsFirstRender from "../../utils/useIsFirstRender";
 import Alert from "../../components/alert";
 import widthStyle from "./widthStyle";
 
-const FormikPagedComboBox = ({
+const FormPagedComboBox = ({
   name,
   width,
   loadItems,
@@ -35,8 +35,12 @@ const FormikPagedComboBox = ({
   ...otherProps
 }) => {
   const isFirstRender = useIsFirstRender();
-  const [{ value }, { touched, error }, { setValue, setTouched }] =
-    useField(name);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
 
   const pagedComboBox = usePagedComboBox({
     defaultSelectedItem: value,
@@ -49,7 +53,7 @@ const FormikPagedComboBox = ({
 
   useEffect(() => {
     if (!isFirstRender) {
-      setValue(pagedComboBox.selectedItem);
+      field.handleChange(pagedComboBox.selectedItem);
     }
   }, [getKey(pagedComboBox.selectedItem)]);
 
@@ -80,7 +84,7 @@ const FormikPagedComboBox = ({
         onOpenChange={pagedComboBox.onOpenChange}
         onLoadMore={pagedComboBox.onLoadMore}
         onBlur={() => {
-          setTouched(true);
+          field.handleBlur();
         }}
       >
         {(item) => (
@@ -104,7 +108,7 @@ const FormikPagedComboBox = ({
   );
 };
 
-FormikPagedComboBox.propTypes = {
+FormPagedComboBox.propTypes = {
   name: PropTypes.string.isRequired,
   width: PropTypes.string,
   loadItems: PropTypes.func.isRequired,
@@ -118,4 +122,4 @@ FormikPagedComboBox.propTypes = {
   "data-test-id": PropTypes.string,
 };
 
-export default FormikPagedComboBox;
+export default FormPagedComboBox;

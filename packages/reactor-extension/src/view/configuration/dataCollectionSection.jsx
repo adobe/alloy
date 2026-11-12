@@ -11,18 +11,27 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect } from "react";
-import { useField, useFormikContext } from "formik";
+import { setFieldBlurred, useFormContext } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { object, string } from "yup";
+import {
+  all,
+  isEmpty,
+  parentOf,
+  required,
+  rule,
+  shape,
+  when,
+} from "../forms/validation";
 import { ActionButton, Checkbox, Radio } from "@react-spectrum/s2";
 import PropTypes from "prop-types";
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import CodeField from "../components/codeField";
-import FormikCheckbox from "../forms/fields/Checkbox";
-import FormikCheckboxGroup from "../forms/fields/CheckboxGroup";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
-import FormikTextField from "../forms/fields/TextField";
+import FormCheckbox from "../forms/fields/Checkbox";
+import FormCheckboxGroup from "../forms/fields/CheckboxGroup";
+import FormRadioGroup from "../forms/fields/RadioGroup";
+import FormTextField from "../forms/fields/TextField";
 import FieldSubset from "../components/fieldSubset";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
@@ -227,55 +236,52 @@ export const bridge = {
 
     return instanceSettings;
   },
-  instanceValidationSchema: object().shape({
-    downloadLinkQualifier: string().when(
-      ["$components.activityCollector", "clickCollection.downloadLinkEnabled"],
-      {
-        is: true,
-        then: (schema) =>
-          schema.required("Please provide a regular expression.").test({
-            name: "invalidDownloadLinkQualifier",
-            message: "Please provide a valid regular expression.",
-            test(value) {
-              try {
-                return RegExp(value) !== null;
-              } catch {
-                return false;
-              }
-            },
-          }),
-      },
+  instanceValidationSchema: shape({
+    downloadLinkQualifier: when(
+      (value, ctx) =>
+        ctx.root.components?.activityCollector === true &&
+        parentOf(ctx).clickCollection?.downloadLinkEnabled === true,
+      all(
+        required("Please provide a regular expression."),
+        rule((value) => {
+          try {
+            return RegExp(value) !== null;
+          } catch {
+            return false;
+          }
+        }, "Please provide a valid regular expression."),
+      ),
     ),
-    onBeforeLinkClickSend: string().when(
-      ["eventGrouping", "linkCallbackType"],
-      {
-        is: (eventGrouping, linkCallbackType) =>
-          eventGrouping !== EVENT_GROUPING.NONE &&
-          linkCallbackType === LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND,
-        then: (schema) =>
-          schema.oneOf(
-            [""],
-            "Event grouping cannot be used when the onBeforeLinkClickSend callback is specified. Use filterClickDetails instead or turn off event grouping.",
-          ),
-      },
-    ),
+    onBeforeLinkClickSend: rule((value, ctx) => {
+      const { eventGrouping, linkCallbackType } = parentOf(ctx);
+      return (
+        isEmpty(value) ||
+        eventGrouping === EVENT_GROUPING.NONE ||
+        linkCallbackType !== LINK_CALLBACK.ON_BEFORE_LINK_CLICK_SEND
+      );
+    }, "Event grouping cannot be used when the onBeforeLinkClickSend callback is specified. Use filterClickDetails instead or turn off event grouping."),
   }),
 };
 
 const DataCollectionSection = ({ instanceFieldName }) => {
-  const { setFieldValue } = useFormikContext();
-  const [{ value: instanceValues }] = useField(instanceFieldName);
+  const form = useFormContext();
+  const field = (name) => useFieldValue(`${instanceFieldName}.${name}`);
+  const instanceValues = {
+    clickCollection: field("clickCollection"),
+    onBeforeLinkClickSendInitiallySpecified: field(
+      "onBeforeLinkClickSendInitiallySpecified",
+    ),
+    linkCallbackType: field("linkCallbackType"),
+    contextGranularity: field("contextGranularity"),
+  };
   const instanceDefaults = bridge.getInstanceDefaults();
-  const [{ value: activityCollectorEnabled }] = useField(
+  const activityCollectorEnabled = useFieldValue(
     "components.activityCollector",
   );
   // Always mark the onBeforeLinkClickSend field to be touched so it will show errors immediately when
   // event grouping is used.
-  const [, , { setTouched }] = useField(
-    `${instanceFieldName}.onBeforeLinkClickSend`,
-  );
   useEffect(() => {
-    setTouched(true);
+    setFieldBlurred(form, `${instanceFieldName}.onBeforeLinkClickSend`);
   }, []);
 
   return (
@@ -295,17 +301,17 @@ const DataCollectionSection = ({ instanceFieldName }) => {
         />
         {activityCollectorEnabled ? (
           <FormElementContainer>
-            <FormikCheckbox
+            <FormCheckbox
               data-test-id="internalLinkEnabledField"
               name={`${instanceFieldName}.clickCollection.internalLinkEnabled`}
               description="Collect data associated with clicks on links within the current domain."
               width="size-5000"
             >
               Collect internal link clicks
-            </FormikCheckbox>
+            </FormCheckbox>
             {instanceValues.clickCollection.internalLinkEnabled && (
               <FieldSubset>
-                <FormikRadioGroup
+                <FormRadioGroup
                   label="Event grouping options:"
                   name={`${instanceFieldName}.eventGrouping`}
                 >
@@ -346,25 +352,25 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                       <BetaBadge />
                     </span>
                   </Radio>
-                </FormikRadioGroup>
+                </FormRadioGroup>
               </FieldSubset>
             )}
-            <FormikCheckbox
+            <FormCheckbox
               data-test-id="externalLinkEnabledField"
               name={`${instanceFieldName}.clickCollection.externalLinkEnabled`}
               description="Collect data associated with clicks on links to external domains."
               width="size-5000"
             >
               Collect external link clicks
-            </FormikCheckbox>
-            <FormikCheckbox
+            </FormCheckbox>
+            <FormCheckbox
               data-test-id="downloadLinkEnabledField"
               name={`${instanceFieldName}.clickCollection.downloadLinkEnabled`}
               description="Collect data assocated with clicks on links that qualify as download links."
               width="size-5000"
             >
               Collect download link clicks
-            </FormikCheckbox>
+            </FormCheckbox>
             {instanceValues.clickCollection.downloadLinkEnabled && (
               <FieldSubset>
                 <div
@@ -373,7 +379,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     gap: 8,
                   })}
                 >
-                  <FormikTextField
+                  <FormTextField
                     data-test-id="downloadLinkQualifierField"
                     label="Download link qualifier"
                     name={`${instanceFieldName}.downloadLinkQualifier`}
@@ -384,13 +390,14 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                   <ActionButton
                     data-test-id="downloadLinkQualifierTestButton"
                     onPress={async () => {
-                      const currentPattern =
-                        instanceValues.downloadLinkQualifier;
+                      const currentPattern = form.getFieldValue(
+                        `${instanceFieldName}.downloadLinkQualifier`,
+                      );
                       const newPattern =
                         await window.extensionBridge.openRegexTester({
                           pattern: currentPattern,
                         });
-                      setFieldValue(
+                      form.setFieldValue(
                         `${instanceFieldName}.downloadLinkQualifier`,
                         newPattern,
                       );
@@ -417,7 +424,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     gap: 8,
                   })}
                 >
-                  <FormikRadioGroup
+                  <FormRadioGroup
                     label="Link callback type"
                     name={`${instanceFieldName}.linkCallbackType`}
                   >
@@ -439,7 +446,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     >
                       onBeforeLinkClickSend (deprecated)
                     </Radio>
-                  </FormikRadioGroup>
+                  </FormRadioGroup>
                 </div>
               )}
             {clickCollectionIsEnabled(instanceValues) &&
@@ -493,7 +500,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
           </InfoMessage>
         )}
         <div>
-          <FormikRadioGroup
+          <FormRadioGroup
             label="When sending event data, automatically include:"
             name={`${instanceFieldName}.contextGranularity`}
           >
@@ -509,12 +516,12 @@ const DataCollectionSection = ({ instanceFieldName }) => {
             >
               Specific context information
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
 
           {instanceValues.contextGranularity ===
             CONTEXT_GRANULARITY.SPECIFIC && (
             <FieldSubset>
-              <FormikCheckboxGroup
+              <FormCheckboxGroup
                 aria-label="Context data categories"
                 name={`${instanceFieldName}.context`}
               >
@@ -539,7 +546,7 @@ const DataCollectionSection = ({ instanceFieldName }) => {
                     </FieldDescriptionAndError>
                   );
                 })}
-              </FormikCheckboxGroup>
+              </FormCheckboxGroup>
             </FieldSubset>
           )}
         </div>

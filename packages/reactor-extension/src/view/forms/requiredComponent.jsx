@@ -11,12 +11,12 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { mixed } from "yup";
 import ComponentDependency from "../components/requiredComponent";
 import form from "./form";
 import { isDefaultComponent } from "../utils/alloyComponents.mjs";
 
 import valueOrDefault from "../utils/valueOrDefault";
+import { invalid } from "./validation";
 
 /** @typedef {import("./form").Form} Form */
 /**
@@ -56,10 +56,8 @@ const RequiredComponent = (
       if (!componentEnabled && isNew && whole) {
         return {
           ...existingValidationShape,
-          requiredComponent: mixed().test(
-            "requiredComponent",
+          requiredComponent: invalid(
             `The ${requiredComponent} component is disabled.`,
-            () => false,
           ),
         };
       }

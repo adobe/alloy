@@ -11,16 +11,17 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { object, string } from "yup";
+import { required, shape, when } from "../forms/validation";
 import { useEffect, useRef } from "react";
-import { useField, useFormikContext } from "formik";
+import { setFieldBlurred, useFormContext } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Content, Link } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../forms/fields/TextField";
+import FormTextField from "../forms/fields/TextField";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 
@@ -69,20 +70,15 @@ export const bridge = {
     return instanceSettings;
   },
 
-  instanceValidationSchema: object().shape({
-    pushNotifications: object().when("$components.pushNotifications", {
-      is: true,
-      then: (schema) =>
-        schema.shape({
-          vapidPublicKey: string().required(
-            "Please provide a VAPID public key.",
-          ),
-          appId: string().required("Please provide an Application ID."),
-          trackingDatasetId: string().required(
-            "Please provide a Tracking Dataset ID.",
-          ),
-        }),
-    }),
+  instanceValidationSchema: shape({
+    pushNotifications: when(
+      (value, ctx) => ctx.root.components?.pushNotifications === true,
+      shape({
+        vapidPublicKey: required("Please provide a VAPID public key."),
+        appId: required("Please provide an Application ID."),
+        trackingDatasetId: required("Please provide a Tracking Dataset ID."),
+      }),
+    ),
   }),
 };
 
@@ -93,18 +89,18 @@ const PUSH_NOTIFICATIONS_FIELDS = [
 ];
 
 const PushNotificationsSection = ({ instanceFieldName }) => {
-  const [{ value: pushNotificationsComponentEnabled }] = useField(
+  const pushNotificationsComponentEnabled = useFieldValue(
     "components.pushNotifications",
   );
-  const { setFieldTouched } = useFormikContext();
+  const form = useFormContext();
   const prevEnabled = useRef(pushNotificationsComponentEnabled);
 
   useEffect(() => {
     if (pushNotificationsComponentEnabled && !prevEnabled.current) {
       PUSH_NOTIFICATIONS_FIELDS.forEach((field) => {
-        setFieldTouched(
+        setFieldBlurred(
+          form,
           `${instanceFieldName}.pushNotifications.${field}`,
-          false,
           false,
         );
       });
@@ -150,7 +146,7 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
       </Content>
       <FormElementContainer>
         <DataElementSelector>
-          <FormikTextField
+          <FormTextField
             data-test-id="vapidPublicKeyField"
             label="VAPID Public Key"
             name={`${instanceFieldName}.pushNotifications.vapidPublicKey`}
@@ -162,7 +158,7 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
       </FormElementContainer>
       <FormElementContainer>
         <DataElementSelector>
-          <FormikTextField
+          <FormTextField
             data-test-id="appIdField"
             label="Application ID"
             name={`${instanceFieldName}.pushNotifications.appId`}
@@ -174,7 +170,7 @@ const PushNotificationsSection = ({ instanceFieldName }) => {
       </FormElementContainer>
       <FormElementContainer>
         <DataElementSelector>
-          <FormikTextField
+          <FormTextField
             data-test-id="trackingDatasetIdField"
             label="Tracking Dataset ID"
             name={`${instanceFieldName}.pushNotifications.trackingDatasetId`}

@@ -1,0 +1,119 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Update variable settings snapshots > edits custom code through the extension bridge 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "xdm",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 42;",
+    "data": {
+      "count": 2,
+      "flag": true,
+      "nested": {
+        "label": "nested",
+      },
+      "tags": [
+        "a",
+        "b",
+      ],
+      "testField": "%value%",
+    },
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips data variable settings 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "data": {
+      "__adobe": {
+        "analytics": {
+          "pageName": "Home",
+        },
+        "target": {
+          "mbox": "home",
+        },
+      },
+    },
+    "dataElementId": "DE2",
+    "dataElementName": "Data variable",
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips new settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Data element",
+      "messages": [
+        "Please specify a data element.",
+      ],
+      "testId": "dataElementField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": undefined,
+    "dataElementName": undefined,
+  },
+  "valid": false,
+}
+`;
+
+exports[`Update variable settings snapshots > round trips root clear transform settings 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "data": {},
+    "dataElementId": "DE1",
+    "dataElementName": "XDM variable",
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+    "transforms": {
+      "": {
+        "clear": true,
+      },
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Update variable settings snapshots > switches from an XDM variable to a Data variable 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "customCode": "content.xdm.count = 2;",
+    "data": {},
+    "dataElementId": "DE2",
+    "dataElementName": "Data variable",
+  },
+  "valid": false,
+}
+`;

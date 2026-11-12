@@ -64,7 +64,10 @@ export const reactorExtensionTestProjects = [
     // 'useContext')" the first time an isolated file renders it.
     optimizeDeps: {
       exclude: ["@react-spectrum/s2/style"],
-      include: ["@react-spectrum/s2/illustrations/linear/Error"],
+      include: [
+        "@react-spectrum/s2/illustrations/linear/Error",
+        "react-dom/client",
+      ],
     },
     test: {
       name: "reactor-extension/integration",

@@ -14,25 +14,19 @@ import { Children } from "react";
 import PropTypes from "prop-types";
 import { RadioGroup, Radio, TextField } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
-import { string } from "yup";
+import { useFieldError, useFormField } from "../formContext";
 import RawDataElementSelector from "../../components/rawDataElementSelector";
-import singleDataElementRegex from "../../constants/singleDataElementRegex";
-import { DATA_ELEMENT_REQUIRED } from "../../constants/validationErrorMessages";
 import FieldSubset from "../../components/fieldSubset";
 import normalizeGroupChildren from "./normalizeGroupChildren";
+import { dataElementRequired, parentOf, when } from "../validation";
 
-export const createRadioGroupWithDataElementValidationSchema = (name) => {
-  return string().when([`${name}DataElement`], {
-    is: ({ isDataElement } = {}) => isDataElement,
-    then: (schema) =>
-      schema
-        .required(DATA_ELEMENT_REQUIRED)
-        .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
-  });
-};
+export const radioGroupWithDataElementSchema = (name) =>
+  when(
+    (value, ctx) => parentOf(ctx)[`${name}DataElement`]?.isDataElement,
+    dataElementRequired,
+  );
 
-const FormikRadioGroupWithDataElement = ({
+const FormRadioGroupWithDataElement = ({
   name,
   children,
   dataElementDescription,
@@ -43,12 +37,14 @@ const FormikRadioGroupWithDataElement = ({
     const { value } = child.props;
     return value;
   });
-  const [{ value }, { error }, { setValue, setTouched }] = useField(name);
-  const [
-    { value: dataElementValue },
-    { touched: dataElementTouched },
-    { setValue: dataElementSetValue, setTouched: dataElementSetTouched },
-  ] = useField(`${name}DataElement`);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const dataElementField = useFormField(`${name}DataElement`);
+  const { value } = field.state;
+  const {
+    value: dataElementValue,
+    meta: { isBlurred: dataElementTouched },
+  } = dataElementField.state;
 
   let radioValue;
   let dataElementText;
@@ -73,14 +69,13 @@ const FormikRadioGroupWithDataElement = ({
 
   const setValues = (newRadioValue, newDataElement) => {
     // set the dataElement value first because the main field validation uses it
-    dataElementSetValue(
-      {
-        isDataElement: newRadioValue === "dataElement",
-        dataElement: newDataElement,
-      },
-      false,
+    dataElementField.handleChange({
+      isDataElement: newRadioValue === "dataElement",
+      dataElement: newDataElement,
+    });
+    field.handleChange(
+      newRadioValue === "dataElement" ? newDataElement : newRadioValue,
     );
-    setValue(newRadioValue === "dataElement" ? newDataElement : newRadioValue);
   };
 
   return (
@@ -91,7 +86,7 @@ const FormikRadioGroupWithDataElement = ({
         onChange={(newValue) => {
           setValues(newValue, dataElementText);
         }}
-        onBlur={() => setTouched(true)}
+        onBlur={field.handleBlur}
       >
         {normalizeGroupChildren(Radio, children)}
         <Radio
@@ -108,7 +103,7 @@ const FormikRadioGroupWithDataElement = ({
             adjustForLabel
             onChange={(newValue) => {
               setValues("dataElement", newValue);
-              dataElementSetTouched(true);
+              dataElementField.handleBlur();
             }}
           >
             <TextField
@@ -116,7 +111,7 @@ const FormikRadioGroupWithDataElement = ({
               value={dataElementText}
               data-test-id={`${dataTestIdPrefix}DataElementField`}
               onChange={(newValue) => setValues("dataElement", newValue)}
-              onBlur={() => dataElementSetTouched(true)}
+              onBlur={dataElementField.handleBlur}
               description={dataElementDescription}
               isInvalid={Boolean(dataElementTouched && error)}
               errorMessage={error}
@@ -132,7 +127,7 @@ const FormikRadioGroupWithDataElement = ({
   );
 };
 
-FormikRadioGroupWithDataElement.propTypes = {
+FormRadioGroupWithDataElement.propTypes = {
   name: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   description: PropTypes.string,
@@ -141,4 +136,4 @@ FormikRadioGroupWithDataElement.propTypes = {
   dataTestIdPrefix: PropTypes.string,
 };
 
-export default FormikRadioGroupWithDataElement;
+export default FormRadioGroupWithDataElement;

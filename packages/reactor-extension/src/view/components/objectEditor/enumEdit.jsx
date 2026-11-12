@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { ComboBoxItem } from "@react-spectrum/s2";
-import FormikKeyedComboBox from "../../forms/fields/KeyedComboBox";
+import FormKeyedComboBox from "../../forms/fields/KeyedComboBox";
 import DataElementSelector from "../dataElementSelector";
 
 /**
@@ -24,7 +24,7 @@ const EnumEdit = (props) => {
   return (
     <div>
       <DataElementSelector clearable>
-        <FormikKeyedComboBox
+        <FormKeyedComboBox
           data-test-id="valueField"
           label={displayName}
           name={`${fieldName}.value`}
@@ -45,7 +45,7 @@ const EnumEdit = (props) => {
               {item.label}
             </ComboBoxItem>
           )}
-        </FormikKeyedComboBox>
+        </FormKeyedComboBox>
       </DataElementSelector>
     </div>
   );

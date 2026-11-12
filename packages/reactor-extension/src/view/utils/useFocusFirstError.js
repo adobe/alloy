@@ -11,18 +11,19 @@ governing permissions and limitations under the License.
 */
 
 import { useEffect, useRef } from "react";
-import { useFormikContext } from "formik";
+import { useStore } from "@tanstack/react-form";
+import { useFormContext } from "../forms/formContext";
 
 /**
  * Focuses the first field with a validation error after form submission.
  * This hook leverages ARIA attributes (aria-invalid="true") that are
- * automatically set by the Formik-wrapped React Spectrum components.
+ * automatically set by the form field React Spectrum components.
  *
  * Handles async UI transitions (tab switches, accordion expansions) by
  * polling for the invalid field to appear in the DOM before focusing.
  *
  * Usage:
- * Simply add this hook to any component wrapped in a Formik context:
+ * Simply add this hook to any component inside a form context:
  *
  * const MyFormComponent = () => {
  *   useFocusFirstError();
@@ -30,7 +31,10 @@ import { useFormikContext } from "formik";
  * };
  */
 export default () => {
-  const { submitCount, isSubmitting, errors } = useFormikContext();
+  const form = useFormContext();
+  const submitCount = useStore(form.store, (state) => state.submissionAttempts);
+  const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
+
   const previousSubmitCountRef = useRef(0);
   const timeoutIdRef = useRef(null);
   const rafIdRef = useRef(null);
@@ -43,8 +47,7 @@ export default () => {
     if (
       submitCount !== previousSubmitCountRef.current &&
       !isSubmitting &&
-      errors &&
-      Object.keys(errors).length > 0
+      form.state.errorMap.onDynamic
     ) {
       previousSubmitCountRef.current = submitCount;
 
@@ -58,7 +61,7 @@ export default () => {
        */
       const tryFocusInvalidField = (attempt = 0, maxAttempts = 60) => {
         // Find the first invalid field using ARIA attributes
-        // All Formik-wrapped components set aria-invalid="true" when validationState="invalid"
+        // All form field components set aria-invalid="true" when validationState="invalid"
         const firstInvalidField = document.querySelector(
           '[aria-invalid="true"]',
         );
@@ -125,7 +128,7 @@ export default () => {
         }, 150); // Wait 150ms for state updates + remounting
       });
     }
-  }, [submitCount, isSubmitting, errors]);
+  }, [submitCount, isSubmitting]);
 
   // Cleanup on unmount
   useEffect(() => {

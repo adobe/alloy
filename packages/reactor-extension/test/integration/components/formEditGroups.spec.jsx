@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Formik } from "formik";
+import TestForm from "../helpers/TestForm";
 import objectArray from "../../../src/view/forms/objectArray";
 import simpleMap from "../../../src/view/forms/simpleMap";
 import textField from "../../../src/view/forms/textField";
@@ -42,14 +42,14 @@ let view;
 
 const setup = async (Component, initialValues) => {
   view = await renderView(() => (
-    <Formik initialValues={initialValues} onSubmit={() => {}}>
+    <TestForm initialValues={initialValues}>
       {({ values }) => (
         <FormElementContainer>
           <Component />
           <output data-test-id="values">{JSON.stringify(values)}</output>
         </FormElementContainer>
       )}
-    </Formik>
+    </TestForm>
   ));
 };
 

@@ -24,12 +24,12 @@ import {
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Copy from "@react-spectrum/s2/icons/Copy";
 import copyToClipboard from "clipboard-copy";
-import { useField } from "formik";
+import { useFieldError, useFormField } from "../forms/formContext";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DataElementSelector from "./dataElementSelector";
 import RefreshButton from "./refreshButton";
-import FormikTextField from "../forms/fields/TextField";
+import FormTextField from "../forms/fields/TextField";
 import { findDatastream } from "../utils/useDatastreamCatalog";
 
 const getLabel = (datastream) => datastream.data.title;
@@ -53,6 +53,22 @@ const findByLabel = (groups, label) => {
  * the datastream ID or the exact text entered; the sandbox of a chosen
  * datastream is saved alongside it so later API calls can use it.
  */
+// Stable render functions let React Aria reuse cached item elements instead
+// of rebuilding all 100+ suggestions on every keystroke.
+const renderDatastream = (datastream) => (
+  <ComboBoxItem id={datastream._system.id} textValue={getLabel(datastream)}>
+    <Text slot="label">{getLabel(datastream)}</Text>
+    <Text slot="description">{datastream._system.id}</Text>
+  </ComboBoxItem>
+);
+
+const renderSection = (section) => (
+  <ComboBoxSection id={section.sandbox.name}>
+    <Header>{section.sandbox.title}</Header>
+    <Collection items={section.datastreams}>{renderDatastream}</Collection>
+  </ComboBoxSection>
+);
+
 const DatastreamField = ({
   name,
   sandboxName,
@@ -63,10 +79,14 @@ const DatastreamField = ({
   isRequired,
   "data-test-id": dataTestId,
 }) => {
-  const [{ value = "" }, { touched, error }, { setValue, setTouched }] =
-    useField(name);
-  const [{ value: sandbox = "" }, , { setValue: setSandbox }] =
-    useField(sandboxName);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const sandboxField = useFormField(sandboxName);
+  const value = field.state.value ?? "";
+  const touched = field.state.meta.isBlurred;
+  const sandbox = sandboxField.state.value ?? "";
+  const setValue = field.handleChange;
+  const setSandbox = sandboxField.handleChange;
   const { groups } = catalog;
 
   const match = findDatastream(groups, value);
@@ -101,7 +121,7 @@ const DatastreamField = ({
   // datastream list.
   const savedValue = useRef(value);
   useEffect(() => {
-    if (value !== savedValue.current && !match) {
+    if (value !== savedValue.current && !match && sandbox !== "") {
       setSandbox("");
     }
   }, [value]);
@@ -189,32 +209,17 @@ const DatastreamField = ({
             onBlur={() => {
               commitInput();
               setIsFocused(false);
-              setTouched(true);
+              field.handleBlur();
             }}
             loadingState={catalog.isLoading ? "loading" : "idle"}
             isInvalid={Boolean(touched && error)}
             errorMessage={touched ? error : undefined}
             styles={style({ width: 400 })}
           >
-            {(section) => (
-              <ComboBoxSection id={section.sandbox.name}>
-                <Header>{section.sandbox.title}</Header>
-                <Collection items={section.datastreams}>
-                  {(datastream) => (
-                    <ComboBoxItem
-                      id={datastream._system.id}
-                      textValue={getLabel(datastream)}
-                    >
-                      <Text slot="label">{getLabel(datastream)}</Text>
-                      <Text slot="description">{datastream._system.id}</Text>
-                    </ComboBoxItem>
-                  )}
-                </Collection>
-              </ComboBoxSection>
-            )}
+            {renderSection}
           </ComboBox>
         ) : (
-          <FormikTextField
+          <FormTextField
             data-test-id={dataTestId}
             name={name}
             label={label}

@@ -1,0 +1,2659 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Configuration settings snapshots > adds, selects, duplicates and removes advertiser rows 1`] = `
+{
+  "errors": [
+    {
+      "field": "Advertiser 3",
+      "messages": [
+        "Please select an advertiser.",
+      ],
+      "testId": "advertiser2Field",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "advertising": true,
+      "audiences": false,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+      "streamingMedia": false,
+    },
+    "instances": [
+      {
+        "advertising": {
+          "advertiserSettings": [
+            {
+              "advertiserId": "167524",
+              "enabled": true,
+            },
+            {
+              "advertiserId": "83565",
+              "enabled": false,
+            },
+          ],
+          "dspEnabled": true,
+          "id5PartnerId": "partner",
+          "rampIdJSPath": "https://example.com/ramp.js",
+        },
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "developmentEdgeConfigId": "%developmentStream%",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-prod",
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "alloy",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "sandbox": "prod",
+        "stagingEdgeConfigId": "ds-staging",
+        "stagingSandbox": "prod",
+        "thirdPartyCookiesEnabled": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > adds, selects, duplicates and removes advertiser rows 2`] = `
+{
+  "errors": [
+    {
+      "field": "Advertiser 3",
+      "messages": [
+        "Duplicate advertiser not allowed.",
+      ],
+      "testId": "advertiser2Field",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "advertising": true,
+      "audiences": false,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+      "streamingMedia": false,
+    },
+    "instances": [
+      {
+        "advertising": {
+          "advertiserSettings": [
+            {
+              "advertiserId": "167524",
+              "enabled": true,
+            },
+            {
+              "advertiserId": "83565",
+              "enabled": false,
+            },
+            {
+              "advertiserId": "167524",
+              "enabled": true,
+            },
+          ],
+          "dspEnabled": true,
+          "id5PartnerId": "partner",
+          "rampIdJSPath": "https://example.com/ramp.js",
+        },
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "developmentEdgeConfigId": "%developmentStream%",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-prod",
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "alloy",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "sandbox": "prod",
+        "stagingEdgeConfigId": "ds-staging",
+        "stagingSandbox": "prod",
+        "thirdPartyCookiesEnabled": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > deletes the first fully populated instance and preserves the remaining invalid settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "On before link click send callback (deprecated, use filter click details instead)",
+      "messages": [],
+      "testId": "instancesHeading",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "advertising": true,
+      "brandConcierge": true,
+      "pushNotifications": true,
+    },
+    "instances": [
+      {
+        "advertising": {
+          "advertiserSettings": [
+            {
+              "advertiserId": "167524",
+              "enabled": true,
+            },
+            {
+              "advertiserId": "83565",
+              "enabled": false,
+            },
+          ],
+          "dspEnabled": true,
+          "id5PartnerId": "partner",
+          "rampIdJSPath": "https://example.com/ramp.js",
+        },
+        "autoCollectPropositionInteractions": {
+          "AJO": "never",
+          "TGT": "decoratedElementsOnly",
+        },
+        "clickCollection": {
+          "internalLinkEnabled": false,
+        },
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "conversation": {
+          "collectSources": true,
+          "region": "va7",
+          "stickyConversationSession": true,
+          "streamTimeout": 20000,
+          "transferCookies": [
+            "a",
+            "b",
+            "%cookie%",
+          ],
+        },
+        "defaultConsent": "pending",
+        "downloadLinkQualifier": "\\.pdf$",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-other",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-development",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-development",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 1,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-development",
+            },
+            "datastreamId": "ds-development",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-production",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-production",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 3,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-production",
+            },
+            "datastreamId": "ds-production",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-staging",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-staging",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 2,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-staging",
+            },
+            "datastreamId": "ds-staging",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "secondary",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "onBeforeLinkClickSend": "content.xdm.web = {};",
+        "orgId": "SECOND@AdobeOrg",
+        "personalizationStorageEnabled": true,
+        "prehidingStyle": "body { opacity: 0; }",
+        "pushNotifications": {
+          "appId": "app-1",
+          "trackingDatasetId": "dataset-1",
+          "vapidPublicKey": "public-key",
+        },
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": 30,
+          "playerName": "Player",
+        },
+        "targetMigrationEnabled": true,
+        "thirdPartyCookiesEnabled": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > does not retain report-suite errors after deleting the authenticated-org instance 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instances": [
+      {
+        "edgeConfigId": "ds-other",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "external-suite",
+              ],
+            },
+            "datastreamId": "ds-prod",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "name": "secondary",
+        "orgId": "SECOND@AdobeOrg",
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > edits mediaMainPingIntervalField through ["25","","-1","61"] 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "audiences": false,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+    },
+    "instances": [
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": 25,
+          "playerName": "Player",
+        },
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > edits mediaMainPingIntervalField through ["25","","-1","61"] 2`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "audiences": false,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+    },
+    "instances": [
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": NaN,
+          "playerName": "Player",
+        },
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > edits mediaMainPingIntervalField through ["25","","-1","61"] 3`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "audiences": false,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+    },
+    "instances": [
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": -1,
+          "playerName": "Player",
+        },
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > edits mediaMainPingIntervalField through ["25","","-1","61"] 4`] = `
+{
+  "errors": [
+    {
+      "field": "DIV",
+      "messages": [],
+      "testId": "mediaMainPingIntervalField",
+    },
+    {
+      "field": "Main ping interval",
+      "messages": [
+        "The Main Ping Interval must be less than 60 seconds.",
+      ],
+      "testId": "mediaMainPingIntervalField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "audiences": false,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+    },
+    "instances": [
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": 61,
+          "playerName": "Player",
+        },
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > edits streamTimeoutDataTestId through ["25","","-1","9"] 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "audiences": false,
+      "brandConcierge": true,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+      "streamingMedia": false,
+    },
+    "instances": [
+      {
+        "conversation": {
+          "collectSources": true,
+          "region": "va7",
+          "stickyConversationSession": true,
+          "streamTimeout": 25000,
+          "transferCookies": [
+            "a",
+            "b",
+            "%cookie%",
+          ],
+        },
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > edits streamTimeoutDataTestId through ["25","","-1","9"] 2`] = `
+{
+  "errors": [
+    {
+      "field": "DIV",
+      "messages": [],
+      "testId": "streamTimeoutDataTestId",
+    },
+    {
+      "field": "Stream timeout (seconds)",
+      "messages": [
+        "The stream timeout must be at least 10 seconds.",
+      ],
+      "testId": "streamTimeoutDataTestId",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "audiences": false,
+      "brandConcierge": true,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+      "streamingMedia": false,
+    },
+    "instances": [
+      {
+        "conversation": {
+          "collectSources": true,
+          "region": "va7",
+          "stickyConversationSession": true,
+          "streamTimeout": NaN,
+          "transferCookies": [
+            "a",
+            "b",
+            "%cookie%",
+          ],
+        },
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips data elements settings before the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "On before link click send callback (deprecated, use filter click details instead)",
+      "messages": [],
+      "testId": "instancesHeading",
+    },
+    {
+      "field": "Report suite override #1",
+      "messages": [
+        "The value must be one of the preconfigured report suites.",
+      ],
+      "testId": "reportSuitesOverride.0",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "advertising": true,
+      "brandConcierge": true,
+      "pushNotifications": true,
+    },
+    "instances": [
+      {
+        "advertising": {
+          "advertiserSettings": [
+            {
+              "advertiserId": "%advertiser%",
+              "enabled": "%advertiserEnabled%",
+            },
+          ],
+          "dspEnabled": "%dsp%",
+          "enabled": "%ads%",
+          "id5PartnerId": "%id5%",
+          "rampIdJSPath": "%ramp%",
+        },
+        "autoCollectPropositionInteractions": {
+          "AJO": "never",
+          "TGT": "decoratedElementsOnly",
+        },
+        "clickCollection": {
+          "internalLinkEnabled": false,
+        },
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "conversation": {
+          "region": "va7",
+          "transferCookies": "%cookies%",
+        },
+        "defaultConsent": "%consent%",
+        "developmentEdgeConfigId": "%developmentStream%",
+        "downloadLinkQualifier": "\\.pdf$",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "%stream%",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-development",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-development",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 1,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-development",
+            },
+            "datastreamId": "ds-development",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-production",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-production",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 3,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-production",
+            },
+            "datastreamId": "ds-production",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-staging",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-staging",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 2,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-staging",
+            },
+            "datastreamId": "ds-staging",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "alloy",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "onBeforeLinkClickSend": "content.xdm.web = {};",
+        "personalizationStorageEnabled": true,
+        "prehidingStyle": "body { opacity: 0; }",
+        "pushNotifications": {
+          "appId": "app-1",
+          "trackingDatasetId": "dataset-1",
+          "vapidPublicKey": "public-key",
+        },
+        "stagingEdgeConfigId": "ds-staging",
+        "stagingSandbox": "prod",
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": 30,
+          "playerName": "Player",
+        },
+        "targetMigrationEnabled": true,
+        "thirdPartyCookiesEnabled": "%cookies%",
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips disabled components settings before the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "Report suite override #1",
+      "messages": [
+        "The value must be one of the preconfigured report suites.",
+      ],
+      "testId": "reportSuitesOverride.0",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "audiences": false,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+      "streamingMedia": false,
+    },
+    "instances": [
+      {
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "developmentEdgeConfigId": "%developmentStream%",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-prod",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-development",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-development",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 1,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-development",
+            },
+            "datastreamId": "ds-development",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-production",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-production",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 3,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-production",
+            },
+            "datastreamId": "ds-production",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-staging",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-staging",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 2,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-staging",
+            },
+            "datastreamId": "ds-staging",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "alloy",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "onBeforeLinkClickSend": "content.xdm.web = {};",
+        "sandbox": "prod",
+        "stagingEdgeConfigId": "ds-staging",
+        "stagingSandbox": "prod",
+        "thirdPartyCookiesEnabled": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips disabled components without callbacks settings before the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "Report suite override #1",
+      "messages": [
+        "The value must be one of the preconfigured report suites.",
+      ],
+      "testId": "reportSuitesOverride.0",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "activityCollector": false,
+      "audiences": false,
+      "consent": false,
+      "eventMerge": false,
+      "mediaAnalyticsBridge": false,
+      "personalization": false,
+      "rulesEngine": false,
+      "streamingMedia": false,
+    },
+    "instances": [
+      {
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "developmentEdgeConfigId": "%developmentStream%",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-prod",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-development",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-development",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 1,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-development",
+            },
+            "datastreamId": "ds-development",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-production",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-production",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 3,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-production",
+            },
+            "datastreamId": "ds-production",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-staging",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-staging",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 2,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-staging",
+            },
+            "datastreamId": "ds-staging",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "alloy",
+        "sandbox": "prod",
+        "stagingEdgeConfigId": "ds-staging",
+        "stagingSandbox": "prod",
+        "thirdPartyCookiesEnabled": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips duplicate instances without saved sandboxes settings before the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "Name",
+      "messages": [
+        "Please provide a name unique from those used for other instances.",
+      ],
+      "testId": "nameField",
+    },
+    {
+      "field": "IMS organization ID",
+      "messages": [
+        "Please provide an IMS Organization ID unique from those used for other instances.",
+      ],
+      "testId": "orgIdField",
+    },
+    {
+      "field": "Production datastream",
+      "messages": [
+        "Please provide a value unique from those used for other instances.",
+      ],
+      "testId": "productionDatastreamField",
+    },
+  ],
+  "settingsAfterValidate": {
+    "instances": [
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+    ],
+  },
+  "settingsBeforeValidate": {
+    "instances": [
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips full settings before the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "On before link click send callback (deprecated, use filter click details instead)",
+      "messages": [],
+      "testId": "instancesHeading",
+    },
+    {
+      "field": "Report suite override #1",
+      "messages": [
+        "The value must be one of the preconfigured report suites.",
+      ],
+      "testId": "reportSuitesOverride.0",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "advertising": true,
+      "brandConcierge": true,
+      "pushNotifications": true,
+    },
+    "instances": [
+      {
+        "advertising": {
+          "advertiserSettings": [
+            {
+              "advertiserId": "167524",
+              "enabled": true,
+            },
+            {
+              "advertiserId": "83565",
+              "enabled": false,
+            },
+          ],
+          "dspEnabled": true,
+          "id5PartnerId": "partner",
+          "rampIdJSPath": "https://example.com/ramp.js",
+        },
+        "autoCollectPropositionInteractions": {
+          "AJO": "never",
+          "TGT": "decoratedElementsOnly",
+        },
+        "clickCollection": {
+          "internalLinkEnabled": false,
+        },
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "conversation": {
+          "collectSources": true,
+          "region": "va7",
+          "stickyConversationSession": true,
+          "streamTimeout": 20000,
+          "transferCookies": [
+            "a",
+            "b",
+            "%cookie%",
+          ],
+        },
+        "defaultConsent": "pending",
+        "developmentEdgeConfigId": "%developmentStream%",
+        "downloadLinkQualifier": "\\.pdf$",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-prod",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-development",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-development",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 1,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-development",
+            },
+            "datastreamId": "ds-development",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-production",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-production",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 3,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-production",
+            },
+            "datastreamId": "ds-production",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-staging",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-staging",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 2,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-staging",
+            },
+            "datastreamId": "ds-staging",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "alloy",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "onBeforeLinkClickSend": "content.xdm.web = {};",
+        "personalizationStorageEnabled": true,
+        "prehidingStyle": "body { opacity: 0; }",
+        "pushNotifications": {
+          "appId": "app-1",
+          "trackingDatasetId": "dataset-1",
+          "vapidPublicKey": "public-key",
+        },
+        "sandbox": "prod",
+        "stagingEdgeConfigId": "ds-staging",
+        "stagingSandbox": "prod",
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": 30,
+          "playerName": "Player",
+        },
+        "targetMigrationEnabled": true,
+        "thirdPartyCookiesEnabled": false,
+      },
+      {
+        "advertising": {
+          "advertiserSettings": [
+            {
+              "advertiserId": "167524",
+              "enabled": true,
+            },
+            {
+              "advertiserId": "83565",
+              "enabled": false,
+            },
+          ],
+          "dspEnabled": true,
+          "id5PartnerId": "partner",
+          "rampIdJSPath": "https://example.com/ramp.js",
+        },
+        "autoCollectPropositionInteractions": {
+          "AJO": "never",
+          "TGT": "decoratedElementsOnly",
+        },
+        "clickCollection": {
+          "internalLinkEnabled": false,
+        },
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "conversation": {
+          "collectSources": true,
+          "region": "va7",
+          "stickyConversationSession": true,
+          "streamTimeout": 20000,
+          "transferCookies": [
+            "a",
+            "b",
+            "%cookie%",
+          ],
+        },
+        "defaultConsent": "pending",
+        "downloadLinkQualifier": "\\.pdf$",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-other",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-development",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-development",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 1,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-development",
+            },
+            "datastreamId": "ds-development",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-production",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-production",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 3,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-production",
+            },
+            "datastreamId": "ds-production",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-staging",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-staging",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 2,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-staging",
+            },
+            "datastreamId": "ds-staging",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "secondary",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "onBeforeLinkClickSend": "content.xdm.web = {};",
+        "orgId": "SECOND@AdobeOrg",
+        "personalizationStorageEnabled": true,
+        "prehidingStyle": "body { opacity: 0; }",
+        "pushNotifications": {
+          "appId": "app-1",
+          "trackingDatasetId": "dataset-1",
+          "vapidPublicKey": "public-key",
+        },
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": 30,
+          "playerName": "Player",
+        },
+        "targetMigrationEnabled": true,
+        "thirdPartyCookiesEnabled": false,
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips invalid values settings before the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "Name",
+      "messages": [
+        "Please provide a non-numeric name.",
+      ],
+      "testId": "nameField",
+    },
+    {
+      "field": "Use third-party cookies",
+      "messages": [
+        "Please choose a value or specify a data element.",
+      ],
+      "testId": "thirdPartyCookiesEnabledField",
+    },
+    {
+      "field": "On before link click send callback (deprecated, use filter click details instead)",
+      "messages": [],
+      "testId": "instancesHeading",
+    },
+    {
+      "field": "Player Name",
+      "messages": [
+        "Please provide a player name for streaming media.",
+      ],
+      "testId": "mediaPlayerNameField",
+    },
+    {
+      "field": "Region",
+      "messages": [
+        "Please enter a valid region (e.g. va7, or2, irl1).",
+      ],
+      "testId": "regionField",
+    },
+    {
+      "field": "DIV",
+      "messages": [],
+      "testId": "streamTimeoutDataTestId",
+    },
+    {
+      "field": "Stream timeout (seconds)",
+      "messages": [
+        "The stream timeout must be at least 10 seconds.",
+      ],
+      "testId": "streamTimeoutDataTestId",
+    },
+    {
+      "field": "Report suite override #1",
+      "messages": [
+        "The value must be one of the preconfigured report suites.",
+      ],
+      "testId": "reportSuitesOverride.0",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "advertising": true,
+      "brandConcierge": true,
+      "pushNotifications": true,
+    },
+    "instances": [
+      {
+        "advertising": {
+          "advertiserSettings": [
+            {
+              "advertiserId": "167524",
+              "enabled": true,
+            },
+            {
+              "advertiserId": "83565",
+              "enabled": false,
+            },
+          ],
+          "dspEnabled": true,
+          "id5PartnerId": "partner",
+          "rampIdJSPath": "https://example.com/ramp.js",
+        },
+        "autoCollectPropositionInteractions": {
+          "AJO": "never",
+          "TGT": "decoratedElementsOnly",
+        },
+        "clickCollection": {
+          "internalLinkEnabled": false,
+        },
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "conversation": {
+          "region": "bad",
+          "streamTimeout": 5000,
+        },
+        "defaultConsent": "pending",
+        "developmentEdgeConfigId": "%developmentStream%",
+        "downloadLinkQualifier": "\\.pdf$",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-prod",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-development",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-development",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 1,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-development",
+            },
+            "datastreamId": "ds-development",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-production",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-production",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 3,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-production",
+            },
+            "datastreamId": "ds-production",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-staging",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-staging",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 2,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-staging",
+            },
+            "datastreamId": "ds-staging",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "idMigrationEnabled": false,
+        "name": "123",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "onBeforeLinkClickSend": "content.xdm.web = {};",
+        "personalizationStorageEnabled": true,
+        "prehidingStyle": "body { opacity: 0; }",
+        "pushNotifications": {
+          "appId": "app-1",
+          "trackingDatasetId": "dataset-1",
+          "vapidPublicKey": "public-key",
+        },
+        "sandbox": "prod",
+        "stagingEdgeConfigId": "ds-staging",
+        "stagingSandbox": "prod",
+        "targetMigrationEnabled": true,
+        "thirdPartyCookiesEnabled": "invalid",
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips legacy advertising and component shapes settings before the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "Advertiser 1",
+      "messages": [
+        "Please select an advertiser.",
+      ],
+      "testId": "advertiser0Field",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "advertising": true,
+    },
+    "instances": [
+      {
+        "advertising": {
+          "dspEnabled": true,
+        },
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips legacy library settings settings before the first validation 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instances": [
+      {
+        "edgeConfigId": "ds-prod",
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips legacy overrides and click collection settings before the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "VAPID Public Key",
+      "messages": [
+        "Please provide a VAPID public key.",
+      ],
+      "testId": "vapidPublicKeyField",
+    },
+    {
+      "field": "Application ID",
+      "messages": [
+        "Please provide an Application ID.",
+      ],
+      "testId": "appIdField",
+    },
+    {
+      "field": "Tracking Dataset ID",
+      "messages": [
+        "Please provide a Tracking Dataset ID.",
+      ],
+      "testId": "trackingDatasetIdField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "advertising": true,
+      "brandConcierge": true,
+      "pushNotifications": true,
+    },
+    "instances": [
+      {
+        "advertising": {
+          "dspEnabled": false,
+        },
+        "autoCollectPropositionInteractions": {
+          "AJO": "decoratedElementsOnly",
+          "TGT": "always",
+        },
+        "clickCollectionEnabled": false,
+        "edgeConfigId": "ds-prod",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite",
+              ],
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 12,
+            },
+            "enabled": true,
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite",
+              ],
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 12,
+            },
+            "enabled": true,
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite",
+              ],
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 12,
+            },
+            "enabled": true,
+          },
+        },
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips new settings before the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "Production datastream",
+      "messages": [
+        "Please specify a datastream.",
+      ],
+      "testId": "productionDatastreamField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "eventMerge": false,
+    },
+    "instances": [
+      {
+        "name": "alloy",
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > round trips valid fully populated settings with multiple instances 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "components": {
+      "advertising": true,
+      "brandConcierge": true,
+      "pushNotifications": true,
+    },
+    "instances": [
+      {
+        "advertising": {
+          "advertiserSettings": [
+            {
+              "advertiserId": "167524",
+              "enabled": true,
+            },
+            {
+              "advertiserId": "83565",
+              "enabled": false,
+            },
+          ],
+          "dspEnabled": true,
+          "id5PartnerId": "partner",
+          "rampIdJSPath": "https://example.com/ramp.js",
+        },
+        "autoCollectPropositionInteractions": {
+          "AJO": "never",
+          "TGT": "decoratedElementsOnly",
+        },
+        "clickCollection": {
+          "filterClickDetails": "content.linkName = "clicked";",
+          "internalLinkEnabled": false,
+        },
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "conversation": {
+          "collectSources": true,
+          "region": "va7",
+          "stickyConversationSession": true,
+          "streamTimeout": 20000,
+          "transferCookies": [
+            "a",
+            "b",
+            "%cookie%",
+          ],
+        },
+        "defaultConsent": "pending",
+        "developmentEdgeConfigId": "%developmentStream%",
+        "downloadLinkQualifier": "\\.pdf$",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-prod",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-development",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-development",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 1,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-development",
+            },
+            "datastreamId": "ds-development",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-production",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-production",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 3,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-production",
+            },
+            "datastreamId": "ds-production",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-staging",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-staging",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 2,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-staging",
+            },
+            "datastreamId": "ds-staging",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "alloy",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "personalizationStorageEnabled": true,
+        "prehidingStyle": "body { opacity: 0; }",
+        "pushNotifications": {
+          "appId": "app-1",
+          "trackingDatasetId": "dataset-1",
+          "vapidPublicKey": "public-key",
+        },
+        "sandbox": "prod",
+        "stagingEdgeConfigId": "ds-staging",
+        "stagingSandbox": "prod",
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": 30,
+          "playerName": "Player",
+        },
+        "targetMigrationEnabled": true,
+        "thirdPartyCookiesEnabled": false,
+      },
+      {
+        "advertising": {
+          "advertiserSettings": [
+            {
+              "advertiserId": "167524",
+              "enabled": true,
+            },
+            {
+              "advertiserId": "83565",
+              "enabled": false,
+            },
+          ],
+          "dspEnabled": true,
+          "id5PartnerId": "partner",
+          "rampIdJSPath": "https://example.com/ramp.js",
+        },
+        "autoCollectPropositionInteractions": {
+          "AJO": "never",
+          "TGT": "decoratedElementsOnly",
+        },
+        "clickCollection": {
+          "filterClickDetails": "content.linkName = "clicked";",
+          "internalLinkEnabled": false,
+        },
+        "context": [
+          "web",
+          "device",
+          "highEntropyUserAgentHints",
+        ],
+        "conversation": {
+          "collectSources": true,
+          "region": "va7",
+          "stickyConversationSession": true,
+          "streamTimeout": 20000,
+          "transferCookies": [
+            "a",
+            "b",
+            "%cookie%",
+          ],
+        },
+        "defaultConsent": "pending",
+        "developmentEdgeConfigId": "%developmentStream%",
+        "downloadLinkQualifier": "\\.pdf$",
+        "edgeBasePath": "custom",
+        "edgeConfigId": "ds-other",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-development",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-development",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 1,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-development",
+            },
+            "datastreamId": "ds-development",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "production": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-production",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-production",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 3,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-production",
+            },
+            "datastreamId": "ds-production",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+          "staging": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite-staging",
+                "%suite%",
+              ],
+            },
+            "com_adobe_audiencemanager": {
+              "enabled": false,
+            },
+            "com_adobe_experience_platform": {
+              "com_adobe_edge_ajo": {
+                "enabled": false,
+              },
+              "com_adobe_edge_destinations": {
+                "enabled": false,
+              },
+              "com_adobe_edge_ode": {
+                "enabled": false,
+              },
+              "com_adobe_edge_segmentation": {
+                "enabled": false,
+              },
+              "datasets": {
+                "event": {
+                  "datasetId": "dataset-staging",
+                },
+              },
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": 2,
+            },
+            "com_adobe_launch_ssf": {
+              "enabled": false,
+            },
+            "com_adobe_target": {
+              "propertyToken": "token-staging",
+            },
+            "datastreamId": "ds-staging",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "edgeDomain": "collect.example.com",
+        "idMigrationEnabled": false,
+        "name": "secondary",
+        "onBeforeEventSend": "content.xdm.test = true;",
+        "orgId": "SECOND@AdobeOrg",
+        "personalizationStorageEnabled": true,
+        "prehidingStyle": "body { opacity: 0; }",
+        "pushNotifications": {
+          "appId": "app-1",
+          "trackingDatasetId": "dataset-1",
+          "vapidPublicKey": "public-key",
+        },
+        "sandbox": "prod",
+        "stagingEdgeConfigId": "ds-staging",
+        "stagingSandbox": "prod",
+        "streamingMedia": {
+          "adPingInterval": 3,
+          "appVersion": "1.2",
+          "channel": "Web",
+          "mainPingInterval": 30,
+          "playerName": "Player",
+        },
+        "targetMigrationEnabled": true,
+        "thirdPartyCookiesEnabled": false,
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > selects datastreams and sandboxes for every environment, then clears them 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instances": [
+      {
+        "developmentEdgeConfigId": "ds-second-sandbox",
+        "developmentSandbox": "number-two-prod",
+        "edgeConfigId": "ds-staging",
+        "name": "alloy",
+        "sandbox": "prod",
+        "stagingEdgeConfigId": "ds-development",
+        "stagingSandbox": "prod",
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > selects datastreams and sandboxes for every environment, then clears them 2`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instances": [
+      {
+        "edgeConfigId": "%productionStream%",
+        "name": "alloy",
+      },
+    ],
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > shows the grouped legacy callback report-suite error on the first validation 1`] = `
+{
+  "errors": [
+    {
+      "field": "On before link click send callback (deprecated, use filter click details instead)",
+      "messages": [],
+      "testId": "instancesHeading",
+    },
+    {
+      "field": "Report suite override #1",
+      "messages": [
+        "The value must be one of the preconfigured report suites.",
+      ],
+      "testId": "reportSuitesOverride.0",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instances": [
+      {
+        "clickCollection": {
+          "eventGroupingEnabled": true,
+          "sessionStorageEnabled": true,
+        },
+        "edgeConfigId": "ds-prod",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "not-allowed",
+              ],
+            },
+            "datastreamId": "ds-prod",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "name": "alloy",
+        "onBeforeLinkClickSend": "content.xdm.web = {};",
+        "sandbox": "prod",
+      },
+    ],
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > switches a populated configuration to preinstalled library mode and back 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instances": [
+      {
+        "name": "alloy",
+      },
+      {
+        "name": "secondary",
+      },
+    ],
+    "libraryCode": {
+      "type": "preinstalled",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`Configuration settings snapshots > switches a populated configuration to preinstalled library mode and back 2`] = `
+{
+  "errors": [
+    {
+      "field": "Name",
+      "messages": [
+        "Please provide a non-numeric name.",
+      ],
+      "testId": "nameField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instances": [
+      {
+        "name": "123",
+      },
+      {
+        "name": "secondary",
+      },
+    ],
+    "libraryCode": {
+      "type": "preinstalled",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Configuration settings snapshots > validates numeric and service override inputs 1`] = `
+{
+  "errors": [
+    {
+      "field": "Third-party ID sync container",
+      "messages": [
+        "The value must be a positive number.",
+      ],
+      "testId": "idSyncContainerOverride",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instances": [
+      {
+        "edgeConfigId": "ds-prod",
+        "edgeConfigOverrides": {
+          "development": {
+            "com_adobe_analytics": {
+              "reportSuites": [
+                "suite",
+              ],
+            },
+            "com_adobe_identity": {
+              "idSyncContainerId": -1,
+            },
+            "datastreamId": "ds-prod",
+            "enabled": true,
+            "sandbox": "prod",
+          },
+        },
+        "name": "alloy",
+        "sandbox": "prod",
+      },
+    ],
+  },
+  "valid": false,
+}
+`;

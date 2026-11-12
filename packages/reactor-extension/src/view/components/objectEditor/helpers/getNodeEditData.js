@@ -26,7 +26,7 @@ const addToBreadcrumb = (breadcrumb, displayName, nodeId) => {
  * @typedef {Object} NodeEditData
  * @property {FormStateNode} formStateNode The form state node that will
  * be edited.
- * @property {string} fieldName The Formik field name.
+ * @property {string} fieldName The form field name.
  * @property {Array} An array containing an object for each item in the
  * breadcrumb hierarchy.
  */
@@ -35,7 +35,7 @@ const addToBreadcrumb = (breadcrumb, displayName, nodeId) => {
  * Retrieves data that's necessary to render the edit view for a particular node.
  * @param {FormStateNode} candidateFormStateNode A form state node that is a
  * candidate for the node we're trying to find by ID.
- * @param {string} candidateFieldName The Formik field name for the candidate.
+ * @param {string} candidateFieldName The form field name for the candidate.
  * @param {string} candidateDisplayName The display name for the candidate node.
  * @param {string} nodeIdToFind The ID of the node that we're trying to find.
  * @returns {NodeEditData}

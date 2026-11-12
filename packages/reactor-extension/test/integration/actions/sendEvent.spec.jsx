@@ -178,6 +178,72 @@ describe("Send Event Action", () => {
     });
   });
 
+  describe("validation", () => {
+    const extensionSettings = {
+      instances: [{ name: "alloy", edgeConfigId: "PR123" }],
+      components: { personalization: true },
+    };
+
+    const idSyncOverride = (idSyncContainerId) => ({
+      instanceName: "alloy",
+      edgeConfigOverrides: {
+        development: {
+          enabled: true,
+          com_adobe_identity: { idSyncContainerId },
+        },
+      },
+    });
+
+    it("accepts a numeric ID sync container override", async () => {
+      await driver.init({ extensionSettings, settings: idSyncOverride(123) });
+
+      await driver.expectValidate().toBe(true);
+    });
+
+    it.each([
+      ["request personalization", undefined],
+      ["collect analytics", "guidedEventcollectOption"],
+    ])(
+      "only accepts a data element ID sync container override for guided %s events",
+      async (_, guidedEventOption) => {
+        await driver.init({ extensionSettings, settings: idSyncOverride(123) });
+        await field(view.getByTestId("guidedEventsEnabledCheckbox")).click();
+        if (guidedEventOption) {
+          await field(view.getByTestId(guidedEventOption)).click();
+        }
+
+        await driver.expectValidate().toBe(false);
+        await field(view.getByTestId("idSyncContainerOverride")).expectError(
+          /please enter a number/i,
+        );
+      },
+    );
+
+    it("rejects an invalid surface", async () => {
+      await driver.init({
+        extensionSettings,
+        settings: { instanceName: "alloy", surfaces: ["ftp://example.com"] },
+      });
+
+      await driver.expectValidate().toBe(false);
+      await field(view.getByTestId("surfaces0Field")).expectError(
+        /unsupported surface type ftp/i,
+      );
+    });
+
+    it("requires the XDM to be a data element", async () => {
+      await driver.init({
+        extensionSettings,
+        settings: { instanceName: "alloy", xdm: "not a data element" },
+      });
+
+      await driver.expectValidate().toBe(false);
+      await field(view.getByTestId("xdmTextField")).expectError(
+        /please specify a data element/i,
+      );
+    });
+  });
+
   describe("Component visibility based on configuration", () => {
     it("hides advertising section when advertising component is not enabled", async () => {
       await driver.init({

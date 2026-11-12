@@ -18,15 +18,15 @@ import {
   PickerItem,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useFieldValue } from "../../../utils/useFieldValue";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import UserReportableError from "../../../errors/userReportableError";
 import fetchSandboxes from "../../../utils/fetchSandboxes";
 import fetchSchema from "../../../utils/fetchSchema";
 import fetchSchemasMeta from "../../../utils/fetchSchemasMeta";
-import FormikPicker from "../../../forms/fields/Picker";
-import FormikPagedComboBox from "../../../forms/fields/PagedComboBox";
+import FormPicker from "../../../forms/fields/Picker";
+import FormPagedComboBox from "../../../forms/fields/PagedComboBox";
 import FieldSubset from "../../../components/fieldSubset";
 import FormElementContainer from "../../../components/formElementContainer";
 import RefreshButton from "../../../components/refreshButton";
@@ -169,7 +169,7 @@ export const bridge = {
       },
     };
   },
-  validateFormikState: ({ type, sandbox, schema }) => {
+  validateFormState: ({ type, sandbox, schema }) => {
     const result = {};
 
     if (type === DATA) {
@@ -206,7 +206,7 @@ const XdmVariable = ({
     tokens: { imsAccess },
   } = initInfo;
 
-  const [{ value: sandbox }] = useField("sandbox");
+  const sandbox = useFieldValue("sandbox");
   const [schemasData, setSchemasData] = useState({
     firstPage: schemasFirstPage,
     firstPageCursor: schemasFirstPageCursor,
@@ -287,7 +287,7 @@ const XdmVariable = ({
             </Content>
           </InlineAlert>
         )}
-        <FormikPicker
+        <FormPicker
           data-test-id="sandboxField"
           name="sandbox"
           label="Sandbox"
@@ -309,7 +309,7 @@ const XdmVariable = ({
               </PickerItem>
             );
           }}
-        </FormikPicker>
+        </FormPicker>
 
         {sandbox && (
           <div
@@ -320,7 +320,7 @@ const XdmVariable = ({
             })}
           >
             <div>
-              <FormikPagedComboBox
+              <FormPagedComboBox
                 data-test-id="schemaField"
                 name="schema"
                 label="Schema"

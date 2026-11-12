@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import renderForm from "../forms/renderForm";
 import instancePicker from "../forms/instancePicker";
 import textField from "../forms/textField";
@@ -18,6 +17,7 @@ import objectArray from "../forms/objectArray";
 import dataElement from "../forms/dataElement";
 import comboBox from "../forms/comboBox";
 import requiredComponent from "../forms/requiredComponent";
+import { required } from "../forms/validation";
 
 const applyPropositionsForm = requiredComponent(
   {
@@ -56,14 +56,14 @@ const applyPropositionsForm = requiredComponent(
           label: "Scope",
           description:
             "Enter the scope (i.e. mbox or AJO surface name) for the propositions that you would like to apply these settings",
-          validationSchemaBase: string().required("Please provide a scope."),
+          validationSchemaBase: required("Please provide a scope."),
         }),
         textField({
           name: "selector",
           label: "Selector",
           description:
             "Enter the CSS selector where this proposition should be rendered",
-          validationSchemaBase: string().required("Please provide a selector."),
+          validationSchemaBase: required("Please provide a selector."),
         }),
         comboBox({
           name: "actionType",
@@ -75,9 +75,7 @@ const applyPropositionsForm = requiredComponent(
             { value: "appendHtml", label: "Append HTML" },
             { value: "collectInteractions", label: "Collect interactions" },
           ],
-          validationSchemaBase: string().required(
-            "Please provide an action type.",
-          ),
+          validationSchemaBase: required("Please provide an action type."),
         }),
       ],
     ),

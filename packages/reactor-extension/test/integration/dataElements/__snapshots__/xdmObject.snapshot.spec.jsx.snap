@@ -1,0 +1,99 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`XDM object settings snapshots > adds an array item 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "flag",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "tags",
+      "message": "This field contains an error",
+    },
+    {
+      "field": "Item 3",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`XDM object settings snapshots > round trips schema without sandbox settings 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "data": {
+      "testField": "Legacy",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": true,
+}
+`;
+
+exports[`XDM object settings snapshots > shows display names without changing settings 1`] = `
+{
+  "errors": [],
+  "schemaTreeErrors": [
+    {
+      "field": "Flag",
+      "message": "This field contains an error",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "data": {
+      "count": 3,
+      "flag": true,
+      "nested": {
+        "label": "Hello",
+      },
+      "tags": [
+        "a",
+        "%tag%",
+      ],
+      "testField": "%field%",
+    },
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": "https://ns.adobe.com/test/schemas/sch123",
+      "version": "1.0",
+    },
+  },
+  "valid": false,
+}
+`;

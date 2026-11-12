@@ -12,8 +12,8 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { ComboBoxItem } from "@react-spectrum/s2";
-import FormikTextField from "../../forms/fields/TextField";
-import FormikKeyedComboBox from "../../forms/fields/KeyedComboBox";
+import FormTextField from "../../forms/fields/TextField";
+import FormKeyedComboBox from "../../forms/fields/KeyedComboBox";
 import DataElementSelector from "../dataElementSelector";
 
 const StringEdit = (props) => {
@@ -23,7 +23,7 @@ const StringEdit = (props) => {
     <div>
       <DataElementSelector clearable>
         {possibleValues ? (
-          <FormikKeyedComboBox
+          <FormKeyedComboBox
             data-test-id="valueField"
             label={displayName}
             name={`${fieldName}.value`}
@@ -44,9 +44,9 @@ const StringEdit = (props) => {
                 {item.label}
               </ComboBoxItem>
             )}
-          </FormikKeyedComboBox>
+          </FormKeyedComboBox>
         ) : (
-          <FormikTextField
+          <FormTextField
             data-test-id="valueField"
             name={`${fieldName}.value`}
             label={displayName}

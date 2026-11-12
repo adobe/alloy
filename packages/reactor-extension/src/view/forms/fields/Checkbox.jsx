@@ -12,13 +12,17 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { Checkbox } from "@react-spectrum/s2";
-import { useField } from "formik";
+import { useFieldError, useFormField } from "../formContext";
 import FieldDescriptionAndError from "../../components/fieldDescriptionAndError";
 import widthStyle from "./widthStyle";
 
-const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] =
-    useField(name);
+const FormCheckbox = ({ name, description, width, ...otherProps }) => {
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
   return (
     <FieldDescriptionAndError
       description={description}
@@ -30,9 +34,9 @@ const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
       <Checkbox
         {...otherProps}
         isSelected={value}
-        onChange={setValue}
+        onChange={field.handleChange}
         onBlur={() => {
-          setTouched(true);
+          field.handleBlur();
         }}
         isInvalid={Boolean(touched && error)}
         styles={widthStyle(width)}
@@ -41,10 +45,10 @@ const FormikCheckbox = ({ name, description, width, ...otherProps }) => {
   );
 };
 
-FormikCheckbox.propTypes = {
+FormCheckbox.propTypes = {
   name: PropTypes.string.isRequired,
   description: PropTypes.string,
   width: PropTypes.string,
 };
 
-export default FormikCheckbox;
+export default FormCheckbox;

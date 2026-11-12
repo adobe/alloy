@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import { ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import Data from "@react-spectrum/s2/icons/Data";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikKeyedComboBox from "./fields/KeyedComboBox";
+import FormKeyedComboBox from "./fields/KeyedComboBox";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
+import { all, isEmpty, required, rule } from "./validation";
 
 // Reserves the width of the DataElementSelector's icon button next to a combo
 // box that has no data element button of its own, so sibling fields with and
@@ -35,7 +35,7 @@ const HIDDEN_ICON_STYLE = style({ visibility: "hidden" });
 /**
  * Form builder for a combo box. Use this when you have a static list of items.
  * @param {object} options - Options for the combo box.
- * @param {string} options.name - The formik key for the field.
+ * @param {string} options.name - The form key for the field.
  * @param {boolean} [options.isRequired] - If true, an asterisk is added
  * to the label, and the schema is updated to require the field.
  * @param {boolean} [options.dataElementSupported] - If true, the field
@@ -65,27 +65,26 @@ export default function comboBox({
   allowsCustomValue = false,
   width = "size-5000",
   defaultValue = "",
-  Component = FormikKeyedComboBox,
-  validationSchemaBase = string(),
+  Component = FormKeyedComboBox,
+  validationSchemaBase,
 }) {
-  let fieldSchema = validationSchemaBase;
-  if (!allowsCustomValue) {
-    fieldSchema = fieldSchema.test(
-      name,
-      `Please choose a ${
-        label ? label.toLowerCase() : "value"
-      } from the list or specify a single data element.`,
-      (value) =>
-        !value ||
-        items.find((item) => item.value === value) ||
-        value.match(singleDataElementRegex),
-    );
-  }
-  if (isRequired) {
-    fieldSchema = fieldSchema.required(
-      `Please choose a ${label ? label.toLowerCase() : "value"}.`,
-    );
-  }
+  const fieldSchema = all(
+    ...[
+      isRequired &&
+        required(`Please choose a ${label ? label.toLowerCase() : "value"}.`),
+      validationSchemaBase,
+      !allowsCustomValue &&
+        rule(
+          (value) =>
+            isEmpty(value) ||
+            items.some((item) => item.value === value) ||
+            singleDataElementRegex.test(value),
+          `Please choose a ${
+            label ? label.toLowerCase() : "value"
+          } from the list or specify a single data element.`,
+        ),
+    ].filter(Boolean),
+  );
 
   // DataElementSelector looks for name and label to do its calculations, so we have to have them here.
   const InnerComponent = ({
@@ -147,7 +146,7 @@ export default function comboBox({
     },
     Component: ({ namePrefix = "", hideLabel = false }) => {
       if (dataElementSupported) {
-        const [{ value = "" }] = useField(`${namePrefix}${name}`);
+        const value = useFieldValue(`${namePrefix}${name}`) ?? "";
         return (
           <DataElementSelector>
             <InnerComponent

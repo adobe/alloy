@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { FieldArray, useField } from "formik";
+import { useFormContext } from "../../../forms/formContext";
+import { useFieldValue } from "../../../utils/useFieldValue";
 import { useState } from "react";
 import Delete from "@react-spectrum/s2/icons/Delete";
 import {
@@ -31,10 +32,10 @@ import getDefaultIdentity from "../utils/getDefaultIdentity";
 import FormElementContainer from "../../../components/formElementContainer";
 import getDefaultIdentifier from "../utils/getDefaultIdentifier";
 import DataElementSelector from "../../../components/dataElementSelector";
-import FormikTextField from "../../../forms/fields/TextField";
-import FormikPicker from "../../../forms/fields/Picker";
+import FormTextField from "../../../forms/fields/TextField";
+import FormPicker from "../../../forms/fields/Picker";
 import * as AUTHENTICATED_STATE from "../constants/authenticatedState";
-import FormikCheckbox from "../../../forms/fields/Checkbox";
+import FormCheckbox from "../../../forms/fields/Checkbox";
 import NamespacesComponent from "./NamespacesComponent";
 import { findNamespace } from "../utils/namespacesUtils";
 import FormEditGroup from "../../../components/formEditGroup";
@@ -58,7 +59,8 @@ const DELETE_IDENTITY_WRAPPER_STYLE = style({ marginTop: 8 });
 const Identity = ({ context }) => {
   const { current } = context;
   const { namespaces } = current;
-  const [{ value: identities }] = useField("identities");
+  const form = useFormContext();
+  const identities = useFieldValue("identities");
 
   const [selectedTabKey, setSelectedTabKey] = useState("0");
 
@@ -77,178 +79,156 @@ const Identity = ({ context }) => {
   useFocusFirstError();
 
   return (
-    <FieldArray
-      name="identities"
-      render={(arrayHelpers) => {
-        return (
-          <>
-            <div className={HEADER_ROW_STYLE}>
-              <Heading size="M">Identities</Heading>
-              <Button
-                data-test-id="addIdentityButton"
-                variant="secondary"
-                onPress={() => {
-                  arrayHelpers.push(getDefaultIdentity());
-                  setSelectedTabKey(String(identities.length));
-                }}
-                styles={ADD_IDENTITY_BUTTON_STYLE}
-              >
-                Add identity
-              </Button>
-            </div>
-            <Tabs
-              aria-label="Identities"
-              selectedKey={selectedTabKey}
-              onSelectionChange={setSelectedTabKey}
-            >
-              <TabList>
-                {identities.map((identity, index) => {
-                  const label =
-                    findNamespace(namespaces, identity.namespaceCode)?.name ||
-                    identity.namespaceCode ||
-                    "Unnamed identity";
-                  return (
-                    <Tab id={String(index)} key={index}>
-                      {label}
-                    </Tab>
-                  );
-                })}
-              </TabList>
-              {identities.map((identity, index) => {
-                return (
-                  <TabPanel id={String(index)} key={index}>
-                    <FormElementContainer>
-                      <FieldArray
-                        id={`identities.${index}.identifiers`}
-                        name={`identities.${index}.identifiers`}
-                        render={(identityArrayHelpers) => {
-                          return (
-                            <>
-                              <div className={IDENTIFIER_HEADER_STYLE}>
-                                <NamespacesComponent
-                                  name={`identities.${index}.namespaceCode`}
-                                  selectedNamespaceCode={identity.namespaceCode}
-                                  namespaces={namespaces}
-                                  index={index}
-                                />
-                                <Button
-                                  data-test-id={`addIdentifier${index}Button`}
-                                  variant="secondary"
-                                  onPress={() => {
-                                    identityArrayHelpers.push(
-                                      getDefaultIdentifier(),
-                                    );
-                                  }}
-                                >
-                                  Add identifier
-                                </Button>
-                              </div>
-                              <div className={IDENTIFIERS_LIST_STYLE}>
-                                {identity.identifiers.map(
-                                  (identifier, identifierIndex) => (
-                                    <FormEditGroup
-                                      key={`identity${index}identifier${identifierIndex}`}
-                                      label={`Identifier ${identifierIndex + 1}`}
-                                    >
-                                      <FormElementContainer>
-                                        <DataElementSelector>
-                                          <FormikTextField
-                                            data-test-id={`identity${index}idField${identifierIndex}`}
-                                            label="ID"
-                                            name={`identities.${index}.identifiers.${identifierIndex}.id`}
-                                            description="If the ID value is not a populated string, this identifier will automatically be removed from the identity map."
-                                            isRequired
-                                            width="size-5000"
-                                          />
-                                        </DataElementSelector>
-                                        <FormikPicker
-                                          data-test-id={`identity${index}authenticatedStateField${identifierIndex}`}
-                                          label="Authenticated state"
-                                          name={`identities.${index}.identifiers.${identifierIndex}.authenticatedState`}
-                                          width="size-5000"
-                                        >
-                                          <PickerItem
-                                            key={AUTHENTICATED_STATE.AMBIGUOUS}
-                                            id={AUTHENTICATED_STATE.AMBIGUOUS}
-                                          >
-                                            Ambiguous
-                                          </PickerItem>
-                                          <PickerItem
-                                            key={
-                                              AUTHENTICATED_STATE.AUTHENTICATED
-                                            }
-                                            id={
-                                              AUTHENTICATED_STATE.AUTHENTICATED
-                                            }
-                                          >
-                                            Authenticated
-                                          </PickerItem>
-                                          <PickerItem
-                                            key={AUTHENTICATED_STATE.LOGGED_OUT}
-                                            id={AUTHENTICATED_STATE.LOGGED_OUT}
-                                          >
-                                            Logged Out
-                                          </PickerItem>
-                                        </FormikPicker>
-                                        <FormikCheckbox
-                                          width="size-5000"
-                                          data-test-id={`identity${index}primaryField${identifierIndex}`}
-                                          name={`identities.${index}.identifiers.${identifierIndex}.primary`}
-                                          description="Adobe Experience Platform will use the identity as an identifier to help stitch together more information about that individual. If left unchecked, the identifier within this namespace will still be collected, but the ECID will be used as the primary identifier for stitching."
-                                        >
-                                          Primary
-                                        </FormikCheckbox>
-                                      </FormElementContainer>
-                                      {identities[index].identifiers.length >
-                                        1 && (
-                                        <Button
-                                          data-test-id={`deleteIdentifier${index}Button${identifierIndex}`}
-                                          variant="secondary"
-                                          onPress={() => {
-                                            identityArrayHelpers.remove(
-                                              identifierIndex,
-                                            );
-                                          }}
-                                          styles={
-                                            DELETE_IDENTIFIER_BUTTON_STYLE
-                                          }
-                                        >
-                                          <Delete />
-                                          <Text>Delete identifier</Text>
-                                        </Button>
-                                      )}
-                                    </FormEditGroup>
-                                  ),
-                                )}
-                              </div>
-                            </>
-                          );
-                        }}
-                      />
-                      {identities.length > 1 && (
-                        <div className={DELETE_IDENTITY_WRAPPER_STYLE}>
+    <>
+      <div className={HEADER_ROW_STYLE}>
+        <Heading size="M">Identities</Heading>
+        <Button
+          data-test-id="addIdentityButton"
+          variant="secondary"
+          onPress={() => {
+            form.pushFieldValue("identities", getDefaultIdentity());
+            setSelectedTabKey(String(identities.length));
+          }}
+          styles={ADD_IDENTITY_BUTTON_STYLE}
+        >
+          Add identity
+        </Button>
+      </div>
+      <Tabs
+        aria-label="Identities"
+        selectedKey={selectedTabKey}
+        onSelectionChange={setSelectedTabKey}
+      >
+        <TabList>
+          {identities.map((identity, index) => {
+            const label =
+              findNamespace(namespaces, identity.namespaceCode)?.name ||
+              identity.namespaceCode ||
+              "Unnamed identity";
+            return (
+              <Tab id={String(index)} key={index}>
+                {label}
+              </Tab>
+            );
+          })}
+        </TabList>
+        {identities.map((identity, index) => {
+          return (
+            <TabPanel id={String(index)} key={index}>
+              <FormElementContainer>
+                <>
+                  <div className={IDENTIFIER_HEADER_STYLE}>
+                    <NamespacesComponent
+                      name={`identities.${index}.namespaceCode`}
+                      selectedNamespaceCode={identity.namespaceCode}
+                      namespaces={namespaces}
+                      index={index}
+                    />
+                    <Button
+                      data-test-id={`addIdentifier${index}Button`}
+                      variant="secondary"
+                      onPress={() => {
+                        form.pushFieldValue(
+                          `identities.${index}.identifiers`,
+                          getDefaultIdentifier(),
+                        );
+                      }}
+                    >
+                      Add identifier
+                    </Button>
+                  </div>
+                  <div className={IDENTIFIERS_LIST_STYLE}>
+                    {identity.identifiers.map((identifier, identifierIndex) => (
+                      <FormEditGroup
+                        key={`identity${index}identifier${identifierIndex}`}
+                        label={`Identifier ${identifierIndex + 1}`}
+                      >
+                        <FormElementContainer>
+                          <DataElementSelector>
+                            <FormTextField
+                              data-test-id={`identity${index}idField${identifierIndex}`}
+                              label="ID"
+                              name={`identities.${index}.identifiers.${identifierIndex}.id`}
+                              description="If the ID value is not a populated string, this identifier will automatically be removed from the identity map."
+                              isRequired
+                              width="size-5000"
+                            />
+                          </DataElementSelector>
+                          <FormPicker
+                            data-test-id={`identity${index}authenticatedStateField${identifierIndex}`}
+                            label="Authenticated state"
+                            name={`identities.${index}.identifiers.${identifierIndex}.authenticatedState`}
+                            width="size-5000"
+                          >
+                            <PickerItem
+                              key={AUTHENTICATED_STATE.AMBIGUOUS}
+                              id={AUTHENTICATED_STATE.AMBIGUOUS}
+                            >
+                              Ambiguous
+                            </PickerItem>
+                            <PickerItem
+                              key={AUTHENTICATED_STATE.AUTHENTICATED}
+                              id={AUTHENTICATED_STATE.AUTHENTICATED}
+                            >
+                              Authenticated
+                            </PickerItem>
+                            <PickerItem
+                              key={AUTHENTICATED_STATE.LOGGED_OUT}
+                              id={AUTHENTICATED_STATE.LOGGED_OUT}
+                            >
+                              Logged Out
+                            </PickerItem>
+                          </FormPicker>
+                          <FormCheckbox
+                            width="size-5000"
+                            data-test-id={`identity${index}primaryField${identifierIndex}`}
+                            name={`identities.${index}.identifiers.${identifierIndex}.primary`}
+                            description="Adobe Experience Platform will use the identity as an identifier to help stitch together more information about that individual. If left unchecked, the identifier within this namespace will still be collected, but the ECID will be used as the primary identifier for stitching."
+                          >
+                            Primary
+                          </FormCheckbox>
+                        </FormElementContainer>
+                        {identities[index].identifiers.length > 1 && (
                           <Button
-                            data-test-id={`deleteIdentity${index}Button`}
+                            data-test-id={`deleteIdentifier${index}Button${identifierIndex}`}
                             variant="secondary"
-                            onClick={() => {
-                              arrayHelpers.remove(index);
-                              setSelectedTabKey("0");
+                            onPress={() => {
+                              form.removeFieldValue(
+                                `identities.${index}.identifiers`,
+                                identifierIndex,
+                              );
                             }}
+                            styles={DELETE_IDENTIFIER_BUTTON_STYLE}
                           >
                             <Delete />
-                            <Text>Delete identity</Text>
+                            <Text>Delete identifier</Text>
                           </Button>
-                        </div>
-                      )}
-                    </FormElementContainer>
-                  </TabPanel>
-                );
-              })}
-            </Tabs>
-          </>
-        );
-      }}
-    />
+                        )}
+                      </FormEditGroup>
+                    ))}
+                  </div>
+                </>
+                {identities.length > 1 && (
+                  <div className={DELETE_IDENTITY_WRAPPER_STYLE}>
+                    <Button
+                      data-test-id={`deleteIdentity${index}Button`}
+                      variant="secondary"
+                      onClick={() => {
+                        form.removeFieldValue("identities", index);
+                        setSelectedTabKey("0");
+                      }}
+                    >
+                      <Delete />
+                      <Text>Delete identity</Text>
+                    </Button>
+                  </div>
+                )}
+              </FormElementContainer>
+            </TabPanel>
+          );
+        })}
+      </Tabs>
+    </>
   );
 };
 

@@ -10,17 +10,23 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { reach } from "yup";
 import PropTypes from "prop-types";
+import { useFieldValue } from "../utils/useFieldValue";
 import Overrides, { bridge as overridesBridge } from "../components/overrides";
 import getEdgeConfigIds from "../utils/getEdgeConfigIds";
 
 /** @typedef {import("./form").Form} Form */
 /**
  * This creates a form field for edge config overrides.
+ * @param {string[]} [hideFields] Override fields to hide.
+ * @param {object} [edgeConfigOverridesSchema] The schema to validate the
+ * overrides with.
  * @returns {Form} A config overrides form.
  */
-export default function configOverrides(hideFields) {
+export default function configOverrides(
+  hideFields,
+  edgeConfigOverridesSchema = overridesBridge.edgeConfigOverridesSchema,
+) {
   const part = {
     getInitialValues({ initInfo }) {
       return overridesBridge.getInitialInstanceValues({
@@ -31,13 +37,10 @@ export default function configOverrides(hideFields) {
       return overridesBridge.getInstanceSettings({ instanceValues: values });
     },
     validationShape: {
-      edgeConfigOverrides: reach(
-        overridesBridge.formikStateValidationSchema,
-        "edgeConfigOverrides",
-      ),
+      edgeConfigOverrides: edgeConfigOverridesSchema,
     },
-    Component({ initInfo, formikProps: { values } }) {
-      const { instanceName } = values;
+    Component({ initInfo }) {
+      const instanceName = useFieldValue("instanceName");
       const instanceSettings = initInfo.extensionSettings.instances.find(
         (instance) => instance.name === instanceName,
       );
@@ -56,9 +59,6 @@ export default function configOverrides(hideFields) {
 
   part.Component.propTypes = {
     initInfo: PropTypes.object.isRequired,
-    formikProps: PropTypes.shape({
-      values: PropTypes.object.isRequired,
-    }).isRequired,
   };
 
   return part;

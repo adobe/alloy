@@ -11,8 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { object, string } from "yup";
-import { isEmptyArray } from "formik";
 import comboBox from "../forms/comboBox";
 import instancePicker from "../forms/instancePicker";
 import conditional from "../forms/conditional";
@@ -33,6 +31,7 @@ import mediaShowTypes from "./constants/mediaShowTypes";
 import configOverrides from "../forms/configOverrides";
 import { FIELD_NAMES } from "../components/overrides/utils";
 import requiredComponent from "../forms/requiredComponent";
+import { shape } from "../forms/validation";
 
 const getSortedInputItems = (mapItems) => {
   return Object.keys(mapItems)
@@ -175,11 +174,11 @@ const wrapGetSettings =
       mediaCollection.customMetadata = customMetadata;
     }
 
-    if (!isEmptyArray(statesEnd)) {
+    if (statesEnd?.length !== 0) {
       mediaCollection.statesEnd = statesEnd;
     }
 
-    if (!isEmptyArray(statesStart)) {
+    if (statesStart?.length !== 0) {
       mediaCollection.statesStart = statesStart;
     }
 
@@ -419,7 +418,6 @@ const stateUpdateDetailsSection = section({ label: "State Update Details" }, [
       description: "Create an array of states that started.",
       dataElementDescription:
         "Provide a data element that returns an array of states that started.",
-      validationSchema: string(),
     },
     [
       comboBox({
@@ -441,7 +439,6 @@ const stateUpdateDetailsSection = section({ label: "State Update Details" }, [
       description: "Create an array of states that ended.",
       dataElementDescription:
         "Provide a data element that returns an array of states that ended.",
-      validationSchema: string(),
     },
     [
       comboBox({
@@ -774,31 +771,27 @@ const eventBasedDetailFormConditionals = [
   ),
 ];
 
-const onInstanceChange = ({ context, instanceName, initInfo }) => {
+const onInstanceChange = ({ form, instanceName, initInfo }) => {
   const extensionSettings = initInfo.extensionSettings;
   const instanceSettings = extensionSettings.instances.find(
     (instance) => instance.name === instanceName,
   );
 
-  context.setFieldValue(
+  form.setFieldValue(
     `sessionDetails.channel`,
     instanceSettings.streamingMedia.channel || "",
-    true,
   );
-  context.setFieldValue(
+  form.setFieldValue(
     `sessionDetails.playerName`,
     instanceSettings.streamingMedia.playerName || "",
-    true,
   );
-  context.setFieldValue(
+  form.setFieldValue(
     `sessionDetails.appVersion`,
     instanceSettings.streamingMedia.appVersion || "",
-    true,
   );
-  context.setFieldValue(
+  form.setFieldValue(
     `advertisingDetails.playerName`,
     instanceSettings.streamingMedia.playerName || "",
-    true,
   );
 };
 
@@ -860,7 +853,7 @@ const FormComponent = (props) => {
 
 FormComponent.propTypes = {
   initInfo: PropTypes.object,
-  formikProps: PropTypes.object,
+  form: PropTypes.object,
   namePrefix: PropTypes.string,
   horizontal: PropTypes.bool,
 };
@@ -869,15 +862,14 @@ const FormExtensionView = () => {
   const { getInitialValues, getSettings, getValidationShape } = sendEventForm;
 
   const getValidationSchema = ({ initInfo }) => {
-    const shape = getValidationShape({ initInfo, existingValidationShape: {} });
-    return object().shape(shape);
+    return shape(getValidationShape({ initInfo, existingValidationShape: {} }));
   };
 
   return (
     <ExtensionView
       getInitialValues={getInitialValues}
       getSettings={getSettings}
-      getFormikStateValidationSchema={getValidationSchema}
+      getValidationSchema={getValidationSchema}
       render={(props) => <FormComponent {...props} />}
     />
   );
