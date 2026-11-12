@@ -32,15 +32,16 @@ import {
 } from "@react-spectrum/s2";
 import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useState } from "react";
-import { object, array, string } from "yup";
-import { FieldArray, useField } from "formik";
+import { shape, when } from "../forms/validation";
+import { useFormContext } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import DeleteIcon from "@react-spectrum/s2/icons/Delete";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
 import useNewlyValidatedFormSubmission from "../utils/useNewlyValidatedFormSubmission";
 import useFocusFirstError from "../utils/useFocusFirstError";
 import { useDatastreamCatalog } from "../utils/useDatastreamCatalog";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
+import FormRadioGroup from "../forms/fields/RadioGroup";
 import BasicSection, { bridge as basicSectionBridge } from "./basicSection";
 import EdgeConfigurationsSection, {
   bridge as edgeConfigurationsSectionBridge,
@@ -66,7 +67,6 @@ import OverridesSection, {
 import AdvancedSection, {
   bridge as advancedSectionBridge,
 } from "./advancedSection";
-import getEdgeConfigIds from "../utils/getEdgeConfigIds";
 import { FIELD_NAMES } from "../components/overrides/utils";
 import StreamingMediaSection, {
   bridge as mediaBridge,
@@ -85,10 +85,7 @@ import {
   LIBRARY_TYPE_MANAGED,
   LIBRARY_TYPE_PREINSTALLED,
 } from "../constants/libraryType";
-import {
-  createNameValidation,
-  createUniqueNameTest,
-} from "./basicSectionBridge";
+import { nameSchema } from "./basicSectionBridge";
 
 const sectionBridges = [
   basicSectionBridge,
@@ -129,34 +126,19 @@ const getInstanceSettings = getMergedBridgeMethod("getInstanceSettings");
 /**
  * Creates the validation schema based on library type
  */
-const createValidationSchema = () => {
-  // Create full validation schema by merging all bridge schemas
-  const fullInstanceSchema = sectionBridges.reduce((instanceSchema, bridge) => {
-    return bridge.instanceValidationSchema
-      ? instanceSchema.concat(bridge.instanceValidationSchema)
-      : instanceSchema;
-  }, object());
+const fullInstanceSchema = sectionBridges
+  .map((bridge) => bridge.instanceValidationSchema)
+  .filter(Boolean)
+  .reduce((schema, bridgeSchema) => schema.and(bridgeSchema));
 
-  // Create minimal schema for preinstalled mode (only name validation)
-  const preinstalledInstanceSchema = object()
-    .shape({
-      name: createNameValidation(),
-    })
-    .test(createUniqueNameTest());
-
-  return object().shape({
-    libraryCode: object().shape({
-      type: string().required(),
-    }),
-    instances: array().of(
-      object().when("$libraryCode.type", {
-        is: LIBRARY_TYPE_PREINSTALLED,
-        then: () => preinstalledInstanceSchema,
-        otherwise: () => fullInstanceSchema,
-      }),
-    ),
-  });
-};
+const validationSchema = shape({
+  instances: when(
+    (instances, ctx) =>
+      ctx.root.libraryCode?.type === LIBRARY_TYPE_PREINSTALLED,
+    shape({ name: nameSchema }).array(),
+    fullInstanceSchema.array(),
+  ),
+});
 
 const getInitialValues = async ({ initInfo }) => {
   const { instances: instancesSettings } = initInfo.settings || {};
@@ -213,13 +195,75 @@ const getSettings = async ({ values, initInfo }) => {
   };
 };
 
+// Each instance field subscribes to its own value, so these small components
+// keep a keystroke from re-rendering every section of every instance.
+const InstanceTabLabel = ({ index }) =>
+  useFieldValue(`instances.${index}.name`) || "Unnamed instance";
+
+InstanceTabLabel.propTypes = {
+  index: PropTypes.number.isRequired,
+};
+
+// Overrides only fetch a datastream's settings when its sandbox is known, and
+// only for the signed-in org, so a partly typed datastream ID or org ID is
+// passed as empty rather than re-rendering the overrides on every keystroke.
+const useFetchableDatastreamId = (instanceFieldName, idKey, sandboxKey) => {
+  const sandbox = useFieldValue(`${instanceFieldName}.${sandboxKey}`);
+  const datastreamId = useFieldValue(`${instanceFieldName}.${idKey}`, (id) =>
+    sandbox ? id : "",
+  );
+  return { datastreamId, sandbox };
+};
+
+const InstanceOverridesSection = ({ initInfo, instanceFieldName }) => {
+  const authOrgId = initInfo.company.orgId;
+  const configOrgId = useFieldValue(`${instanceFieldName}.orgId`, (orgId) =>
+    orgId === authOrgId ? orgId : "",
+  );
+  const production = useFetchableDatastreamId(
+    instanceFieldName,
+    "edgeConfigId",
+    "sandbox",
+  );
+  const staging = useFetchableDatastreamId(
+    instanceFieldName,
+    "stagingEdgeConfigId",
+    "stagingSandbox",
+  );
+  const development = useFetchableDatastreamId(
+    instanceFieldName,
+    "developmentEdgeConfigId",
+    "developmentSandbox",
+  );
+  return (
+    <OverridesSection
+      initInfo={initInfo}
+      instanceFieldName={instanceFieldName}
+      edgeConfigIds={{
+        productionEnvironment: production,
+        stagingEnvironment: staging,
+        developmentEnvironment: development,
+      }}
+      configOrgId={configOrgId}
+      hideFields={[FIELD_NAMES.datastreamId]}
+    />
+  );
+};
+
+InstanceOverridesSection.propTypes = {
+  initInfo: PropTypes.object.isRequired,
+  instanceFieldName: PropTypes.string.isRequired,
+};
+
 const InstancesSection = ({
   initInfo,
   isPreinstalled,
   isExpanded,
   onAddInstance,
 }) => {
-  const [{ value: instances }] = useField("instances");
+  const form = useFormContext();
+  const instanceCount = useFieldValue("instances.length");
+  const instanceIndexes = Array.from({ length: instanceCount }, (_, i) => i);
   const [selectedTabKey, setSelectedTabKey] = useState("0");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [instanceToDelete, setInstanceToDelete] = useState(null);
@@ -245,209 +289,189 @@ const InstancesSection = ({
   useFocusFirstError();
 
   return (
-    <FieldArray
-      name="instances"
-      render={(arrayHelpers) => {
-        return (
-          <Disclosure
-            id="instances"
-            data-test-id="instancesHeading"
-            styles={style({ position: "relative" })}
+    <Disclosure
+      id="instances"
+      data-test-id="instancesHeading"
+      styles={style({ position: "relative" })}
+    >
+      <DisclosureHeader>
+        <DisclosureTitle>
+          <span className={style({ paddingEnd: size(128) })}>
+            SDK instances
+          </span>
+        </DisclosureTitle>
+        {isExpanded && (
+          <Button
+            data-test-id="addInstanceButton"
+            variant="secondary"
+            fillStyle="outline"
+            styles={style({
+              position: "absolute",
+              top: 8,
+              insetEnd: 8,
+            })}
+            onPress={async () => {
+              const newInstance = await getInstanceDefaults({
+                initInfo,
+                isFirstInstance: false,
+                existingInstances: form.state.values.instances,
+              });
+              form.pushFieldValue("instances", newInstance);
+              setSelectedTabKey(String(instanceCount));
+              onAddInstance();
+            }}
           >
-            <DisclosureHeader>
-              <DisclosureTitle>
-                <span className={style({ paddingEnd: size(128) })}>
-                  SDK instances
-                </span>
-              </DisclosureTitle>
-              {isExpanded && (
-                <Button
-                  data-test-id="addInstanceButton"
-                  variant="secondary"
-                  fillStyle="outline"
-                  styles={style({
-                    position: "absolute",
-                    top: 8,
-                    insetEnd: 8,
-                  })}
-                  onPress={async () => {
-                    const newInstance = await getInstanceDefaults({
-                      initInfo,
-                      isFirstInstance: false,
-                      existingInstances: instances,
-                    });
-                    arrayHelpers.push(newInstance);
-                    setSelectedTabKey(String(instances.length));
-                    onAddInstance();
-                  }}
-                >
-                  Add instance
-                </Button>
-              )}
-            </DisclosureHeader>
-            <DisclosurePanel>
-              <div
-                className={style({
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 4,
-                })}
-              >
-                <Tabs
-                  aria-label="SDK instances"
-                  selectedKey={selectedTabKey}
-                  onSelectionChange={setSelectedTabKey}
-                >
-                  <TabList
-                    styles={style({
-                      marginBottom: 16,
-                    })}
-                  >
-                    {instances.map((instance, index) => {
-                      return (
-                        <Tab key={index} id={String(index)}>
-                          {instance.name || "Unnamed instance"}
-                        </Tab>
-                      );
-                    })}
-                  </TabList>
-                  {instances.map((instance, index) => {
-                    const instanceFieldName = `instances.${index}`;
-                    const edgeConfigIds = getEdgeConfigIds(instance);
-                    return (
-                      <TabPanel key={index} id={String(index)}>
-                        <BasicSection
-                          instanceFieldName={instanceFieldName}
-                          initInfo={initInfo}
-                          isPreinstalled={isPreinstalled}
-                        />
-                        {!isPreinstalled && (
-                          <>
-                            <EdgeConfigurationsSection
-                              instanceFieldName={instanceFieldName}
-                              instanceIndex={index}
-                              initInfo={initInfo}
-                              datastreamCatalog={datastreamCatalog}
-                            />
-                            <PrivacySection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <IdentitySection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <PersonalizationSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <DataCollectionSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <StreamingMediaSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <PushNotificationsSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <BrandConciergeSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                            <AdvertisingSection
-                              instanceFieldName={instanceFieldName}
-                              initInfo={initInfo}
-                            />
-                            <OverridesSection
-                              initInfo={initInfo}
-                              instanceFieldName={instanceFieldName}
-                              edgeConfigIds={edgeConfigIds}
-                              configOrgId={instance.orgId}
-                              hideFields={[FIELD_NAMES.datastreamId]}
-                            />
-                            <AdvancedSection
-                              instanceFieldName={instanceFieldName}
-                            />
-                          </>
-                        )}
-                        {instances.length > 1 && (
-                          <div
-                            className={style({
-                              marginTop: 24,
-                            })}
-                          >
-                            <Button
-                              data-test-id="deleteInstanceButton"
-                              variant="secondary"
-                              isDisabled={instances.length === 1}
-                              onPress={() => {
-                                setInstanceToDelete(index);
-                                setDeleteDialogOpen(true);
-                              }}
-                            >
-                              <DeleteIcon />
-                              <Text>Delete instance</Text>
-                            </Button>
-                          </div>
-                        )}{" "}
-                      </TabPanel>
-                    );
-                  })}
-                </Tabs>
-                <DialogContainer
-                  onDismiss={() => {
-                    setDeleteDialogOpen(false);
-                    setInstanceToDelete(null);
-                  }}
-                >
-                  {deleteDialogOpen && (
-                    <Dialog data-test-id="resourceUsageDialog">
-                      <Heading slot="title">Resource Usage</Heading>
-
-                      <Content>
-                        <Text>
-                          Any rule components or data elements using this
-                          instance will no longer function as expected when
-                          running on your website. We recommend removing these
-                          resources or switching them to use a different
-                          instance before publishing your next library. Would
-                          you like to proceed?
-                        </Text>
-                      </Content>
-                      <ButtonGroup>
-                        <Button
-                          data-test-id="cancelDeleteInstanceButton"
-                          variant="secondary"
-                          onPress={() => {
-                            setDeleteDialogOpen(false);
-                            setInstanceToDelete(null);
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          data-test-id="confirmDeleteInstanceButton"
-                          variant="accent"
-                          onPress={() => {
-                            arrayHelpers.remove(instanceToDelete);
-                            setSelectedTabKey(
-                              String(
-                                instanceToDelete > 0 ? instanceToDelete - 1 : 0,
-                              ),
-                            );
-                            setDeleteDialogOpen(false);
-                            setInstanceToDelete(null);
-                          }}
-                          autoFocus
-                        >
-                          Delete
-                        </Button>
-                      </ButtonGroup>
-                    </Dialog>
+            Add instance
+          </Button>
+        )}
+      </DisclosureHeader>
+      <DisclosurePanel>
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+          })}
+        >
+          <Tabs
+            aria-label="SDK instances"
+            selectedKey={selectedTabKey}
+            onSelectionChange={setSelectedTabKey}
+          >
+            <TabList
+              styles={style({
+                marginBottom: 16,
+              })}
+            >
+              {instanceIndexes.map((index) => {
+                return (
+                  <Tab key={index} id={String(index)}>
+                    <InstanceTabLabel index={index} />
+                  </Tab>
+                );
+              })}
+            </TabList>
+            {instanceIndexes.map((index) => {
+              const instanceFieldName = `instances.${index}`;
+              return (
+                <TabPanel key={index} id={String(index)}>
+                  <BasicSection
+                    instanceFieldName={instanceFieldName}
+                    initInfo={initInfo}
+                    isPreinstalled={isPreinstalled}
+                  />
+                  {!isPreinstalled && (
+                    <>
+                      <EdgeConfigurationsSection
+                        instanceFieldName={instanceFieldName}
+                        instanceIndex={index}
+                        initInfo={initInfo}
+                        datastreamCatalog={datastreamCatalog}
+                      />
+                      <PrivacySection instanceFieldName={instanceFieldName} />
+                      <IdentitySection instanceFieldName={instanceFieldName} />
+                      <PersonalizationSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <DataCollectionSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <StreamingMediaSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <PushNotificationsSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <BrandConciergeSection
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <AdvertisingSection
+                        instanceFieldName={instanceFieldName}
+                        initInfo={initInfo}
+                      />
+                      <InstanceOverridesSection
+                        initInfo={initInfo}
+                        instanceFieldName={instanceFieldName}
+                      />
+                      <AdvancedSection instanceFieldName={instanceFieldName} />
+                    </>
                   )}
-                </DialogContainer>{" "}
-              </div>
-            </DisclosurePanel>
-          </Disclosure>
-        );
-      }}
-    />
+                  {instanceCount > 1 && (
+                    <div
+                      className={style({
+                        marginTop: 24,
+                      })}
+                    >
+                      <Button
+                        data-test-id="deleteInstanceButton"
+                        variant="secondary"
+                        isDisabled={instanceCount === 1}
+                        onPress={() => {
+                          setInstanceToDelete(index);
+                          setDeleteDialogOpen(true);
+                        }}
+                      >
+                        <DeleteIcon />
+                        <Text>Delete instance</Text>
+                      </Button>
+                    </div>
+                  )}{" "}
+                </TabPanel>
+              );
+            })}
+          </Tabs>
+          <DialogContainer
+            onDismiss={() => {
+              setDeleteDialogOpen(false);
+              setInstanceToDelete(null);
+            }}
+          >
+            {deleteDialogOpen && (
+              <Dialog data-test-id="resourceUsageDialog">
+                <Heading slot="title">Resource Usage</Heading>
+
+                <Content>
+                  <Text>
+                    Any rule components or data elements using this instance
+                    will no longer function as expected when running on your
+                    website. We recommend removing these resources or switching
+                    them to use a different instance before publishing your next
+                    library. Would you like to proceed?
+                  </Text>
+                </Content>
+                <ButtonGroup>
+                  <Button
+                    data-test-id="cancelDeleteInstanceButton"
+                    variant="secondary"
+                    onPress={() => {
+                      setDeleteDialogOpen(false);
+                      setInstanceToDelete(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    data-test-id="confirmDeleteInstanceButton"
+                    variant="accent"
+                    onPress={() => {
+                      form.removeFieldValue("instances", instanceToDelete);
+                      setSelectedTabKey(
+                        String(instanceToDelete > 0 ? instanceToDelete - 1 : 0),
+                      );
+                      setDeleteDialogOpen(false);
+                      setInstanceToDelete(null);
+                    }}
+                    autoFocus
+                  >
+                    Delete
+                  </Button>
+                </ButtonGroup>
+              </Dialog>
+            )}
+          </DialogContainer>{" "}
+        </div>
+      </DisclosurePanel>
+    </Disclosure>
   );
 };
 
@@ -460,7 +484,7 @@ InstancesSection.propTypes = {
 
 const Configuration = ({ initInfo }) => {
   const [expandedKeys, setExpandedKeys] = useState(new Set(["instances"]));
-  const [{ value: libraryCode }] = useField("libraryCode");
+  const libraryCode = useFieldValue("libraryCode");
 
   useNewlyValidatedFormSubmission((errors) => {
     if (errors) {
@@ -520,7 +544,7 @@ const Configuration = ({ initInfo }) => {
                 </Content>
               </InlineAlert>
 
-              <FormikRadioGroup
+              <FormRadioGroup
                 width="size-6000"
                 data-test-id="libraryCodeField"
                 name="libraryCode.type"
@@ -534,7 +558,7 @@ const Configuration = ({ initInfo }) => {
                 <Radio value={LIBRARY_TYPE_PREINSTALLED}>
                   Use a self-hosted alloy.js instance
                 </Radio>
-              </FormikRadioGroup>
+              </FormRadioGroup>
               {!isPreinstalled && <ComponentsSection />}
             </div>
           </DisclosurePanel>
@@ -567,7 +591,7 @@ const ConfigurationView = () => {
     <ExtensionView
       getInitialValues={getInitialValues}
       getSettings={getSettings}
-      formikStateValidationSchema={createValidationSchema()}
+      validationSchema={validationSchema}
       render={({ initInfo }) => {
         return <Configuration initInfo={initInfo} />;
       }}

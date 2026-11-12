@@ -11,13 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { object } from "yup";
 import ExtensionView from "../components/extensionView";
 import render from "../render";
 import useFocusFirstError from "../utils/useFocusFirstError";
 import form from "../forms/form";
 import notice from "../forms/notice";
 import comboBox from "../forms/comboBox";
+import { shape } from "../forms/validation";
 
 const monitoringHooks = [
   {
@@ -93,7 +93,7 @@ const FormComponent = (props) => {
 
 FormComponent.propTypes = {
   initInfo: PropTypes.object,
-  formikProps: PropTypes.object,
+  form: PropTypes.object,
   namePrefix: PropTypes.string,
   horizontal: PropTypes.bool,
 };
@@ -103,15 +103,14 @@ const FormExtensionView = () => {
     triggerMonitorForm;
 
   const getValidationSchema = ({ initInfo }) => {
-    const shape = getValidationShape({ initInfo, existingValidationShape: {} });
-    return object().shape(shape);
+    return shape(getValidationShape({ initInfo, existingValidationShape: {} }));
   };
 
   return (
     <ExtensionView
       getInitialValues={getInitialValues}
       getSettings={getSettings}
-      getFormikStateValidationSchema={getValidationSchema}
+      getValidationSchema={getValidationSchema}
       render={(props) => <FormComponent {...props} />}
     />
   );

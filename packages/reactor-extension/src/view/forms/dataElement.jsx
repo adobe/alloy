@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { string } from "yup";
 import PropTypes from "prop-types";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "./fields/TextField";
+import FormTextField from "./fields/TextField";
 import singleDataElementRegex from "../constants/singleDataElementRegex";
 import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
+import { all, matches, required } from "./validation";
 
 export default function dataElement({
   name,
@@ -24,20 +24,12 @@ export default function dataElement({
   description,
   tokenize = true,
 }) {
-  let fieldSchema = string();
-
-  if (tokenize) {
-    fieldSchema = fieldSchema.matches(
-      singleDataElementRegex,
-      DATA_ELEMENT_REQUIRED,
-    );
-  }
-
-  if (isRequired) {
-    fieldSchema = fieldSchema.required(
-      `Please provide a ${label.toLowerCase()}.`,
-    );
-  }
+  const fieldSchema = all(
+    ...[
+      isRequired && required(`Please provide a ${label.toLowerCase()}.`),
+      tokenize && matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED),
+    ].filter(Boolean),
+  );
 
   const part = {
     getInitialValues({ initInfo }) {
@@ -58,7 +50,7 @@ export default function dataElement({
     Component: ({ namePrefix = "" }) => {
       return (
         <DataElementSelector tokenize={tokenize}>
-          <FormikTextField
+          <FormTextField
             data-test-id={`${namePrefix}${name}TextField`}
             name={`${namePrefix}${name}`}
             label={label}

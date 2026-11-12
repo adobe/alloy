@@ -10,21 +10,29 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { array, string, object } from "yup";
-import { FieldArray, useField } from "formik";
+import { useFormField } from "./formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, Button, ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
 import Delete from "@react-spectrum/s2/icons/Delete";
-import FormikRadioGroup from "./fields/RadioGroup";
-import FormikTextField from "./fields/TextField";
+import FormRadioGroup from "./fields/RadioGroup";
+import FormTextField from "./fields/TextField";
 import DataElementSelector from "../components/dataElementSelector";
-import singleDataElementRegex from "../constants/singleDataElementRegex";
-import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
 import form from "./form";
 import numberAwareCompareFunction from "../utils/numberAwareCompareFunction";
 import FormElementContainer from "../components/formElementContainer";
 import FormEditGroup from "../components/formEditGroup";
+import {
+  all,
+  dataElementRequired,
+  parentOf,
+  previousItems,
+  required,
+  rule,
+  shape,
+  when,
+} from "./validation";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
@@ -75,7 +83,7 @@ ObjectArrayContainer.propTypes = {
  * objects, or an object with string keys and object values. Any items with no
  * values filled in will be removed from the final settings.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  *  - `${key}` will be used to store the array of objects.
  *  - `${key}InputMethod` will be used to determine whether or not to use a data
  *    element.
@@ -87,7 +95,7 @@ ObjectArrayContainer.propTypes = {
  * the data element field. Usually you would use this to describe the type the
  * data element should be.
  * @param {string} [options.objectKey] - If you want to create an object, use
- * this to specify the Formik key to use for the keys of the object. If you want
+ * this to specify the form key to use for the keys of the object. If you want
  * to create an array of objects, omit this.
  * @param {string} [options.objectLabelPlural] - If you have set `objectKey`,
  * this will be used to describe the object keys in the validation error message
@@ -184,96 +192,59 @@ export default function objectArray(
       return settings;
     },
     getValidationShape({ initInfo, existingValidationShape }) {
-      let itemSchema = object().shape(
-        getItemValidationShape({ initInfo, existingValidationShape: {} }),
-      );
+      const itemShape = getItemValidationShape({
+        initInfo,
+        existingValidationShape: {},
+      });
 
       if (objectKey) {
-        itemSchema = itemSchema
-          .test(
-            "unique",
-            `Duplicate ${lowerInitialLetters(objectLabelPlural)} are not allowed`,
-            (value, context) => {
-              if (!value || !value[objectKey]) {
-                return true;
-              }
-
-              const { path, parent } = context;
-              const items = [...parent];
-              const currentIndex = items.indexOf(value);
-              const previousItems = items.slice(0, currentIndex);
-
-              if (
-                previousItems.some(
-                  (item) => item[objectKey] === value[objectKey],
-                )
-              ) {
-                throw context.createError({
-                  path: `${path}.${objectKey}`,
-                  message: `Duplicate ${lowerInitialLetters(
-                    objectLabelPlural,
-                  )} are not allowed`,
-                });
-              }
-
-              return true;
-            },
-          )
-          .test(
-            "key-required-when-values-present",
-            `Please provide a ${lowerInitialLetters(singularLabel)}.`,
-            (value, context) => {
-              if (
-                value[objectKey] === undefined &&
-                Object.keys(value).length !== 0
-              ) {
-                throw context.createError({
-                  path: `${context.path}.${objectKey}`,
-                  message: `Please provide a ${lowerInitialLetters(singularLabel)}.`,
-                });
-              }
-              return true;
-            },
-          );
+        itemShape[objectKey] = all(
+          ...[
+            itemShape[objectKey],
+            required(`Please provide a ${lowerInitialLetters(singularLabel)}.`),
+            rule(
+              (key, ctx) =>
+                !previousItems(ctx).some((item) => item[objectKey] === key),
+              `Duplicate ${lowerInitialLetters(objectLabelPlural)} are not allowed`,
+            ),
+          ].filter(Boolean),
+        );
       }
 
-      const validationShape = {};
-      validationShape[name] = array()
-        .compact(
-          (item) => Object.keys(getItemSettings({ values: item })).length === 0,
-        )
-        .when(`${name}InputMethod`, {
-          is: FORM,
-          then: (schema) => schema.of(itemSchema),
-        });
-
-      validationShape[`${name}DataElement`] = string().when(
-        `${name}InputMethod`,
-        {
-          is: DATA_ELEMENT,
-          then: (schema) =>
-            schema
-              .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED)
-              .required(DATA_ELEMENT_REQUIRED),
-        },
+      // Rows without any settings are left out when saving, so they are not
+      // validated either.
+      const itemSchema = when(
+        (item) => Object.keys(getItemSettings({ values: item })).length > 0,
+        shape(itemShape),
       );
+
+      const inputMethodIs = (inputMethod) => (value, ctx) =>
+        parentOf(ctx)[`${name}InputMethod`] === inputMethod;
+      const validationShape = {
+        [name]: when(
+          (items, ctx) =>
+            inputMethodIs(FORM)(items, ctx) && Array.isArray(items),
+          itemSchema.array(),
+        ),
+        [`${name}DataElement`]: when(
+          inputMethodIs(DATA_ELEMENT),
+          dataElementRequired,
+        ),
+      };
       return {
         ...existingValidationShape,
         ...validationShape,
       };
     },
     Component: ({ namePrefix = "", ...props }) => {
-      const [{ value: inputMethod }] = useField(
-        `${namePrefix}${name}InputMethod`,
-      );
-      const [{ value: items }, , { setValue: setItems }] = useField(
-        `${namePrefix}${name}`,
-      );
+      const inputMethod = useFieldValue(`${namePrefix}${name}InputMethod`);
+      const itemsField = useFormField(`${namePrefix}${name}`);
+      const items = itemsField.state.value;
 
       return (
         <ObjectArrayContainer horizontal={horizontal} label={singularLabel}>
           {dataElementSupported && (
-            <FormikRadioGroup
+            <FormRadioGroup
               name={`${namePrefix}${name}InputMethod`}
               orientation="horizontal"
               label={label}
@@ -291,99 +262,84 @@ export default function objectArray(
               >
                 Provide a data element.
               </Radio>
-            </FormikRadioGroup>
+            </FormRadioGroup>
           )}
           {inputMethod === FORM && (
-            <FieldArray
-              name={`${namePrefix}${name}`}
-              render={(arrayHelpers) => {
+            <>
+              {items.map((item, index) => {
                 return (
-                  <>
-                    {items.map((item, index) => {
-                      return (
-                        <div key={index}>
-                          {!horizontal && (
-                            <FormEditGroup
-                              label={`${singularLabel} ${index + 1}`}
+                  <div key={index}>
+                    {!horizontal && (
+                      <FormEditGroup label={`${singularLabel} ${index + 1}`}>
+                        <div className={WELL_CONTENT_STYLE}>
+                          <ItemComponent
+                            namePrefix={`${namePrefix}${name}.${index}.`}
+                            {...props}
+                          />
+                          <div className={REMOVE_ROW_STYLE}>
+                            <Button
+                              variant="secondary"
+                              fillStyle="outline"
+                              data-test-id={`${namePrefix}${name}${index}RemoveButton`}
+                              onPress={() => {
+                                itemsField.handleChange(
+                                  items.filter((_, i) => i !== index),
+                                );
+                              }}
+                              isDisabled={
+                                items.length === 1 && isRowEmpty(item)
+                              }
+                              styles={REMOVE_BUTTON_STYLE}
                             >
-                              <div className={WELL_CONTENT_STYLE}>
-                                <ItemComponent
-                                  namePrefix={`${namePrefix}${name}.${index}.`}
-                                  {...props}
-                                />
-                                <div className={REMOVE_ROW_STYLE}>
-                                  <Button
-                                    variant="secondary"
-                                    fillStyle="outline"
-                                    data-test-id={`${namePrefix}${name}${index}RemoveButton`}
-                                    onPress={() => {
-                                      // using arrayHelpers.remove mangles the error message
-                                      setItems(
-                                        items.filter((_, i) => i !== index),
-                                      );
-                                    }}
-                                    isDisabled={
-                                      items.length === 1 && isRowEmpty(item)
-                                    }
-                                    styles={REMOVE_BUTTON_STYLE}
-                                  >
-                                    {`Remove ${lowerInitialLetters(singularLabel)}`}
-                                  </Button>
-                                </div>
-                              </div>
-                            </FormEditGroup>
-                          )}
-                          {horizontal && (
-                            <div className={REMOVE_ROW_STYLE}>
-                              <ItemComponent
-                                namePrefix={`${namePrefix}${name}.${index}.`}
-                                hideLabel={index > 0}
-                                horizontal
-                                {...props}
-                              />
-                              <ActionButton
-                                isQuiet
-                                data-test-id={`${namePrefix}${name}${index}RemoveButton`}
-                                onPress={() =>
-                                  // using arrayHelpers.remove mangles the error message
-                                  items.length > 1
-                                    ? setItems(
-                                        items.filter((_, i) => i !== index),
-                                      )
-                                    : setItems([buildDefaultItem()])
-                                }
-                                isDisabled={
-                                  items.length === 1 && isRowEmpty(item)
-                                }
-                                styles={
-                                  HORIZONTAL_REMOVE_BUTTON_STYLES[index === 0]
-                                }
-                              >
-                                <Delete />
-                              </ActionButton>
-                            </div>
-                          )}
+                              {`Remove ${lowerInitialLetters(singularLabel)}`}
+                            </Button>
+                          </div>
                         </div>
-                      );
-                    })}
-                    <div>
-                      <Button
-                        variant="secondary"
-                        fillStyle="outline"
-                        data-test-id={`${namePrefix}${name}AddButton`}
-                        onPress={() => arrayHelpers.push(buildDefaultItem())}
-                      >
-                        {`Add another ${lowerInitialLetters(singularLabel)}`}
-                      </Button>
-                    </div>
-                  </>
+                      </FormEditGroup>
+                    )}
+                    {horizontal && (
+                      <div className={REMOVE_ROW_STYLE}>
+                        <ItemComponent
+                          namePrefix={`${namePrefix}${name}.${index}.`}
+                          hideLabel={index > 0}
+                          horizontal
+                          {...props}
+                        />
+                        <ActionButton
+                          isQuiet
+                          data-test-id={`${namePrefix}${name}${index}RemoveButton`}
+                          onPress={() =>
+                            items.length > 1
+                              ? itemsField.handleChange(
+                                  items.filter((_, i) => i !== index),
+                                )
+                              : itemsField.handleChange([buildDefaultItem()])
+                          }
+                          isDisabled={items.length === 1 && isRowEmpty(item)}
+                          styles={HORIZONTAL_REMOVE_BUTTON_STYLES[index === 0]}
+                        >
+                          <Delete />
+                        </ActionButton>
+                      </div>
+                    )}
+                  </div>
                 );
-              }}
-            />
+              })}
+              <div>
+                <Button
+                  variant="secondary"
+                  fillStyle="outline"
+                  data-test-id={`${namePrefix}${name}AddButton`}
+                  onPress={() => itemsField.pushValue(buildDefaultItem())}
+                >
+                  {`Add another ${lowerInitialLetters(singularLabel)}`}
+                </Button>
+              </div>
+            </>
           )}
           {inputMethod === DATA_ELEMENT && (
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id={`${namePrefix}${name}DataElementField`}
                 name={`${namePrefix}${name}DataElement`}
                 description={dataElementDescription}

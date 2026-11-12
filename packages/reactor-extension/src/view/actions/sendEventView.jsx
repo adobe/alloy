@@ -12,7 +12,6 @@ governing permissions and limitations under the License.
 
 import { Link } from "@react-spectrum/s2";
 
-import { string } from "yup";
 import checkbox from "../forms/checkbox";
 import comboBox from "../forms/comboBox";
 import instancePicker from "../forms/instancePicker";
@@ -25,6 +24,7 @@ import disabledTextField from "../forms/disabledTextField";
 import conditional from "../forms/conditional";
 import disabledCheckbox from "../forms/disabledCheckbox";
 import configOverrides from "../forms/configOverrides";
+import { bridge as overridesBridge } from "../components/overrides";
 import simpleMap from "../forms/simpleMap";
 import requiredComponent from "../forms/requiredComponent";
 
@@ -34,6 +34,7 @@ import textField from "../forms/textField";
 import { validateSurface } from "../utils/surfaceUtils";
 import copyPropertiesIfValueDifferentThanDefault from "../configuration/utils/copyPropertiesIfValueDifferentThanDefault";
 import generateComponentFromForm from "../forms/generateComponentFromForm";
+import { rule } from "../forms/validation";
 
 const FETCH = "fetch";
 const COLLECT = "collect";
@@ -294,16 +295,9 @@ const surfacesField = fieldArray({
   description: "Create an array of surfaces to query with the event.",
   dataElementDescription:
     "This data element should resolve to an array of surfaces.",
-  validationSchema: string().test(
-    "is-surface",
-    () => "Please provide a valid surface",
-    (value, testContext) => {
-      const message = validateSurface(value);
-      if (message) {
-        return testContext.createError({ message });
-      }
-      return true;
-    },
+  validationSchema: rule(
+    (value) => !validateSurface(value),
+    (value) => validateSurface(value),
   ),
 });
 
@@ -419,6 +413,10 @@ const decisionContext = requiredComponent(
 );
 
 const configOverrideFields = configOverrides();
+const guidedConfigOverrideFields = configOverrides(
+  undefined,
+  overridesBridge.edgeConfigOverridesWithoutIdSyncNumbersSchema,
+);
 const datasetIdField = textField({
   name: "datasetId",
   label: "Dataset ID (deprecated)",
@@ -564,7 +562,7 @@ const sendEventForm = form(
                 ),
               ],
             ),
-            configOverrideFields,
+            guidedConfigOverrideFields,
           ],
         ),
         conditional(
@@ -596,7 +594,7 @@ const sendEventForm = form(
                 ),
               ],
             ),
-            configOverrideFields,
+            guidedConfigOverrideFields,
           ],
         ),
       ],

@@ -22,7 +22,8 @@ import {
   Tabs,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useFieldValue } from "../../utils/useFieldValue";
+import { useFormContext } from "../../forms/formContext";
 import PropTypes from "prop-types";
 import { useRef } from "react";
 
@@ -39,7 +40,7 @@ import {
   findDatastream,
   useDatastreamCatalog,
 } from "../../utils/useDatastreamCatalog";
-import { useFetchConfig, useFormikContextWithOverrides } from "./hooks";
+import { useFetchConfig, useOverridesForm } from "./hooks";
 import OverrideInput from "./overrideInput";
 import { bridge } from "./overridesBridge";
 import ReportSuitesOverride from "./reportSuiteOverrides";
@@ -110,7 +111,7 @@ ProductSubsection.propTypes = {
  * @typedef {Object} OverridesProps
  * @property {Object} initInfo
  * @property {string?} options.instanceFieldName
- * The name of the Formik parent form. State will be stored as a nested object under the "edgeConfigOverrides" key.
+ * The name of the parent form. State will be stored as a nested object under the "edgeConfigOverrides" key.
  * @property {Array<"eventDatasetOverride" | "idSyncContainerOverride" | "targetPropertyTokenOverride" | "targetPropertyTokenOverride" | "reportSuitesOverride">} options.showFields
  * Which fields to show. Defaults to showing all fields
  * @property {string} options.configOrgId The org id to use for fetching datastream configurations.
@@ -130,6 +131,19 @@ ProductSubsection.propTypes = {
  * @param {OverridesProps} options
  * @returns {React.Element}
  */
+// Override text values (datasets, report suites, tokens) are rendered by their
+// own fields; only these keys change which fields are shown or which datastream
+// settings are fetched, so the overrides re-render only when they change.
+const LAYOUT_KEYS = new Set(["enabled", "datastreamId", "sandbox"]);
+const getLayout = (overrides) =>
+  JSON.stringify(overrides, (key, value) =>
+    key === "" ||
+    LAYOUT_KEYS.has(key) ||
+    (value !== null && typeof value === "object")
+      ? value
+      : undefined,
+  );
+
 const Overrides = ({
   initInfo,
   instanceFieldName,
@@ -146,8 +160,10 @@ const Overrides = ({
     ),
   );
 
-  /** @type {{value: import("./overridesBridge").EnvironmentConfigOverrideFormikState}[] } */
-  const [{ value: edgeConfigOverrides }] = useField(prefix);
+  const form = useFormContext();
+  useFieldValue(prefix, getLayout);
+  /** @type {{value: import("./overridesBridge").EnvironmentConfigOverrideFormState}[] } */
+  const edgeConfigOverrides = form.getFieldValue(prefix);
 
   const requestCache = useRef({});
   const authOrgId = initInfo.company.orgId;
@@ -197,9 +213,8 @@ const Overrides = ({
   };
 
   const { useServiceStatus, createIsDisabled, onCopy, onDisable } =
-    useFormikContextWithOverrides({
+    useOverridesForm({
       prefix,
-      edgeConfigOverrides,
       defaults,
     });
 

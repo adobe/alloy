@@ -11,17 +11,23 @@ governing permissions and limitations under the License.
 */
 
 import Delete from "@react-spectrum/s2/icons/Delete";
-import { array, string } from "yup";
-import { FieldArray, useField } from "formik";
+import { useFieldBlurred, useFieldError, useFormField } from "./formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Radio, ActionButton, Button, ComboBoxItem } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import PropTypes from "prop-types";
-import FormikTextField from "./fields/TextField";
-import FormikRadioGroup from "./fields/RadioGroup";
+import FormTextField from "./fields/TextField";
+import FormRadioGroup from "./fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
-import singleDataElementRegex from "../constants/singleDataElementRegex";
-import { DATA_ELEMENT_REQUIRED } from "../constants/validationErrorMessages";
-import FormikKeyedComboBox from "./fields/KeyedComboBox";
+import FormKeyedComboBox from "./fields/KeyedComboBox";
+import {
+  all,
+  dataElementRequired,
+  isEmpty,
+  parentOf,
+  rule,
+  when,
+} from "./validation";
 
 const FORM = "form";
 const DATA_ELEMENT = "dataElement";
@@ -37,7 +43,7 @@ const StringItem = ({
 }) => {
   return (
     <DataElementSelector>
-      <FormikTextField
+      <FormTextField
         data-test-id={`${namePrefix}${name}${index}Field`}
         aria-label={`Item ${index + 1}`}
         name={`${namePrefix}${name}.${index}`}
@@ -72,7 +78,7 @@ const ComboboxItem = ({
 }) => {
   return (
     <DataElementSelector>
-      <FormikKeyedComboBox
+      <FormKeyedComboBox
         data-test-id={`${namePrefix}${name}${index}Field`}
         aria-label={`Item ${index + 1}`}
         name={`${namePrefix}${name}.${index}`}
@@ -91,7 +97,7 @@ const ComboboxItem = ({
             {item.label}
           </ComboBoxItem>
         )}
-      </FormikKeyedComboBox>
+      </FormKeyedComboBox>
     </DataElementSelector>
   );
 };
@@ -113,7 +119,7 @@ ComboboxItem.propTypes = {
  * filled in will be removed from the array. Each item in the array can be a
  * data element or the entire array can be a data element.
  * @param {object} options - Options for the field.
- * @param {string} options.name - The formik key to use for this field.
+ * @param {string} options.name - The form key to use for this field.
  * - `${key}` will be used to store the array of strings.
  * - `${key}InputMethod` will be used to determine whether or not to use a data
  *   element.
@@ -128,7 +134,7 @@ ComboboxItem.propTypes = {
  * data element should be.
  * @param {boolean} [options.isRequired] - Whether or not the field is
  * required. When required, the user will need to enter at least one string.
- * @param options.validationSchema - A yup validation schema to use for each
+ * @param options.validationSchema - An ArkType validation schema to use for each
  * string in the array.
  * @param options.fieldItems
  * @returns {Form} A form field for an array of strings.
@@ -143,34 +149,31 @@ export default function fieldArray({
   validationSchema,
   fieldItems,
 }) {
+  const inputMethodIs = (inputMethod) => (value, ctx) =>
+    parentOf(ctx)[`${name}InputMethod`] === inputMethod;
   const validationShape = {
-    [name]: array(),
+    [name]: when(
+      inputMethodIs(FORM),
+      all(
+        ...[
+          isRequired &&
+            rule(
+              (items) => items.some(Boolean),
+              `Please provide at least one ${singularLabel.toLowerCase()}.`,
+            ),
+          validationSchema &&
+            when(
+              (items) => Array.isArray(items),
+              when((item) => !isEmpty(item), validationSchema).array(),
+            ),
+        ].filter(Boolean),
+      ),
+    ),
+    [`${name}DataElement`]: when(
+      inputMethodIs(DATA_ELEMENT),
+      dataElementRequired,
+    ),
   };
-  if (isRequired) {
-    validationShape[name] = validationShape[name]
-      .compact()
-      .when(`${name}InputMethod`, {
-        is: FORM,
-        then: (schema) =>
-          schema.min(
-            1,
-            `Please provide at least one ${singularLabel.toLowerCase()}.`,
-          ),
-      });
-  }
-  if (validationSchema) {
-    validationShape[name] = validationShape[name].when(`${name}InputMethod`, {
-      is: FORM,
-      then: (schema) => schema.of(validationSchema),
-    });
-  }
-  validationShape[`${name}DataElement`] = string().when(`${name}InputMethod`, {
-    is: DATA_ELEMENT,
-    then: (schema) =>
-      schema
-        .matches(singleDataElementRegex, DATA_ELEMENT_REQUIRED)
-        .required(DATA_ELEMENT_REQUIRED),
-  });
 
   const FieldItem = fieldItems ? ComboboxItem : StringItem;
 
@@ -205,19 +208,14 @@ export default function fieldArray({
     },
     validationShape,
     Component: ({ namePrefix = "" }) => {
-      const [{ value: inputMethod }] = useField(
-        `${namePrefix}${name}InputMethod`,
-      );
-      const [
-        { value: items },
-        { touched: itemsTouched, error: itemsError },
-        { setValue: setItems },
-      ] = useField(`${namePrefix}${name}`);
-
-      const error = typeof itemsError === "string" ? itemsError : undefined;
+      const inputMethod = useFieldValue(`${namePrefix}${name}InputMethod`);
+      const itemsField = useFormField(`${namePrefix}${name}`);
+      const items = itemsField.state.value;
+      const itemsTouched = useFieldBlurred(`${namePrefix}${name}`);
+      const error = useFieldError(`${namePrefix}${name}`);
       return (
         <>
-          <FormikRadioGroup
+          <FormRadioGroup
             name={`${namePrefix}${name}InputMethod`}
             orientation="horizontal"
             label={label}
@@ -232,80 +230,70 @@ export default function fieldArray({
             >
               Provide a data element.
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
           {inputMethod === FORM && (
-            <FieldArray
-              name={name}
-              render={(arrayHelpers) => {
-                return (
-                  <div>
+            <div>
+              <div
+                className={style({
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  alignItems: "start",
+                })}
+              >
+                {items.map((item, index) => {
+                  return (
                     <div
+                      key={index}
                       className={style({
                         display: "flex",
-                        flexDirection: "column",
-                        gap: 8,
                         alignItems: "start",
                       })}
                     >
-                      {items.map((item, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className={style({
-                              display: "flex",
-                              alignItems: "start",
-                            })}
-                          >
-                            <FieldItem
-                              namePrefix={namePrefix}
-                              name={name}
-                              index={index}
-                              description={description}
-                              error={error}
-                              touched={itemsTouched}
-                              isLast={index === items.length - 1}
-                              items={fieldItems}
-                            />
-                            <ActionButton
-                              data-test-id={`${namePrefix}${name}${index}RemoveButton`}
-                              isQuiet
-                              onPress={() => {
-                                // using arrayHelpers.remove mangles the error message
-                                const newItems = items.filter(
-                                  (_, i) => i !== index,
-                                );
-                                if (newItems.length === 0) {
-                                  newItems.push("");
-                                }
-                                setItems(newItems);
-                              }}
-                              aria-label={`Remove ${label} ${index + 1}`}
-                              styles={style({
-                                marginTop: 0,
-                              })}
-                            >
-                              <Delete />
-                            </ActionButton>
-                          </div>
-                        );
-                      })}
+                      <FieldItem
+                        namePrefix={namePrefix}
+                        name={name}
+                        index={index}
+                        description={description}
+                        error={error}
+                        touched={itemsTouched}
+                        isLast={index === items.length - 1}
+                        items={fieldItems}
+                      />
+                      <ActionButton
+                        data-test-id={`${namePrefix}${name}${index}RemoveButton`}
+                        isQuiet
+                        onPress={() => {
+                          const newItems = items.filter((_, i) => i !== index);
+                          if (newItems.length === 0) {
+                            newItems.push("");
+                          }
+                          itemsField.handleChange(newItems);
+                        }}
+                        aria-label={`Remove ${label} ${index + 1}`}
+                        styles={style({
+                          marginTop: 0,
+                        })}
+                      >
+                        <Delete />
+                      </ActionButton>
                     </div>
-                    <Button
-                      variant="secondary"
-                      fillStyle="outline"
-                      data-test-id={`${namePrefix}${name}AddButton`}
-                      onPress={() => arrayHelpers.push("")}
-                    >
-                      {`Add ${singularLabel.toLowerCase()}`}
-                    </Button>
-                  </div>
-                );
-              }}
-            />
+                  );
+                })}
+              </div>
+              <Button
+                variant="secondary"
+                fillStyle="outline"
+                data-test-id={`${namePrefix}${name}AddButton`}
+                onPress={() => itemsField.pushValue("")}
+              >
+                {`Add ${singularLabel.toLowerCase()}`}
+              </Button>
+            </div>
           )}
           {inputMethod === DATA_ELEMENT && (
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id={`${namePrefix}${name}DataElementField`}
                 name={`${namePrefix}${name}DataElement`}
                 description={dataElementDescription}

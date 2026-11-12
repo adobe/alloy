@@ -11,17 +11,25 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { object, boolean, number, string, array } from "yup";
-import { useField, FieldArray } from "formik";
+import {
+  isEmpty,
+  matches,
+  parentOf,
+  rule,
+  shape,
+  when,
+} from "../forms/validation";
+import { useFormContext } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import { Button, ActionButton, Radio } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
-import FormikCheckbox from "../forms/fields/Checkbox";
-import FormikNumberField from "../forms/fields/NumberField";
-import FormikTextField from "../forms/fields/TextField";
-import FormikRadioGroup from "../forms/fields/RadioGroup";
+import FormCheckbox from "../forms/fields/Checkbox";
+import FormNumberField from "../forms/fields/NumberField";
+import FormTextField from "../forms/fields/TextField";
+import FormRadioGroup from "../forms/fields/RadioGroup";
 import DataElementSelector from "../components/dataElementSelector";
 import FormElementContainer from "../components/formElementContainer";
 import BetaBadge from "../components/betaBadge";
@@ -153,47 +161,39 @@ export const bridge = {
     return instanceSettings;
   },
 
-  instanceValidationSchema: object().shape({
-    conversation: object().when("$components.brandConcierge", {
-      is: true,
-      then: (conciergeSchema) =>
-        conciergeSchema.shape({
-          region: string().test(
-            "valid-region",
-            "Please enter a valid region (e.g. va7, or2, irl1).",
-            (value) => !value || /^[a-z]{2,4}[0-9]{1,2}$/i.test(value),
+  instanceValidationSchema: shape({
+    conversation: when(
+      (value, ctx) => ctx.root.components?.brandConcierge === true,
+      shape({
+        region: matches(
+          /^[a-z]{2,4}[0-9]{1,2}$/i,
+          "Please enter a valid region (e.g. va7, or2, irl1).",
+        ),
+        streamTimeout: rule(
+          (value) => isEmpty(value) || Number(value) >= 10,
+          "The stream timeout must be at least 10 seconds.",
+        ),
+        transferCookiesDataElement: when(
+          (value, ctx) =>
+            parentOf(ctx).transferCookiesInputMethod === DATA_ELEMENT,
+          matches(
+            singleDataElementRegex,
+            "Please provide a single data element, for example %myDataElement%.",
           ),
-          stickyConversationSession: boolean(),
-          streamTimeout: number()
-            .min(10, "The stream timeout must be at least 10 seconds.")
-            .default(STREAM_TIMEOUT_SECONDS),
-          collectSources: boolean(),
-          transferCookies: array().of(string()),
-          transferCookiesInputMethod: string(),
-          transferCookiesDataElement: string().when(
-            "transferCookiesInputMethod",
-            {
-              is: DATA_ELEMENT,
-              then: (schema) =>
-                schema.matches(
-                  singleDataElementRegex,
-                  "Please provide a single data element, for example %myDataElement%.",
-                ),
-            },
-          ),
-        }),
-    }),
+        ),
+      }),
+    ),
   }),
 };
 
 const BrandConciergeSection = ({ instanceFieldName }) => {
-  const [{ value: brandConciergeComponentEnabled }] = useField(
+  const form = useFormContext();
+  const brandConciergeComponentEnabled = useFieldValue(
     "components.brandConcierge",
   );
-  const [{ value: transferCookies = [] }] = useField(
-    `${instanceFieldName}.conversation.transferCookies`,
-  );
-  const [{ value: transferCookiesInputMethod }] = useField(
+  const transferCookies =
+    useFieldValue(`${instanceFieldName}.conversation.transferCookies`) ?? [];
+  const transferCookiesInputMethod = useFieldValue(
     `${instanceFieldName}.conversation.transferCookiesInputMethod`,
   );
 
@@ -220,29 +220,29 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
         Brand Concierge <BetaBadge />
       </SectionHeader>
       <FormElementContainer>
-        <FormikTextField
+        <FormTextField
           data-test-id="regionField"
           label="Region"
           name={`${instanceFieldName}.conversation.region`}
           description="The Brand Concierge region (e.g. va7, or2, irl1). Leave blank to use the default region."
           width="size-5000"
         />
-        <FormikCheckbox
+        <FormCheckbox
           data-test-id="stickyConversationSessionField"
           name={`${instanceFieldName}.conversation.stickyConversationSession`}
           description="Persist Adobe Brand Concierge sessions across page loads using a session cookie."
           width="size-5000"
         >
           Sticky conversation session
-        </FormikCheckbox>
-        <FormikNumberField
+        </FormCheckbox>
+        <FormNumberField
           data-test-id="streamTimeoutDataTestId"
           label="Stream timeout (seconds)"
           name={`${instanceFieldName}.conversation.streamTimeout`}
           description="If the conversation stream chunks are not returned within this timeout duration, a timeout error will be triggered."
           width="size-5000"
         />
-        <FormikCheckbox
+        <FormCheckbox
           data-test-id="collectSourcesDataTestId"
           label=""
           name={`${instanceFieldName}.conversation.collectSources`}
@@ -250,9 +250,9 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
           width="size-5000"
         >
           Collect sources
-        </FormikCheckbox>
+        </FormCheckbox>
         <div data-test-id="transferCookiesField">
-          <FormikRadioGroup
+          <FormRadioGroup
             label="Transfer cookies"
             name={`${instanceFieldName}.conversation.transferCookiesInputMethod`}
             orientation="horizontal"
@@ -266,10 +266,10 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
             >
               Use a data element
             </Radio>
-          </FormikRadioGroup>
+          </FormRadioGroup>
           {transferCookiesInputMethod === DATA_ELEMENT ? (
             <DataElementSelector>
-              <FormikTextField
+              <FormTextField
                 data-test-id="transferCookiesDataElementField"
                 aria-label="Transfer cookies data element"
                 name={`${instanceFieldName}.conversation.transferCookiesDataElement`}
@@ -278,70 +278,71 @@ const BrandConciergeSection = ({ instanceFieldName }) => {
               />
             </DataElementSelector>
           ) : (
-            <FieldArray
-              name={`${instanceFieldName}.conversation.transferCookies`}
-              render={(arrayHelpers) => (
+            <div
+              className={style({
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              })}
+            >
+              {transferCookies.map((cookieName, index) => (
                 <div
+                  key={index}
                   className={style({
                     display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
+                    alignItems: "start",
                   })}
                 >
-                  {transferCookies.map((cookieName, index) => (
-                    <div
-                      key={index}
-                      className={style({
-                        display: "flex",
-                        alignItems: "start",
-                      })}
-                    >
-                      <DataElementSelector>
-                        <FormikTextField
-                          data-test-id={`transferCookie${index}Field`}
-                          aria-label={`Transfer cookie ${index + 1}`}
-                          name={`${instanceFieldName}.conversation.transferCookies.${index}`}
-                          description={
-                            index === transferCookies.length - 1
-                              ? TRANSFER_COOKIES_DESCRIPTION
-                              : undefined
-                          }
-                          width="size-4600"
-                        />
-                      </DataElementSelector>
-                      <ActionButton
-                        data-test-id={`deleteTransferCookie${index}Button`}
-                        isQuiet
-                        variant="secondary"
-                        isDisabled={transferCookies.length <= 1}
-                        onPress={() => {
-                          arrayHelpers.remove(index);
-                        }}
-                        aria-label={`Remove transfer cookie ${index + 1}`}
-                        styles={style({
-                          marginStart: 8,
-                        })}
-                      >
-                        <Delete />
-                      </ActionButton>
-                    </div>
-                  ))}
-                  <Button
+                  <DataElementSelector>
+                    <FormTextField
+                      data-test-id={`transferCookie${index}Field`}
+                      aria-label={`Transfer cookie ${index + 1}`}
+                      name={`${instanceFieldName}.conversation.transferCookies.${index}`}
+                      description={
+                        index === transferCookies.length - 1
+                          ? TRANSFER_COOKIES_DESCRIPTION
+                          : undefined
+                      }
+                      width="size-4600"
+                    />
+                  </DataElementSelector>
+                  <ActionButton
+                    data-test-id={`deleteTransferCookie${index}Button`}
+                    isQuiet
                     variant="secondary"
-                    data-test-id="addTransferCookieButton"
+                    isDisabled={transferCookies.length <= 1}
                     onPress={() => {
-                      arrayHelpers.push("");
+                      form.removeFieldValue(
+                        `${instanceFieldName}.conversation.transferCookies`,
+                        index,
+                      );
                     }}
+                    aria-label={`Remove transfer cookie ${index + 1}`}
                     styles={style({
-                      marginTop: 8,
-                      alignSelf: "start",
+                      marginStart: 8,
                     })}
                   >
-                    Add cookie
-                  </Button>
+                    <Delete />
+                  </ActionButton>
                 </div>
-              )}
-            />
+              ))}
+              <Button
+                variant="secondary"
+                data-test-id="addTransferCookieButton"
+                onPress={() => {
+                  form.pushFieldValue(
+                    `${instanceFieldName}.conversation.transferCookies`,
+                    "",
+                  );
+                }}
+                styles={style({
+                  marginTop: 8,
+                  alignSelf: "start",
+                })}
+              >
+                Add cookie
+              </Button>
+            </div>
           )}
         </div>
       </FormElementContainer>

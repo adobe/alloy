@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { useRef, useState } from "react";
-import { object } from "yup";
+import { required, shape } from "../forms/validation";
 import {
   ProgressCircle,
   Heading as AlertHeading,
@@ -22,7 +22,7 @@ import {
   Link,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useFieldValue } from "../utils/useFieldValue";
 import PropTypes from "prop-types";
 import ExtensionView from "../components/extensionView";
 import FormElementContainer from "../components/formElementContainer";
@@ -36,7 +36,7 @@ import fetchDataElementByName from "../utils/fetchDataElementByName";
 import fetchSchema from "../utils/fetchSchema";
 import Editor from "../components/objectEditor/editor";
 import getInitialFormState from "../components/objectEditor/helpers/getInitialFormState";
-import FormikPagedComboBox from "../forms/fields/PagedComboBox";
+import FormPagedComboBox from "../forms/fields/PagedComboBox";
 import useReportAsyncError from "../utils/useReportAsyncError";
 import useChanged from "../utils/useChanged";
 import useAbortPreviousRequestsAndCreateSignal from "../utils/useAbortPreviousRequestsAndCreateSignal";
@@ -316,11 +316,11 @@ const getSettings =
     return response;
   };
 
-const validationSchema = object().shape({
-  dataElement: object().required("Please specify a data element."),
+const validationSchema = shape({
+  dataElement: required("Please specify a data element."),
 });
 
-const validateFormikState =
+const validateFormState =
   (context) =>
   ({ values }) => {
     const { schema } = context;
@@ -377,11 +377,7 @@ const findFirstNodeIdForDepth = (formStateNode, depth) => {
   return id;
 };
 
-const UpdateVariable = ({
-  initInfo,
-  formikProps: { resetForm, values },
-  context,
-}) => {
+const UpdateVariable = ({ initInfo, form, context }) => {
   const {
     schema,
     dataElementsFirstPage,
@@ -389,12 +385,12 @@ const UpdateVariable = ({
     previouslySavedSchemaInfo,
   } = context;
 
-  const [{ value: dataElement }] = useField("dataElement");
-  const [{ value: customCode }] = useField("customCode");
+  const dataElement = useFieldValue("dataElement");
+  const customCode = useFieldValue("customCode");
   const [hasSchema, setHasSchema] = useState(schema != null);
   const [selectedNodeId, setSelectedNodeId] = useState(() => {
     if (dataElement?.settings?.solutions) {
-      return findFirstNodeIdForDepth(values, 3);
+      return findFirstNodeIdForDepth(form.state.values, 3);
     }
     return null;
   });
@@ -423,14 +419,12 @@ const UpdateVariable = ({
             orgId,
             imsAccess,
             transforms,
-            existingFormStateNode: values,
+            existingFormStateNode: form.state.values,
             signal,
           });
 
           if (!signal.aborted) {
-            resetForm({
-              values: { ...initialFormState, dataElement, customCode },
-            });
+            form.reset({ ...initialFormState, dataElement, customCode });
             if (context.schema) {
               setHasSchema(true);
             }
@@ -499,7 +493,7 @@ const UpdateVariable = ({
           >
             Learn more about the Update Variable action
           </Link>
-          <FormikPagedComboBox
+          <FormPagedComboBox
             data-test-id="dataElementField"
             name="dataElement"
             label="Data element"
@@ -613,7 +607,7 @@ const UpdateVariable = ({
 UpdateVariable.propTypes = {
   context: PropTypes.object,
   initInfo: PropTypes.object,
-  formikProps: PropTypes.object,
+  form: PropTypes.object,
 };
 
 const UpdateVariableExtensionView = () => {
@@ -623,8 +617,8 @@ const UpdateVariableExtensionView = () => {
     <ExtensionView
       getInitialValues={getInitialValues(context)}
       getSettings={getSettings(context)}
-      formikStateValidationSchema={validationSchema}
-      validateFormikState={validateFormikState(context)}
+      validationSchema={validationSchema}
+      validateFormState={validateFormState(context)}
       render={(props) => {
         return <UpdateVariable context={context} {...props} />;
       }}

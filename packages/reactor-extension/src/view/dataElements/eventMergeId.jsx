@@ -37,7 +37,7 @@ const EventMergeId = () => (
   <ExtensionView
     getInitialValues={getInitialValues}
     getSettings={getSettings}
-    validateNonFormikState={() => {
+    validateNonFormState={() => {
       const isNew = initInfoCache?.settings == null;
       if (
         isNew &&

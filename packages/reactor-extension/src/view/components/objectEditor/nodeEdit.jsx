@@ -11,13 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { useFormikContext } from "formik";
+import { useStore } from "@tanstack/react-form";
+import { useFormContext } from "../../forms/formContext";
 import { Breadcrumb, Breadcrumbs, Checkbox } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import getNodeEditData from "./helpers/getNodeEditData";
 import AutoPopulationAlert from "./autoPopulationAlert";
 import { ALWAYS, NONE } from "./constants/autoPopulationSource";
-import FormikCheckbox from "../../forms/fields/Checkbox";
+import FormCheckbox from "../../forms/fields/Checkbox";
 import FieldDescriptionAndError from "../fieldDescriptionAndError";
 import getTypeSpecificView from "./helpers/getTypeSpecificView";
 import NodeDescription from "./nodeDescriptionPopover";
@@ -27,7 +28,8 @@ import NodeDescription from "./nodeDescriptionPopover";
  * that are shown depend on the node's type.
  */
 const NodeEdit = (props) => {
-  const { values: formState } = useFormikContext();
+  const form = useFormContext();
+  const formState = useStore(form.store, (state) => state.values);
   const { onNodeSelect, selectedNodeId, verticalLayout = false } = props;
 
   const {
@@ -115,7 +117,7 @@ const NodeEdit = (props) => {
             </FieldDescriptionAndError>
           )}
           {formStateNode.updateMode && !hasClearedAncestor && (
-            <FormikCheckbox
+            <FormCheckbox
               data-test-id="clearField"
               name={`${fieldName}.transform.clear`}
               description="Checking this box will cause this field to be deleted before setting any values. Fields that are cleared appear with a delete icon in the tree."
@@ -123,7 +125,7 @@ const NodeEdit = (props) => {
               isDisabled={hasClearedAncestor}
             >
               Clear existing value
-            </FormikCheckbox>
+            </FormCheckbox>
           )}
         </>
       )}

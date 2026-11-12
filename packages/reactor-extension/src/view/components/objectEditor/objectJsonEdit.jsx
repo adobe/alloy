@@ -12,13 +12,18 @@ governing permissions and limitations under the License.
 
 import { useCallback } from "react";
 import PropTypes from "prop-types";
-import { FieldArray, useField, useFormikContext } from "formik";
+import {
+  submitForm,
+  useFormContext,
+  useFormField,
+} from "../../forms/formContext";
+import { useFieldValue } from "../../utils/useFieldValue";
 import { Radio, ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import FormikRadioGroup from "../../forms/fields/RadioGroup";
-import FormikTextArea from "../../forms/fields/TextArea";
-import FormikTextField from "../../forms/fields/TextField";
+import FormRadioGroup from "../../forms/fields/RadioGroup";
+import FormTextArea from "../../forms/fields/TextArea";
+import FormTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 import { PARTS, WHOLE } from "./constants/populationStrategy";
 import FormElementContainer from "../formElementContainer";
@@ -49,7 +54,7 @@ const WholePopulationStrategyForm = ({
   return (
     <div className={style({ marginStart: 24 })}>
       <DataElementSelector clearable>
-        <FormikTextArea
+        <FormTextArea
           data-test-id="valueField"
           label={displayName}
           name={`${fieldName}.value`}
@@ -76,80 +81,76 @@ WholePopulationStrategyForm.propTypes = {
  * Displayed when the PARTS population strategy is selected.
  * Allows the user to provide individual items within the array.
  */
-const PartsPopulationStrategyForm = ({ displayName, fieldName, items }) => (
-  <FieldArray
-    name={`${fieldName}.items`}
-    render={(arrayHelpers) => {
-      return (
-        <FormEditGroup label={displayName} styles={style({ marginStart: 24 })}>
-          <div
-            className={style({
-              display: "flex",
-              gap: 8,
-              flexDirection: "column",
-              alignItems: "start",
-            })}
-          >
-            {items.map(({ key, value }, index) => {
-              return (
-                <div
-                  key={`${fieldName}.${index}`}
-                  className={style({
-                    display: "flex",
-                  })}
-                >
-                  <FormikTextField
-                    data-test-id={`keyField${index}`}
-                    name={`${fieldName}.items.${index}.key`}
-                    aria-label="Key"
-                    label={index === 0 ? "Key" : ""}
+const PartsPopulationStrategyForm = ({ displayName, fieldName, items }) => {
+  const itemsField = useFormField(`${fieldName}.items`, { mode: "array" });
+  return (
+    <FormEditGroup label={displayName} styles={style({ marginStart: 24 })}>
+      <div
+        className={style({
+          display: "flex",
+          gap: 8,
+          flexDirection: "column",
+          alignItems: "start",
+        })}
+      >
+        {items.map(({ key, value }, index) => {
+          return (
+            <div
+              key={`${fieldName}.${index}`}
+              className={style({
+                display: "flex",
+              })}
+            >
+              <FormTextField
+                data-test-id={`keyField${index}`}
+                name={`${fieldName}.items.${index}.key`}
+                aria-label="Key"
+                label={index === 0 ? "Key" : ""}
+                width="size-3000"
+              />
+
+              <div className={style({ marginStart: 8 })}>
+                <DataElementSelector clearable>
+                  <FormTextField
+                    data-test-id={`valueField${index}`}
+                    name={`${fieldName}.items.${index}.value`}
+                    aria-label="Value"
+                    label={index === 0 ? "Value" : ""}
                     width="size-3000"
                   />
+                </DataElementSelector>
+              </div>
 
-                  <div className={style({ marginStart: 8 })}>
-                    <DataElementSelector clearable>
-                      <FormikTextField
-                        data-test-id={`valueField${index}`}
-                        name={`${fieldName}.items.${index}.value`}
-                        aria-label="Value"
-                        label={index === 0 ? "Value" : ""}
-                        width="size-3000"
-                      />
-                    </DataElementSelector>
-                  </div>
+              <ActionButton
+                data-test-id={`item${index}RemoveButton`}
+                isQuiet
+                aria-label="Delete"
+                isDisabled={items.length === 1 && !key && !value}
+                styles={REMOVE_BUTTON_STYLES[index === 0]}
+                onPress={() =>
+                  items.length > 1
+                    ? itemsField.removeValue(index)
+                    : itemsField.replaceValue(index, getEmptyItem())
+                }
+              >
+                <Delete />
+              </ActionButton>
+            </div>
+          );
+        })}
 
-                  <ActionButton
-                    data-test-id={`item${index}RemoveButton`}
-                    isQuiet
-                    aria-label="Delete"
-                    isDisabled={items.length === 1 && !key && !value}
-                    styles={REMOVE_BUTTON_STYLES[index === 0]}
-                    onPress={() =>
-                      items.length > 1
-                        ? arrayHelpers.remove(index)
-                        : arrayHelpers.replace(index, getEmptyItem())
-                    }
-                  >
-                    <Delete />
-                  </ActionButton>
-                </div>
-              );
-            })}
-
-            <ActionButton
-              data-test-id="addPropertyButton"
-              onPress={() => {
-                arrayHelpers.push({ key: "", value: "" });
-              }}
-            >
-              Add another property
-            </ActionButton>
-          </div>
-        </FormEditGroup>
-      );
-    }}
-  />
-);
+        <ActionButton
+          data-test-id="addPropertyButton"
+          onPress={() => {
+            itemsField.pushValue({ key: "", value: "" });
+          }}
+        >
+          Add another property
+        </ActionButton>
+      </div>
+    </FormEditGroup>
+  );
+};
 
 PartsPopulationStrategyForm.propTypes = {
   displayName: PropTypes.string.isRequired,
@@ -175,12 +176,14 @@ const updateJsonTextarea = ({
         null,
         2,
       );
-      setValue(entity).then(() => submitForm());
+      setValue(entity);
+      submitForm();
     } else {
-      setValue("").then(() => submitForm());
+      setValue("");
+      submitForm();
     }
   } else {
-    Promise.resolve().then(() => submitForm());
+    submitForm();
   }
 };
 
@@ -201,12 +204,14 @@ const updateRows = ({
       const variables = addToVariablesFromEntity([], JSON.parse(value), {
         expandPaths,
       });
-      setValue(variables).then(() => submitForm());
+      setValue(variables);
+      submitForm();
     } catch {
-      setValue([{ key: "", value: "" }]).then(() => submitForm());
+      setValue([{ key: "", value: "" }]);
+      submitForm();
     }
   } else {
-    Promise.resolve().then(() => submitForm());
+    submitForm();
   }
 };
 
@@ -214,11 +219,12 @@ const updateRows = ({
  * The form for editing a node that is an object that contains JSON.
  */
 const ObjectJsonEdit = (props) => {
-  const { submitForm } = useFormikContext();
+  const form = useFormContext();
   const { displayName, fieldName, nodeDescription } = props;
-  const [{ value: formStateNode }] = useField(fieldName);
-  const [, , { setValue }] = useField(`${fieldName}.value`);
-  const [, , { setValue: setItemsValue }] = useField(`${fieldName}.items`);
+  const formStateNode = useFieldValue(fieldName);
+  const setValue = (value) => form.setFieldValue(`${fieldName}.value`, value);
+  const setItemsValue = (value) =>
+    form.setFieldValue(`${fieldName}.items`, value);
 
   const { isPartsPopulationStrategySupported, populationStrategy, items } =
     formStateNode;
@@ -226,9 +232,17 @@ const ObjectJsonEdit = (props) => {
   const strategyOnChange = useCallback(
     (currentValue) => {
       if (currentValue === WHOLE) {
-        updateJsonTextarea({ setValue, formStateNode, submitForm });
+        updateJsonTextarea({
+          setValue,
+          formStateNode,
+          submitForm: () => submitForm(form),
+        });
       } else {
-        updateRows({ setValue: setItemsValue, formStateNode, submitForm });
+        updateRows({
+          setValue: setItemsValue,
+          formStateNode,
+          submitForm: () => submitForm(form),
+        });
       }
     },
     [formStateNode],
@@ -237,7 +251,7 @@ const ObjectJsonEdit = (props) => {
   return (
     <FormElementContainer>
       {isPartsPopulationStrategySupported && (
-        <FormikRadioGroup
+        <FormRadioGroup
           aria-label="Population strategy"
           label={displayName}
           name={`${fieldName}.populationStrategy`}
@@ -251,7 +265,7 @@ const ObjectJsonEdit = (props) => {
           <Radio data-test-id="wholePopulationStrategyField" value={WHOLE}>
             Provide JSON or Data Element
           </Radio>
-        </FormikRadioGroup>
+        </FormRadioGroup>
       )}
       {populationStrategy === WHOLE ? (
         <WholePopulationStrategyForm

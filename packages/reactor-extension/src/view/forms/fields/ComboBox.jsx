@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { ComboBox, ComboBoxItem } from "@react-spectrum/s2";
-import { useField } from "formik";
+import { useFieldError, useFormField } from "../formContext";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
 import closeDataElementSuggestions from "./closeDataElementSuggestions";
@@ -27,7 +27,7 @@ import closeDataElementSuggestions from "./closeDataElementSuggestions";
  * the value is invalid, or null if the value is valid.
  * @returns {React.Element}
  */
-const FormikComboBox = ({
+const FormComboBox = ({
   name,
   width,
   validate,
@@ -35,20 +35,22 @@ const FormikComboBox = ({
   children,
   ...otherProps
 }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
-    name,
-    validate,
-  });
+  const field = useFormField(name, { validate });
+  const error = useFieldError(name);
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
   return (
     <ComboBox
       {...otherProps}
       menuTrigger={value?.startsWith("%") ? "manual" : otherProps.menuTrigger}
       onInput={closeDataElementSuggestions}
       inputValue={value}
-      onInputChange={setValue}
+      onInputChange={field.handleChange}
       onBlur={(...args) => {
         onBlur(...args);
-        setTouched(true);
+        field.handleBlur();
       }}
       isInvalid={Boolean(touched && error)}
       name={name}
@@ -60,7 +62,7 @@ const FormikComboBox = ({
   );
 };
 
-FormikComboBox.propTypes = {
+FormComboBox.propTypes = {
   name: PropTypes.string.isRequired,
   onBlur: PropTypes.func,
   validate: PropTypes.func,
@@ -68,4 +70,4 @@ FormikComboBox.propTypes = {
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
-export default FormikComboBox;
+export default FormComboBox;

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-.FormikPicker > button:not(:disabled) {
+.FormPicker > button:not(:disabled) {
   background-color: var(--spectrum-global-color-gray-50);
   box-shadow: inset 0 0 0 1px var(--spectrum-alias-border-color);
 }

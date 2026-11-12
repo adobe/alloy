@@ -1,0 +1,76 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Variable settings snapshots > round trips schema without sandbox settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Schema",
+      "messages": [
+        "Please select a schema.",
+      ],
+      "testId": "schemaField",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "sandbox": {
+      "name": "prod",
+    },
+    "schema": {
+      "id": undefined,
+      "version": undefined,
+    },
+  },
+  "valid": false,
+}
+`;
+
+exports[`Variable settings snapshots > round trips untouched empty solutions settings 1`] = `
+{
+  "errors": [
+    {
+      "field": "Adobe Analytics",
+      "messages": [],
+      "testId": "analyticsCheckbox",
+    },
+    {
+      "field": "Adobe Audience Manager",
+      "messages": [],
+      "testId": "audiencemanagerCheckbox",
+    },
+    {
+      "field": "Adobe Target",
+      "messages": [],
+      "testId": "targetCheckbox",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {},
+  "valid": false,
+}
+`;
+
+exports[`Variable settings snapshots > unchecks all solutions while the last checkbox keeps focus 1`] = `
+{
+  "errors": [
+    {
+      "field": "Adobe Analytics",
+      "messages": [],
+      "testId": "analyticsCheckbox",
+    },
+    {
+      "field": "Adobe Audience Manager",
+      "messages": [],
+      "testId": "audiencemanagerCheckbox",
+    },
+    {
+      "field": "Adobe Target",
+      "messages": [],
+      "testId": "targetCheckbox",
+    },
+  ],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {},
+  "valid": false,
+}
+`;

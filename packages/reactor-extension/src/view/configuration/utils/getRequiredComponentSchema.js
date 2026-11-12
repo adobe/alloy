@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { object, mixed } from "yup";
+import { invalid, shape } from "../../forms/validation";
 
 export default (requiredComponent, getValidationSchema) =>
   ({ initInfo }) => {
@@ -19,11 +19,9 @@ export default (requiredComponent, getValidationSchema) =>
     const settings = initInfo?.settings;
 
     if (isComponentDisabled && !settings) {
-      return object().shape({
-        requiredComponent: mixed().test(
-          "requiredComponent",
+      return shape({
+        requiredComponent: invalid(
           `The ${requiredComponent} component is disabled.`,
-          () => false,
         ),
       });
     }

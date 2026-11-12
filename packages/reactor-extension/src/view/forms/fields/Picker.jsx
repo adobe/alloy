@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import { Picker, PickerItem, mergeStyles } from "@react-spectrum/s2";
 import { css, style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useFieldError, useFormField } from "../formContext";
 import PropTypes from "prop-types";
 import widthStyle from "./widthStyle";
 import normalizeCollectionChildren from "./normalizeCollectionChildren";
@@ -34,7 +34,7 @@ const PICKER_APPEARANCE = mergeStyles(
   ),
 );
 
-const FormikPicker = ({
+const FormPicker = ({
   name,
   width,
   validate,
@@ -42,23 +42,25 @@ const FormikPicker = ({
   children,
   ...otherProps
 }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] = useField({
-    name,
-    validate,
-  });
+  const field = useFormField(name, { validate });
+  const error = useFieldError(name);
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
 
   return (
     <div className={PICKER_APPEARANCE}>
       <Picker
         value={value}
         onChange={(key) => {
-          setValue(key);
+          field.handleChange(key);
           if (onChange) {
             onChange(key);
           }
         }}
         onBlur={() => {
-          setTouched(true);
+          field.handleBlur();
         }}
         isInvalid={Boolean(touched && error)}
         errorMessage={error}
@@ -71,7 +73,7 @@ const FormikPicker = ({
   );
 };
 
-FormikPicker.propTypes = {
+FormPicker.propTypes = {
   name: PropTypes.string.isRequired,
   width: PropTypes.string,
   validate: PropTypes.func,
@@ -79,4 +81,4 @@ FormikPicker.propTypes = {
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
 };
 
-export default FormikPicker;
+export default FormPicker;

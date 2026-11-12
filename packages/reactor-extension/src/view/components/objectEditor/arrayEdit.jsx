@@ -11,12 +11,13 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { FieldArray, useField } from "formik";
+import { useFormField } from "../../forms/formContext";
+import { useFieldValue } from "../../utils/useFieldValue";
 import { Radio, Button, ActionButton } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import Delete from "@react-spectrum/s2/icons/Delete";
-import FormikRadioGroup from "../../forms/fields/RadioGroup";
-import FormikTextField from "../../forms/fields/TextField";
+import FormRadioGroup from "../../forms/fields/RadioGroup";
+import FormTextField from "../../forms/fields/TextField";
 import DataElementSelector from "../dataElementSelector";
 import getInitialFormState, {
   formStateNodePropTypes,
@@ -32,7 +33,7 @@ import FormElementContainer from "../formElementContainer";
 const WholePopulationStrategyForm = ({ fieldName }) => {
   return (
     <DataElementSelector clearable>
-      <FormikTextField
+      <FormTextField
         data-test-id="valueField"
         name={`${fieldName}.value`}
         description="This data element should resolve to an array."
@@ -57,83 +58,77 @@ const PartsPopulationStrategyForm = ({
   onNodeSelect,
   updateMode,
 }) => {
+  const itemsField = useFormField(`${fieldName}.items`, { mode: "array" });
   return (
-    <FieldArray
-      name={`${fieldName}.items`}
-      render={(arrayHelpers) => {
+    <div
+      className={style({
+        display: "flex",
+        gap: 16,
+        flexDirection: "column",
+        alignItems: "start",
+      })}
+    >
+      {items.map((itemNode, index) => {
         return (
           <div
+            key={`${fieldName}.${index}`}
             className={style({
               display: "flex",
               gap: 16,
-              flexDirection: "column",
-              alignItems: "start",
             })}
           >
-            {items.map((itemNode, index) => {
-              return (
-                <div
-                  key={`${fieldName}.${index}`}
-                  className={style({
-                    display: "flex",
-                    gap: 16,
-                  })}
-                >
-                  <ActionButton
-                    data-test-id={`item${index}SelectButton`}
-                    isQuiet
-                    onPress={() => onNodeSelect(itemNode.id)}
-                  >
-                    Item {index + 1}
-                  </ActionButton>
-                  <ActionButton
-                    data-test-id={`item${index}RemoveButton`}
-                    isQuiet
-                    aria-label="Delete"
-                    onPress={() => arrayHelpers.remove(index)}
-                    styles={style({
-                      minWidth: 0,
-                    })}
-                  >
-                    <Delete />
-                  </ActionButton>
-                </div>
-              );
-            })}
-            <Button
-              data-test-id="addItemButton"
-              onPress={() => {
-                const itemSchema = schema.items;
-                let defaultValue;
-
-                if (itemSchema.type === OBJECT) {
-                  defaultValue = {};
-                } else if (itemSchema.type === ARRAY) {
-                  defaultValue = [];
-                } else {
-                  defaultValue = "";
-                }
-
-                const itemNodePath = fieldName
-                  ? `${fieldName}.items.${items.length}`
-                  : `items.${items.length}`;
-
-                const itemFormStateNode = getInitialFormState({
-                  schema: itemSchema,
-                  value: defaultValue,
-                  updateMode,
-                  nodePath: itemNodePath,
-                });
-                arrayHelpers.push(itemFormStateNode);
-              }}
-              variant="primary"
+            <ActionButton
+              data-test-id={`item${index}SelectButton`}
+              isQuiet
+              onPress={() => onNodeSelect(itemNode.id)}
             >
-              Add item
-            </Button>
+              Item {index + 1}
+            </ActionButton>
+            <ActionButton
+              data-test-id={`item${index}RemoveButton`}
+              isQuiet
+              aria-label="Delete"
+              onPress={() => itemsField.removeValue(index)}
+              styles={style({
+                minWidth: 0,
+              })}
+            >
+              <Delete />
+            </ActionButton>
           </div>
         );
-      }}
-    />
+      })}
+      <Button
+        data-test-id="addItemButton"
+        onPress={() => {
+          const itemSchema = schema.items;
+          let defaultValue;
+
+          if (itemSchema.type === OBJECT) {
+            defaultValue = {};
+          } else if (itemSchema.type === ARRAY) {
+            defaultValue = [];
+          } else {
+            defaultValue = "";
+          }
+
+          const itemNodePath = fieldName
+            ? `${fieldName}.items.${items.length}`
+            : `items.${items.length}`;
+
+          const itemFormStateNode = getInitialFormState({
+            schema: itemSchema,
+            value: defaultValue,
+            updateMode,
+            nodePath: itemNodePath,
+          });
+          itemsField.pushValue(itemFormStateNode);
+        }}
+        variant="primary"
+      >
+        Add item
+      </Button>
+    </div>
   );
 };
 
@@ -150,7 +145,7 @@ PartsPopulationStrategyForm.propTypes = {
  */
 const ArrayEdit = (props) => {
   const { displayName, fieldName, onNodeSelect, nodeDescription } = props;
-  const [{ value: formStateNode }] = useField(fieldName);
+  const formStateNode = useFieldValue(fieldName);
 
   const {
     isPartsPopulationStrategySupported,
@@ -163,7 +158,7 @@ const ArrayEdit = (props) => {
   return (
     <FormElementContainer>
       {isPartsPopulationStrategySupported && (
-        <FormikRadioGroup
+        <FormRadioGroup
           label={displayName}
           name={`${fieldName}.populationStrategy`}
           orientation="horizontal"
@@ -175,7 +170,7 @@ const ArrayEdit = (props) => {
           <Radio data-test-id="wholePopulationStrategyField" value={WHOLE}>
             Provide entire array
           </Radio>
-        </FormikRadioGroup>
+        </FormRadioGroup>
       )}
       <div>
         {populationStrategy === WHOLE ? (

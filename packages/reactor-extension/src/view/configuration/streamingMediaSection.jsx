@@ -11,14 +11,14 @@ governing permissions and limitations under the License.
 */
 
 import PropTypes from "prop-types";
-import { number, object, string, lazy } from "yup";
-import { useField } from "formik";
+import { all, isEmpty, parentOf, rule, shape, when } from "../forms/validation";
+import { useFieldValue } from "../utils/useFieldValue";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import SectionHeader from "../components/sectionHeader";
 import InfoMessage from "../components/infoMessage";
 import FormElementContainer from "../components/formElementContainer";
-import FormikTextField from "../forms/fields/TextField";
-import FormikNumberField from "../forms/fields/NumberField";
+import FormTextField from "../forms/fields/TextField";
+import FormNumberField from "../forms/fields/NumberField";
 import isNonEmptyString from "../utils/isNonEmptyString";
 
 const getDefaultSettings = () => ({
@@ -28,6 +28,20 @@ const getDefaultSettings = () => ({
   adPingInterval: 10,
   mainPingInterval: 10,
 });
+
+// Intervals are only checked once a channel and player name are set, and
+// only when they are whole numbers rather than data elements.
+const pingInterval = (min, max, minMessage, maxMessage) =>
+  when(
+    (value, ctx) => {
+      const { channel, playerName } = parentOf(ctx);
+      return Boolean(channel && playerName) && /^\d+$/.test(String(value));
+    },
+    all(
+      rule((value) => Number(value) >= min, minMessage),
+      rule((value) => Number(value) <= max, maxMessage),
+    ),
+  );
 
 export const bridge = {
   getInstanceDefaults: () => ({
@@ -86,77 +100,43 @@ export const bridge = {
     }
     return instanceSettings;
   },
-  instanceValidationSchema: object().shape({
-    streamingMedia: object().when("$components.streamingMedia", {
-      is: true,
-      then: (mediaSchema) =>
-        mediaSchema.shape(
-          {
-            channel: string().when("playerName", {
-              is: (playerName) => playerName,
-              then: (schema) =>
-                schema.required(
-                  "Please provide a channel name for streaming media.",
-                ),
-            }),
-            playerName: string().when("channel", {
-              is: (channel) => channel,
-              then: (schema) =>
-                schema.required(
-                  "Please provide a player name for streaming media.",
-                ),
-            }),
-            adPingInterval: lazy((value) =>
-              /^\d+$/.exec(value)
-                ? number().when(["channel", "playerName"], {
-                    is: (channel, playerName) => channel && playerName,
-                    then: (schema) =>
-                      schema
-                        .min(
-                          1,
-                          "The Ad Ping Interval must be greater than 1 second.",
-                        )
-                        .max(
-                          10,
-                          "The Ad Ping Interval must be less than 10 seconds.",
-                        )
-                        .default(10),
-                  })
-                : string(),
-            ),
-            mainPingInterval: lazy((value) =>
-              /^\d+$/.exec(value)
-                ? number().when(["channel", "playerName"], {
-                    is: (channel, playerName) => channel && playerName,
-                    then: (schema) =>
-                      schema
-                        .min(
-                          10,
-                          "The Main Ping Interval must be greater than 10 seconds.",
-                        )
-                        .max(
-                          60,
-                          "The Main Ping Interval must be less than 60 seconds.",
-                        )
-                        .default(10),
-                  })
-                : string(),
-            ),
-          },
-          ["channel", "playerName"],
+  instanceValidationSchema: shape({
+    streamingMedia: when(
+      (value, ctx) => ctx.root.components?.streamingMedia === true,
+      shape({
+        channel: rule(
+          (value, ctx) => !parentOf(ctx).playerName || !isEmpty(value),
+          "Please provide a channel name for streaming media.",
         ),
-    }),
+        playerName: rule(
+          (value, ctx) => !parentOf(ctx).channel || !isEmpty(value),
+          "Please provide a player name for streaming media.",
+        ),
+        adPingInterval: pingInterval(
+          1,
+          10,
+          "The Ad Ping Interval must be greater than 1 second.",
+          "The Ad Ping Interval must be less than 10 seconds.",
+        ),
+        mainPingInterval: pingInterval(
+          10,
+          60,
+          "The Main Ping Interval must be greater than 10 seconds.",
+          "The Main Ping Interval must be less than 60 seconds.",
+        ),
+      }),
+    ),
   }),
 };
 
 const StreamingMediaSection = ({ instanceFieldName }) => {
-  const [{ value: mediaChannel }] = useField(
+  const mediaChannel = useFieldValue(
     `${instanceFieldName}.streamingMedia.channel`,
   );
-  const [{ value: playerName }] = useField(
+  const playerName = useFieldValue(
     `${instanceFieldName}.streamingMedia.playerName`,
   );
-  const [{ value: streamingMediaComponentEnabled }] = useField(
+  const streamingMediaComponentEnabled = useFieldValue(
     "components.streamingMedia",
   );
 
@@ -171,7 +151,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
       <SectionHeader>Streaming media</SectionHeader>
       {streamingMediaComponentEnabled ? (
         <FormElementContainer>
-          <FormikTextField
+          <FormTextField
             data-test-id="mediaChannelField"
             label="Channel"
             name={`${instanceFieldName}.streamingMedia.channel`}
@@ -179,7 +159,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
             width="size-5000"
             isRequired={mediaRequiredFieldsProvided()}
           />
-          <FormikTextField
+          <FormTextField
             data-test-id="mediaPlayerNameField"
             label="Player Name"
             name={`${instanceFieldName}.streamingMedia.playerName`}
@@ -187,7 +167,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
             width="size-5000"
             isRequired={mediaRequiredFieldsProvided()}
           />
-          <FormikTextField
+          <FormTextField
             data-test-id="mediaVersionField"
             label="Application version"
             name={`${instanceFieldName}.streamingMedia.appVersion`}
@@ -195,7 +175,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
             width="size-5000"
             isDisabled={!mediaRequiredFieldsProvided()}
           />
-          <FormikNumberField
+          <FormNumberField
             data-test-id="mediaMainPingIntervalField"
             label="Main ping interval"
             name={`${instanceFieldName}.streamingMedia.mainPingInterval`}
@@ -203,7 +183,7 @@ const StreamingMediaSection = ({ instanceFieldName }) => {
             width="size-5000"
             isDisabled={!mediaRequiredFieldsProvided()}
           />
-          <FormikNumberField
+          <FormNumberField
             data-test-id="mediaAdPingIntervalField"
             label="Ad ping interval"
             name={`${instanceFieldName}.streamingMedia.adPingInterval`}

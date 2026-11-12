@@ -416,6 +416,7 @@ describe("Config datastream fields", () => {
 
   it("converts a typed datastream name to its ID and sandbox", async () => {
     await driver.init();
+    await expectDatastreamsLoaded();
 
     await stagingDatastreamField.focus();
     await userEvent.keyboard("datastream enabled");
@@ -446,6 +447,7 @@ describe("Config datastream fields", () => {
 
   it("saves the sandbox when a typed value is a known datastream ID", async () => {
     await driver.init();
+    await expectDatastreamsLoaded();
 
     await stagingDatastreamField.focus();
     await userEvent.keyboard(DATASTREAM_ENABLED_ID);

@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Monitor triggered settings snapshots > round trips a monitoring hook supplied by a data element 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "name": "%hook%",
+  },
+  "valid": true,
+}
+`;

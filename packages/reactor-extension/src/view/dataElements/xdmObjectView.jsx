@@ -20,15 +20,16 @@ import {
   Content,
 } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
-import { object, string } from "yup";
+import { useFormField } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
+import { required, shape } from "../forms/validation";
 import FormElementContainer from "../components/formElementContainer";
 import ExtensionView from "../components/extensionView";
 import validate from "../components/objectEditor/helpers/validate";
 import Editor from "../components/objectEditor/editor";
 import useChanged from "../utils/useChanged";
-import FormikPicker from "../forms/fields/Picker";
-import FormikPagedComboBox from "../forms/fields/PagedComboBox";
+import FormPicker from "../forms/fields/Picker";
+import FormPagedComboBox from "../forms/fields/PagedComboBox";
 import DEFAULT_SANDBOX_NAME from "../components/objectEditor/constants/defaultSandboxName";
 import fetchSandboxes from "../utils/fetchSandboxes";
 import fetchSchemasMeta from "../utils/fetchSchemasMeta";
@@ -230,16 +231,16 @@ const getSettings =
     };
   };
 
-const formikStateValidationSchema = object().shape({
-  sandboxName: string().required("Please select a sandbox."),
-  selectedSchema: object().nullable().required("Please select a schema."),
+const validationSchema = shape({
+  sandboxName: required("Please select a sandbox."),
+  selectedSchema: required("Please select a schema."),
 });
 
-const validateFormikState =
+const validateFormState =
   (context) =>
   ({ values }) => {
-    // We can't and don't need to do validation on the formik values
-    // if the editor isn't even renderable. validateNonFormikState
+    // We can't and don't need to do validation on the form values
+    // if the editor isn't even renderable. validateNonFormState
     // will ensure that the view is properly marked invalid in this
     // case.
     const { schema } = context;
@@ -250,7 +251,7 @@ const validateFormikState =
     return validate(values);
   };
 
-const validateNonFormikState = (context) => () => {
+const validateNonFormState = (context) => () => {
   const { schema } = context;
   if (!schema) {
     context.showEditorNotReadyValidationError = true;
@@ -262,13 +263,12 @@ const validateNonFormikState = (context) => () => {
 const getSchemaKey = (item) => item && `${item.$id}_${item.version}`;
 const getSchemaLabel = (item) => item?.title;
 
-const XdmObject = ({ initInfo, context, formikProps }) => {
+const XdmObject = ({ initInfo, context, form }) => {
   const {
     company: { orgId },
     tokens: { imsAccess },
   } = initInfo;
   const settings = initInfo.settings || {};
-  const { resetForm, values } = formikProps;
 
   const { sandboxes, schema, schemasFirstPage, schemasFirstPageCursor } =
     context;
@@ -280,9 +280,10 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
   const abortPreviousRequestsAndCreateSignal =
     useAbortPreviousRequestsAndCreateSignal();
 
-  const [{ value: selectedSandboxName }] = useField("sandboxName");
-  const [{ value: selectedSchema }, , { setValue: setSelectedSchema }] =
-    useField("selectedSchema");
+  const selectedSandboxName = useFieldValue("sandboxName");
+  const selectedSchemaField = useFormField("selectedSchema");
+  const selectedSchema = selectedSchemaField.state.value;
+  const setSelectedSchema = selectedSchemaField.handleChange;
 
   useChanged(() => {
     setHasSchema(false);
@@ -310,6 +311,7 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
       });
       if (newSchema) {
         context.schema = newSchema;
+        const { values } = form.state;
         const initialFormState = getInitialFormState(
           values && values.schema
             ? {
@@ -321,12 +323,10 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
                 value: settings?.data,
               },
         );
-        resetForm({
-          values: {
-            ...initialFormState,
-            selectedSchema,
-            sandboxName: selectedSandboxName,
-          },
+        form.reset({
+          ...initialFormState,
+          selectedSchema,
+          sandboxName: selectedSandboxName,
         });
         setHasSchema(true);
       }
@@ -420,7 +420,7 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
             </Content>
           </InlineAlert>
         )}
-        <FormikPicker
+        <FormPicker
           label="Sandbox"
           name="sandboxName"
           data-test-id="sandboxField"
@@ -434,9 +434,9 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
           }
         >
           {sandboxItems}
-        </FormikPicker>
+        </FormPicker>
 
-        <FormikPagedComboBox
+        <FormPagedComboBox
           data-test-id="schemaField"
           name="selectedSchema"
           label="Schema"
@@ -458,7 +458,7 @@ const XdmObject = ({ initInfo, context, formikProps }) => {
 
 XdmObject.propTypes = {
   initInfo: PropTypes.object,
-  formikProps: PropTypes.object,
+  form: PropTypes.object,
   context: PropTypes.object,
 };
 
@@ -469,17 +469,11 @@ const XdmObjectView = () => {
     <ExtensionView
       getInitialValues={getInitialValues(context)}
       getSettings={getSettings(context)}
-      formikStateValidationSchema={formikStateValidationSchema}
-      validateFormikState={validateFormikState(context)}
-      validateNonFormikState={validateNonFormikState(context)}
-      render={({ initInfo, formikProps }) => {
-        return (
-          <XdmObject
-            initInfo={initInfo}
-            formikProps={formikProps}
-            context={context}
-          />
-        );
+      validationSchema={validationSchema}
+      validateFormState={validateFormState(context)}
+      validateNonFormState={validateNonFormState(context)}
+      render={({ initInfo, form }) => {
+        return <XdmObject initInfo={initInfo} form={form} context={context} />;
       }}
     />
   );

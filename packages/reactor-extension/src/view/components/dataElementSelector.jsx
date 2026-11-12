@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 import { Children } from "react";
 import PropTypes from "prop-types";
-import { useField } from "formik";
+import { useFormContext } from "../forms/formContext";
+import { useFieldValue } from "../utils/useFieldValue";
 import RawDataElementSelector from "./rawDataElementSelector";
 
 const DataElementSelector = ({
@@ -37,13 +38,14 @@ const DataElementSelector = ({
 
   const name = inputChild.props.name;
   const adjustForLabel = Boolean(inputChild.props.label);
-  const [{ value }, , { setValue }] = useField(name);
+  const form = useFormContext();
+  const value = useFieldValue(name);
 
   return (
     <RawDataElementSelector
       augmentValue={augmentValue}
       value={value}
-      onChange={setValue}
+      onChange={(newValue) => form.setFieldValue(name, newValue)}
       adjustForLabel={adjustForLabel}
       isDisabled={isDisabled}
       tokenize={tokenize}

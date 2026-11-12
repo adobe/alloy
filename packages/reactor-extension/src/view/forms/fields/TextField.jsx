@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 import PropTypes from "prop-types";
 import { TextField } from "@react-spectrum/s2";
-import { useField } from "formik";
+import { useFieldError, useFormField } from "../formContext";
 import widthStyle from "./widthStyle";
 
 /**
@@ -24,15 +24,13 @@ import widthStyle from "./widthStyle";
  * the value is invalid, or null if the value is valid.
  * @returns {React.Element}
  */
-const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
-  const [
-    { value },
-    { touched: fieldTouched, error: fieldError },
-    { setValue, setTouched },
-  ] = useField({
-    name,
-    validate,
-  });
+const FormTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
+  const field = useFormField(name, { validate });
+  const fieldError = useFieldError(name);
+  const {
+    value,
+    meta: { isBlurred: fieldTouched },
+  } = field.state;
 
   const touched = otherProps.touched || fieldTouched;
   const error = otherProps.error === "" ? "" : otherProps.error || fieldError;
@@ -43,10 +41,10 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
       {...otherProps}
       value={value}
       onChange={(newValue) => {
-        setValue(newValue);
+        field.handleChange(newValue);
       }}
       onBlur={() => {
-        setTouched(true);
+        field.handleBlur();
         if (onBlur) {
           onBlur();
         }
@@ -58,11 +56,11 @@ const FormikTextField = ({ name, width, validate, onBlur, ...otherProps }) => {
   );
 };
 
-FormikTextField.propTypes = {
+FormTextField.propTypes = {
   name: PropTypes.string.isRequired,
   width: PropTypes.string,
   validate: PropTypes.func,
   onBlur: PropTypes.func,
 };
 
-export default FormikTextField;
+export default FormTextField;

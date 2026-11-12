@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { useField } from "formik";
+import { useFieldError, useFormField } from "../forms/formContext";
 import PropTypes from "prop-types";
 import { ActionButton, Text } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
@@ -33,11 +33,15 @@ const CodeField = ({
   placeholder,
   beta,
 }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] =
-    useField(name);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
 
   const onPress = async () => {
-    setTouched(true);
+    field.handleBlur();
 
     const options = {
       code: value || placeholder || "",
@@ -57,7 +61,7 @@ const CodeField = ({
     if (placeholder && updatedCode === placeholder) {
       updatedCode = "";
     }
-    setValue(updatedCode);
+    field.handleChange(updatedCode);
   };
 
   return (
@@ -83,7 +87,7 @@ const CodeField = ({
         <ActionButton
           data-test-id={`${dataTestId}-clearButton`}
           onPress={() => {
-            setValue("");
+            field.handleChange("");
           }}
           styles={style({
             marginTop: "[23px]",

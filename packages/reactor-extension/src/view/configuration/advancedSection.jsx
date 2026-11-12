@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { object, string } from "yup";
+import { required, shape } from "../forms/validation";
 import PropTypes from "prop-types";
 import SectionHeader from "../components/sectionHeader";
 import DataElementSelector from "../components/dataElementSelector";
-import FormikTextField from "../forms/fields/TextField";
+import FormTextField from "../forms/fields/TextField";
 import RestoreDefaultValueButton from "../components/restoreDefaultValueButton";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
@@ -49,8 +49,8 @@ export const bridge = {
 
     return instanceSettings;
   },
-  instanceValidationSchema: object().shape({
-    edgeBasePath: string().required("Please specify an edge base path."),
+  instanceValidationSchema: shape({
+    edgeBasePath: required("Please specify an edge base path."),
   }),
 };
 
@@ -66,7 +66,7 @@ const AdvancedSection = ({ instanceFieldName }) => {
           })}
         >
           <DataElementSelector>
-            <FormikTextField
+            <FormTextField
               data-test-id="edgeBasePathField"
               label="Edge base path"
               name={`${instanceFieldName}.edgeBasePath`}

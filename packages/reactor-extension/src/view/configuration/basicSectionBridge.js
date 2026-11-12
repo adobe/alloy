@@ -10,47 +10,41 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { object, string } from "yup";
+import { getBy } from "@tanstack/react-form";
+import { all, matches, required, rule, shape } from "../forms/validation";
 import copyPropertiesIfValueDifferentThanDefault from "./utils/copyPropertiesIfValueDifferentThanDefault";
 import copyPropertiesWithDefaultFallback from "./utils/copyPropertiesWithDefaultFallback";
-import validateDuplicateValue from "./utils/validateDuplicateValue";
 import { LIBRARY_TYPE_PREINSTALLED } from "../constants/libraryType";
 
 const DEFAULT_EDGE_DOMAIN_TEMPLATE = "{companyId}.data.adobedc.net";
 const LEGACY_DEFAULT_EDGE_DOMAIN = "edge.adobedc.net";
 
-export const createNameValidation = () => {
-  return string()
-    .required("Please specify a name.")
-    .matches(/\D+/, "Please provide a non-numeric name.")
-    .test({
-      name: "notWindowPropertyName",
-      message:
-        "Please provide a name that does not conflict with a property already found on the window object.",
-      test(value) {
-        return !(value in window);
-      },
-    });
-};
-
 const wasPreinstalled = (initInfo) => {
   return initInfo.settings?.librarySettings?.type === LIBRARY_TYPE_PREINSTALLED;
 };
 
-export const createUniqueNameTest = () => {
-  return function (instance, testContext) {
-    const { path: instancePath, parent: instances } = testContext;
-    return validateDuplicateValue({
-      createError: this.createError,
-      instances,
-      instance,
-      instancePath,
-      key: "name",
-      message:
-        "Please provide a name unique from those used for other instances.",
-    });
-  };
-};
+// Only instances after the first one with a value are flagged as duplicates.
+const uniqueAmongInstances = (key, message) =>
+  rule((value, ctx) => {
+    const instances = getBy(ctx.root, ctx.path.slice(0, -2));
+    return (
+      instances.findIndex((instance) => instance[key] === value) ===
+      ctx.path.at(-2)
+    );
+  }, message);
+
+export const nameSchema = all(
+  required("Please specify a name."),
+  matches(/\D+/, "Please provide a non-numeric name."),
+  rule(
+    (value) => !(value in window),
+    "Please provide a name that does not conflict with a property already found on the window object.",
+  ),
+  uniqueAmongInstances(
+    "name",
+    "Please provide a name unique from those used for other instances.",
+  ),
+);
 
 export const bridge = {
   getInstanceDefaults: ({ initInfo, existingInstances = [] }) => {
@@ -114,24 +108,15 @@ export const bridge = {
 
     return instanceSettings;
   },
-  instanceValidationSchema: object()
-    .shape({
-      name: createNameValidation(),
-      orgId: string().required("Please specify an IMS organization ID."),
-      edgeDomain: string().required("Please specify an edge domain."),
-    })
-    .test("uniqueName", createUniqueNameTest())
-
-    .test("uniqueOrgId", function (instance, testContext) {
-      const { path: instancePath, parent: instances } = testContext;
-      return validateDuplicateValue({
-        createError: this.createError,
-        instances,
-        instance,
-        instancePath,
-        key: "orgId",
-        message:
-          "Please provide an IMS Organization ID unique from those used for other instances.",
-      });
-    }),
+  instanceValidationSchema: shape({
+    name: nameSchema,
+    orgId: all(
+      required("Please specify an IMS organization ID."),
+      uniqueAmongInstances(
+        "orgId",
+        "Please provide an IMS Organization ID unique from those used for other instances.",
+      ),
+    ),
+    edgeDomain: required("Please specify an edge domain."),
+  }),
 };

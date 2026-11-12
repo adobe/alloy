@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Subscribe ruleset items settings snapshots > round trips saved filters and removes only the first schema 1`] = `
+{
+  "errors": [],
+  "settingsAfterValidate": "<same as before validation>",
+  "settingsBeforeValidate": {
+    "instanceName": "secondary",
+    "schemas": [
+      "https://ns.adobe.com/personalization/dom-action",
+      "https://ns.adobe.com/personalization/json-content-item",
+    ],
+    "surfaces": [
+      "web://example.com/cart",
+      "#hero",
+    ],
+  },
+  "valid": true,
+}
+`;

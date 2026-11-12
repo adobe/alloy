@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import PropTypes from "prop-types";
 import { RadioGroup, Radio } from "@react-spectrum/s2";
 import { css } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useField } from "formik";
+import { useFieldError, useFormField } from "../formContext";
 import FieldDescriptionAndError from "../../components/fieldDescriptionAndError";
 import widthStyle from "./widthStyle";
 import normalizeGroupChildren from "./normalizeGroupChildren";
@@ -32,7 +32,7 @@ const RADIO_GROUP_LAYOUT_STYLE = css(
   "alloy",
 );
 
-const FormikRadioGroup = ({
+const FormRadioGroup = ({
   name,
   children,
   description,
@@ -40,8 +40,12 @@ const FormikRadioGroup = ({
   onChange,
   ...otherProps
 }) => {
-  const [{ value }, { touched, error }, { setValue, setTouched }] =
-    useField(name);
+  const field = useFormField(name);
+  const error = useFieldError(name);
+  const {
+    value,
+    meta: { isBlurred: touched },
+  } = field.state;
 
   return (
     <div
@@ -61,12 +65,12 @@ const FormikRadioGroup = ({
           {...otherProps}
           value={value}
           onChange={(currentValue) => {
-            setValue(currentValue);
+            field.handleChange(currentValue);
             if (onChange) {
               onChange(currentValue);
             }
           }}
-          onBlur={() => setTouched(true)}
+          onBlur={() => field.handleBlur()}
           isInvalid={Boolean(touched && error)}
           styles={widthStyle(width)}
         >
@@ -77,7 +81,7 @@ const FormikRadioGroup = ({
   );
 };
 
-FormikRadioGroup.propTypes = {
+FormRadioGroup.propTypes = {
   name: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   description: PropTypes.string,
@@ -85,4 +89,4 @@ FormikRadioGroup.propTypes = {
   onChange: PropTypes.func,
 };
 
-export default FormikRadioGroup;
+export default FormRadioGroup;
