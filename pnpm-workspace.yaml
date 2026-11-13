@@ -36,5 +36,4 @@ allowBuilds:
   lmdb: true
   msgpackr-extract: true
   msw: true
-  puppeteer: true
   unrs-resolver: false
