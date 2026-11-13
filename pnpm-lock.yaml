@@ -9145,8 +9145,8 @@ packages:
     resolution: {integrity: sha512-VMbMxbDeehAxpOtWJXlcUS5E8iXh6QmN+BkRX1GARS3wRaXEEgzCcB10gTQazO42tpNIya8xIyNx8fll1OFPrg==}
     engines: {node: '>= 0.8.0'}
 
-  serialize-javascript@7.0.5:
-    resolution: {integrity: sha512-F4LcB0UqUl1zErq+1nYEEzSHJnIwb3AF2XWB94b+afhrekOUijwooAYqFyRbjYkm2PAKBabx6oYv/xDxNi8IBw==}
+  serialize-javascript@7.1.4:
+    resolution: {integrity: sha512-FqlEuoTq/zRmA4Lg6aOqyH3lCHbUtCB0bmHCeFniX2GBdDqMJM3FwdvEhlE5Pim1dlt2FfBdVPmUNNiGhhKqpw==}
     engines: {node: '>=20.0.0'}
 
   serve-handler@6.1.7:
@@ -18251,7 +18251,7 @@ snapshots:
 
   '@rollup/plugin-terser@1.0.0(rollup@4.60.3)':
     dependencies:
-      serialize-javascript: 7.0.5
+      serialize-javascript: 7.1.4
       smob: 1.5.0
       terser: 5.44.0
     optionalDependencies:
@@ -23851,7 +23851,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  serialize-javascript@7.0.5: {}
+  serialize-javascript@7.1.4: {}
 
   serve-handler@6.1.7:
     dependencies:
