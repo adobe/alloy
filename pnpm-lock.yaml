@@ -445,7 +445,7 @@ importers:
         version: 1.33.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       antd:
         specifier: ^5.29.1
-        version: 5.29.3(date-fns@4.1.0)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 5.29.3(date-fns@4.1.0)(moment@2.31.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       arktype:
         specifier: ^2.2.9
         version: 2.2.9
@@ -7779,8 +7779,8 @@ packages:
   moment-duration-format-commonjs@1.0.1:
     resolution: {integrity: sha512-KhKZRH21/+ihNRWrmdNFOyBptFi7nAWZFeFsRRpXkzgk/Yublb4fxyP0jU6EY1VDxUL/VUPdCmm/wAnpbfXdfw==}
 
-  moment@2.30.1:
-    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
+  moment@2.31.0:
+    resolution: {integrity: sha512-0acOTfMiWOheYS4eoWb80yYMb/JLvVv9SHbs2PehaDzfUG0Bw855SKyk0IKTnPGa5+U2bmi3W68l1+sGLX/pvw==}
 
   moo@0.5.3:
     resolution: {integrity: sha512-m2fmM2dDm7GZQsY7KK2cme8agi+AAljILjQnof7p1ZMDe6dQ4bdnSMx0cPppudoeNv5hEFQirN6u+O4fDE0IWA==}
@@ -19134,7 +19134,7 @@ snapshots:
 
   ansi-styles@6.2.3: {}
 
-  antd@5.29.3(date-fns@4.1.0)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  antd@5.29.3(date-fns@4.1.0)(moment@2.31.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       '@ant-design/colors': 7.2.1
       '@ant-design/cssinjs': 1.24.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -19166,7 +19166,7 @@ snapshots:
       rc-motion: 2.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-notification: 5.6.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-pagination: 5.1.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      rc-picker: 4.11.3(date-fns@4.1.0)(dayjs@1.11.20)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      rc-picker: 4.11.3(date-fns@4.1.0)(dayjs@1.11.20)(moment@2.31.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-progress: 4.0.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-rate: 2.13.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-resize-observer: 1.4.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -22023,7 +22023,7 @@ snapshots:
 
   moment-duration-format-commonjs@1.0.1: {}
 
-  moment@2.30.1: {}
+  moment@2.31.0: {}
 
   moo@0.5.3: {}
 
@@ -22762,7 +22762,7 @@ snapshots:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
-  rc-picker@4.11.3(date-fns@4.1.0)(dayjs@1.11.20)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  rc-picker@4.11.3(date-fns@4.1.0)(dayjs@1.11.20)(moment@2.31.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       '@babel/runtime': 7.28.4
       '@rc-component/trigger': 2.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -22775,7 +22775,7 @@ snapshots:
     optionalDependencies:
       date-fns: 4.1.0
       dayjs: 1.11.20
-      moment: 2.30.1
+      moment: 2.31.0
 
   rc-progress@4.0.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
@@ -23439,7 +23439,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.3)
       lodash: 4.18.1
       magic-string: 0.30.21
-      moment: 2.30.1
+      moment: 2.31.0
       package-name-regex: 2.0.6
       rollup: 4.60.3
       spdx-expression-validate: 2.0.0
@@ -24065,7 +24065,7 @@ snapshots:
       dedent: 0.6.0
       highlight-es: 1.0.3
       lodash: 4.18.1
-      moment: 2.30.1
+      moment: 2.31.0
       mustache: 2.3.2
       os-family: 1.1.0
       parse5: 2.2.3
@@ -24153,7 +24153,7 @@ snapshots:
       log-update-async-hook: 2.0.7
       make-dir: 3.1.0
       mime-db: 1.54.0
-      moment: 2.30.1
+      moment: 2.31.0
       moment-duration-format-commonjs: 1.0.1
       mustache: 2.3.2
       nanoid: 3.3.11
