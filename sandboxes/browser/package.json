@@ -19,6 +19,6 @@
   "devDependencies": {
     "@azure/static-web-apps-cli": "2.0.9",
     "@vitejs/plugin-react": "^6.0.1",
-    "vite": "^8.0.10"
+    "vite": "^8.1.6"
   }
 }
