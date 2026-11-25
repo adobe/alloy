@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { describe, it, expect, vi } from "vitest";
+import corePackageJson from "@adobe/alloy-core/package.json" with { type: "json" };
 import implementationDetails from "../../../../../src/components/Context/implementationDetails.js";
 
 describe("Context::implementationDetails", () => {
@@ -26,7 +27,7 @@ describe("Context::implementationDetails", () => {
     });
   });
 
-  it("works", () => {
+  it("falls back to the core package version when none is supplied", () => {
     const event = {
       mergeXdm: vi.fn(),
     };
@@ -34,7 +35,7 @@ describe("Context::implementationDetails", () => {
     expect(event.mergeXdm).toHaveBeenCalledWith({
       implementationDetails: {
         name: "https://ns.adobe.com/experience/alloy",
-        version: "__VERSION__",
+        version: corePackageJson.version,
         environment: "browser",
       },
     });

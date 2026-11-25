@@ -14,7 +14,6 @@ import path from "path";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
-import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
 import { transform as oxcTransform } from "oxc-transform";
 import license from "rollup-plugin-license";
@@ -23,8 +22,6 @@ import { gzip, brotliCompress as br, constants as zlibConstants } from "zlib";
 import { promisify } from "util";
 import { existsSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
-import packageJson from "./package.json" with { type: "json" };
-const { version } = packageJson;
 
 const INCLUDE_BUNDLESIZE = process.env.BUNDLESIZE === "true";
 /**
@@ -223,10 +220,6 @@ export const utilityExportBuilds = [
 
 const buildPlugins = ({ variant, minify }) => {
   const plugins = [
-    replace({
-      __VERSION__: version,
-      preventAssignment: true,
-    }),
     ...typeScriptSourcePlugins(),
     resolve({
       preferBuiltins: false,

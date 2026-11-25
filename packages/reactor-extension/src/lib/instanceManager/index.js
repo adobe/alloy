@@ -23,7 +23,7 @@ const createInstanceManager = require("./createInstanceManager");
 const injectWrapOnBeforeEventSend = require("./injectWrapOnBeforeEventSend");
 const createGetConfigOverrides = require("../utils/createGetConfigOverrides");
 
-const version = "__VERSION__";
+const version = require("../constants/extensionVersion");
 
 const wrapOnBeforeEventSend = injectWrapOnBeforeEventSend({ version });
 

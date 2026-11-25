@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { vi, beforeEach, describe, it, expect } from "vitest";
+import packageJson from "../../../../../package.json" with { type: "json" };
 import createMediaHelper from "../../../../../src/components/MediaAnalyticsBridge/createMediaHelper.js";
 
 describe("createMediaHelper", () => {
@@ -218,7 +219,7 @@ describe("createMediaHelper", () => {
     });
 
     it("should return the version", () => {
-      const expectedResult = `WEBSDK __VERSION__`;
+      const expectedResult = `WEBSDK ${packageJson.version}`;
       const result = mediaHelper.version;
       expect(result).toEqual(expectedResult);
     });

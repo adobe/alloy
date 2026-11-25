@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { beforeEach, describe, it, expect } from "vitest";
+import packageJson from "../../../../../package.json" with { type: "json" };
 import createLibraryInfo from "../../../../../src/components/LibraryInfo/index.js";
 
 describe("LibraryInfo", () => {
@@ -29,7 +30,7 @@ describe("LibraryInfo", () => {
   it("returns library, command, and config information", () => {
     expect(createLibraryInfo(toolsMock).commands.getLibraryInfo.run()).toEqual({
       libraryInfo: {
-        version: `__VERSION__`,
+        version: packageJson.version,
         configs: {
           foo: "bar",
         },
