@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import { expect } from "vitest";
+import field from "../field";
 
 const TIMEOUT = { timeout: 6000 };
 
@@ -18,16 +19,7 @@ const trigger = (locator) => locator.locator("input, button").first();
 
 const listbox = (locator) => trigger(locator).controls();
 
-export const openMenu = async (locator) => {
-  const control = trigger(locator);
-  if (control.element().getAttribute("aria-expanded") !== "true") {
-    const isComboBox = control.element().tagName.toLowerCase() === "input";
-    await (isComboBox ? locator.getByRole("button") : control).click(TIMEOUT);
-  }
-  await expect
-    .element(control, TIMEOUT)
-    .toHaveAttribute("aria-expanded", "true");
-};
+export const openMenu = (locator) => field(locator).openMenu();
 
 export const enterSearch = async (locator, text) => {
   await trigger(locator).fill(text, TIMEOUT);
@@ -37,9 +29,7 @@ export const enterSearch = async (locator, text) => {
 };
 
 export const menuOptionLabels = (locator) =>
-  [...listbox(locator).element().querySelectorAll('[role="option"]')].map(
-    (option) => option.textContent.trim(),
-  );
+  field(locator).getMenuOptionLabels();
 
 export const selectMenuOption = async (locator, label) => {
   await listbox(locator)

@@ -120,6 +120,28 @@ const isChecked = (el) => {
   return el.getAttribute("aria-checked") === "true";
 };
 
+const readMenuOptionLabels = (locator) =>
+  asTrigger(locator)
+    .controls()
+    .getByRole("option")
+    .elements()
+    .map((option) => option.textContent.trim());
+
+// Opens a Picker/ComboBox menu unless it is already open, so calling it
+// twice (or after typing into a ComboBox, which opens it) never toggles it shut.
+const openMenuIfClosed = async (locator) => {
+  const trigger = asTrigger(locator);
+  if (trigger.element().getAttribute("aria-expanded") !== "true") {
+    const isComboBox = trigger.element().tagName.toLowerCase() === "input";
+    const button = isComboBox ? locator.getByRole("button") : trigger;
+    await button.click(TIMEOUT);
+  }
+  await expect
+    .element(trigger, TIMEOUT)
+    .toHaveAttribute("aria-expanded", "true");
+  await expect.element(trigger.controls(), TIMEOUT).toBeVisible();
+};
+
 const field = (locator) => ({
   // Actions:
   // ================================
@@ -184,6 +206,7 @@ const field = (locator) => ({
       asControl(locator).element().focus();
       await expect.element(asControl(locator), TIMEOUT).toHaveFocus();
     }),
+  openMenu: async () => withRetries(() => openMenuIfClosed(locator)),
   scrollIntoView: () =>
     withRetries(async () => {
       await expect.element(locator, TIMEOUT).toBeVisible();
@@ -273,6 +296,14 @@ const field = (locator) => ({
       expect(rect.top).toBeGreaterThanOrEqual(0);
       expect(rect.bottom).toBeLessThanOrEqual(window.innerHeight + 100);
     }),
+  // Opens the menu if needed, then waits for its option labels to match.
+  expectMenuOptionLabels: async (labels) =>
+    withRetries(async () => {
+      await openMenuIfClosed(locator);
+      await expect
+        .poll(() => readMenuOptionLabels(locator), TIMEOUT)
+        .toEqual(labels);
+    }),
   expectNotSelected: async () =>
     withRetries(async () => {
       await expect
@@ -326,6 +357,9 @@ const field = (locator) => ({
     }),
   // Getters: (try to avoid, but sometimes necessary. i.e. to see if the default value is restored)
   // ================================
+  // Synchronous read of the labels of an already open menu; poll it, or use
+  // expectMenuOptionLabels.
+  getMenuOptionLabels: () => readMenuOptionLabels(locator),
   getValue: async () =>
     withRetries(async () => {
       await expect.element(locator, TIMEOUT).toBeVisible();

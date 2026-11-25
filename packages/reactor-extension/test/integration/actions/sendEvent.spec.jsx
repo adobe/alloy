@@ -17,6 +17,19 @@ import useView from "../helpers/useView";
 import SendEventView from "../../../src/view/actions/sendEventView";
 import field from "../helpers/field";
 import { worker } from "../helpers/mocks/browser";
+import runInstanceNameOptionsTest from "../helpers/actions/instanceNameOptionsTest";
+import { instances, LONG_TEST_TIMEOUT } from "../helpers/actions/fixtures";
+import {
+  buildEdgeConfigOverrides,
+  configOverridesInstance,
+  enableProductionOverrides,
+  expectAllEnvironmentOverrides,
+  mockConfigOverridesDatastream,
+  selectBlackbirdOverrides,
+  selectEnvironmentTab,
+  typeAllEnvironmentOverrides,
+  typedOverrideValues,
+} from "../helpers/actions/configOverrides";
 
 let view;
 let driver;
@@ -485,5 +498,477 @@ describe("Send Event Action", () => {
 
       await driver.expectSettings((s) => s.advertising).toBeUndefined();
     });
+
+    describe("with a data element", () => {
+      const advertisingExtensionSettings = {
+        instances: [{ name: "alloy", edgeConfigId: "PR123" }],
+        components: { advertising: true },
+      };
+      let handleAdvertisingDataElementOption;
+      let handleAdvertisingDataElementField;
+
+      beforeEach(() => {
+        handleAdvertisingDataElementOption = field(
+          view.getByTestId("handleAdvertisingDataDataElement"),
+        );
+        handleAdvertisingDataElementField = field(
+          view.getByTestId("handleAdvertisingDataDataElementField"),
+        );
+      });
+
+      it("saves advertising settings when using data element", async () => {
+        await driver.init({ extensionSettings: advertisingExtensionSettings });
+
+        await handleAdvertisingDataElementOption.click();
+        await handleAdvertisingDataElementOption.expectChecked();
+        await handleAdvertisingDataElementField.fill("%myAdvertisingData%");
+
+        await driver.expectValidate().toBe(true);
+        await driver.expectSettings().toEqual({
+          instanceName: "alloy",
+          advertising: { handleAdvertisingData: "%myAdvertisingData%" },
+        });
+      });
+
+      it("loads existing advertising settings - data element", async () => {
+        await driver.init({
+          extensionSettings: advertisingExtensionSettings,
+          settings: {
+            instanceName: "alloy",
+            advertising: { handleAdvertisingData: "%myAdvertisingData%" },
+          },
+        });
+
+        await handleAdvertisingDataElementOption.expectChecked();
+        await handleAdvertisingDataElementField.expectValue(
+          "%myAdvertisingData%",
+        );
+        await handleAdvertisingDataDisabledOption.expectUnchecked();
+        await handleAdvertisingDataAutoOption.expectUnchecked();
+        await handleAdvertisingDataWaitOption.expectUnchecked();
+      });
+
+      it("shows error for advertising data element value that is not a data element", async () => {
+        await driver.init({ extensionSettings: advertisingExtensionSettings });
+
+        await handleAdvertisingDataElementOption.click();
+        await handleAdvertisingDataElementField.fill("notADataElement");
+
+        await driver.expectValidate().toBe(false);
+        await handleAdvertisingDataElementField.expectError(
+          /please specify a data element/i,
+        );
+      });
+    });
+
+    it("allows advertising settings with other personalization settings", async () => {
+      await driver.init({
+        extensionSettings: {
+          instances: [{ name: "alloy", edgeConfigId: "PR123" }],
+          components: { advertising: true },
+        },
+      });
+
+      await handleAdvertisingDataAutoOption.click();
+      await field(view.getByTestId("renderDecisionsCheckbox")).click();
+      await field(view.getByTestId("decisionScopesDataElementOption")).click();
+      await field(view.getByTestId("decisionScopesDataElementField")).fill(
+        "%myScopes%",
+      );
+
+      await driver.expectValidate().toBe(true);
+      await driver.expectSettings().toEqual({
+        instanceName: "alloy",
+        renderDecisions: true,
+        personalization: { decisionScopes: "%myScopes%" },
+        advertising: { handleAdvertisingData: "auto" },
+      });
+    });
+  });
+  describe("form", () => {
+    const mockExtensionSettings = {
+      instances,
+      components: { advertising: true },
+    };
+    const get = (testId) => field(view.getByTestId(testId));
+    const decisionScopes = (index) => ({
+      value: get(`decisionScopes${index}Field`),
+      deleteButton: get(`decisionScopes${index}RemoveButton`),
+    });
+    const surfaces = (index) => ({
+      value: get(`surfaces${index}Field`),
+      deleteButton: get(`surfaces${index}RemoveButton`),
+    });
+
+    it("renders XDM documentation links inline", async () => {
+      await driver.init({ extensionSettings: mockExtensionSettings });
+
+      await expect.element(view.getByText("XDM Object")).toBeVisible();
+      for (const fragment of ["#xdm-object", "#merged-objects"]) {
+        const link = document.querySelector(`a[href*='${fragment}']`);
+        const { display, fontSize } = getComputedStyle(link);
+        expect(display).toBe("inline");
+        // How many lines a link wraps onto depends on the font, so the number
+        // of rects is not asserted; an inline link never makes a rect taller
+        // than a line, though.
+        for (const rect of link.getClientRects()) {
+          expect(rect.height).toBeLessThan(2 * parseFloat(fontSize));
+        }
+      }
+    });
+
+    it(
+      "initializes form fields with full settings, when decision scopes is data element",
+      async () => {
+        const overrideValues = {
+          datastreamId: instances[0].edgeConfigId,
+          sandbox: "prod",
+          datasetId: "6336ff95ba16ca1c07b4c0db",
+          idSyncContainerId: 23512312,
+          propertyToken: "01dbc634-07c1-d8f9-ca69-b489a5ac5e94",
+          reportSuites: ["unifiedjsqeonly2"],
+        };
+        await driver.init({
+          extensionSettings: mockExtensionSettings,
+          settings: {
+            instanceName: "alloy2",
+            type: "myType1",
+            xdm: "%myDataLayer%",
+            data: "%myData%",
+            mergeId: "%myMergeId%",
+            personalization: {
+              decisionScopes: "%myDecisionScope%",
+              surfaces: "%mySurface%",
+            },
+            documentUnloading: true,
+            renderDecisions: true,
+            edgeConfigOverrides: buildEdgeConfigOverrides(overrideValues, {
+              withEnabled: false,
+            }),
+          },
+        });
+
+        await get("instanceNamePicker").expectValue("alloy2");
+        await get("typeField").expectValue("myType1");
+        await get("xdmTextField").expectValue("%myDataLayer%");
+        await get("dataTextField").expectValue("%myData%");
+        await get("mergeIdTextField").expectValue("%myMergeId%");
+        await get("documentUnloadingCheckbox").expectChecked();
+        await get("renderDecisionsCheckbox").expectChecked();
+        await get("decisionScopesDataElementOption").expectChecked();
+        await get("decisionScopesFormOption").expectUnchecked();
+        await get("decisionScopesDataElementField").expectValue(
+          "%myDecisionScope%",
+        );
+        await get("surfacesDataElementOption").expectChecked();
+        await get("surfacesFormOption").expectUnchecked();
+        await get("surfacesDataElementField").expectValue("%mySurface%");
+        await expectAllEnvironmentOverrides(view, overrideValues);
+        await driver.expectValidate().toBe(true);
+      },
+      LONG_TEST_TIMEOUT,
+    );
+
+    it.each([
+      [
+        "legacy decision scopes form fields, when decision scopes is an array of scopes",
+        {
+          decisionScopes: ["foo1", "foo2", "foo3"],
+          personalization: {
+            surfaces: ["web://bar1", "web://bar2", "web://bar3"],
+          },
+        },
+      ],
+      [
+        "decision scopes and surfaces form fields, when these are arrays",
+        {
+          personalization: {
+            decisionScopes: ["foo1", "foo2", "foo3"],
+            surfaces: ["web://bar1", "web://bar2", "web://bar3"],
+          },
+        },
+      ],
+    ])("initializes %s", async (_, settings) => {
+      await driver.init({
+        extensionSettings: mockExtensionSettings,
+        settings: { instanceName: "alloy1", ...settings },
+      });
+
+      await get("decisionScopesFormOption").expectChecked();
+      await get("decisionScopesDataElementField").expectHidden();
+      for (const [index, value] of ["foo1", "foo2", "foo3"].entries()) {
+        // eslint-disable-next-line no-await-in-loop
+        await decisionScopes(index).value.expectValue(value);
+      }
+      await get("surfacesFormOption").expectChecked();
+      await get("surfacesDataElementField").expectHidden();
+      for (const [index, value] of [
+        "web://bar1",
+        "web://bar2",
+        "web://bar3",
+      ].entries()) {
+        // eslint-disable-next-line no-await-in-loop
+        await surfaces(index).value.expectValue(value);
+      }
+      await driver.expectValidate().toBe(true);
+    });
+
+    it("initializes form fields with minimal settings", async () => {
+      await driver.init({
+        extensionSettings: mockExtensionSettings,
+        settings: { instanceName: "alloy1" },
+      });
+
+      await get("instanceNamePicker").expectValue("alloy1");
+      await get("typeField").expectValue("");
+      await get("xdmTextField").expectValue("");
+      await get("dataTextField").expectValue("");
+      await get("mergeIdTextField").expectValue("");
+      await get("decisionScopesFormOption").expectChecked();
+      await get("documentUnloadingCheckbox").expectUnchecked();
+      await get("renderDecisionsCheckbox").expectUnchecked();
+      await get("decisionScopesDataElementOption").expectUnchecked();
+      await decisionScopes(0).value.expectValue("");
+      await get("surfacesDataElementOption").expectUnchecked();
+      await surfaces(0).value.expectValue("");
+    });
+
+    it("initializes form fields with no settings", async () => {
+      await driver.init({ extensionSettings: mockExtensionSettings });
+
+      await get("instanceNamePicker").expectValue("alloy1");
+      await get("typeField").expectValue("");
+      await get("xdmTextField").expectValue("");
+      await get("dataTextField").expectValue("");
+      await get("mergeIdTextField").expectValue("");
+      await get("documentUnloadingCheckbox").expectUnchecked();
+      await get("renderDecisionsCheckbox").expectUnchecked();
+      await get("decisionScopesFormOption").expectChecked();
+      await get("decisionScopesDataElementOption").expectUnchecked();
+      await decisionScopes(0).value.expectValue("");
+      await get("surfacesFormOption").expectChecked();
+      await get("surfacesDataElementOption").expectUnchecked();
+      await surfaces(0).value.expectValue("");
+      await get("overridesEnabled").expectValue("No override");
+    });
+
+    it("returns minimal valid settings", async () => {
+      await driver.init({ extensionSettings: mockExtensionSettings });
+
+      await driver.expectValidate().toBe(true);
+      await driver.expectSettings().toEqual({ instanceName: "alloy1" });
+    });
+
+    it(
+      "returns full valid settings with decision scopes as data element",
+      async () => {
+        const overrideValues = typedOverrideValues;
+        await driver.init({ extensionSettings: mockExtensionSettings });
+
+        await get("instanceNamePicker").selectOption("alloy2");
+        await get("typeField").fill("mytype1");
+        await get("xdmTextField").fill("%myDataLayer%");
+        await get("dataTextField").fill("%myData%");
+        await get("mergeIdTextField").fill("%myMergeId%");
+        await get("documentUnloadingCheckbox").click();
+        await get("renderDecisionsCheckbox").click();
+        await get("decisionScopesDataElementOption").click();
+        await get("decisionScopesDataElementField").fill("%myScope%");
+        await get("surfacesDataElementOption").click();
+        await get("surfacesDataElementField").fill("%mySurface%");
+        await driver.expectValidate().toBe(true);
+        await typeAllEnvironmentOverrides(view, overrideValues);
+
+        await driver.expectValidate().toBe(true);
+        await driver.expectSettings().toEqual({
+          instanceName: "alloy2",
+          type: "mytype1",
+          xdm: "%myDataLayer%",
+          data: "%myData%",
+          mergeId: "%myMergeId%",
+          documentUnloading: true,
+          renderDecisions: true,
+          personalization: {
+            decisionScopes: "%myScope%",
+            surfaces: "%mySurface%",
+          },
+          edgeConfigOverrides: buildEdgeConfigOverrides(overrideValues),
+        });
+      },
+      LONG_TEST_TIMEOUT,
+    );
+
+    it("returns decision scopes settings as an array", async () => {
+      await driver.init({ extensionSettings: mockExtensionSettings });
+
+      await get("decisionScopesFormOption").click();
+      await decisionScopes(0).value.fill("foo");
+      await get("decisionScopesAddButton").click();
+      await decisionScopes(1).value.fill("foo1");
+      await get("decisionScopesAddButton").click();
+      await decisionScopes(2).value.fill("foo2");
+      await decisionScopes(1).deleteButton.click();
+
+      await driver.expectValidate().toBe(true);
+      await driver.expectSettings().toEqual({
+        instanceName: "alloy1",
+        personalization: { decisionScopes: ["foo", "foo2"] },
+      });
+    });
+
+    it("returns surfaces settings as an array", async () => {
+      await driver.init({ extensionSettings: mockExtensionSettings });
+
+      await get("surfacesFormOption").click();
+      await surfaces(0).value.fill("web://foo");
+      await get("surfacesAddButton").click();
+      await surfaces(1).value.fill("web://foo1");
+      await get("surfacesAddButton").click();
+      await surfaces(2).value.fill("web://foo2");
+      await surfaces(1).deleteButton.click();
+
+      await driver.expectValidate().toBe(true);
+      await driver.expectSettings().toEqual({
+        instanceName: "alloy1",
+        personalization: { surfaces: ["web://foo", "web://foo2"] },
+      });
+    });
+
+    it.each([
+      ["decision scopes", "decisionScopes"],
+      ["surface", "surfaces"],
+    ])(
+      "does not return %s settings when provided with array of empty strings",
+      async (_, name) => {
+        await driver.init({ extensionSettings: mockExtensionSettings });
+
+        await get(`${name}FormOption`).click();
+        await get(`${name}AddButton`).click();
+        await get(`${name}AddButton`).click();
+
+        await driver.expectValidate().toBe(true);
+        await driver.expectSettings().toEqual({ instanceName: "alloy1" });
+      },
+    );
+
+    it("shows error for data value that is not a data element", async () => {
+      await driver.init({ extensionSettings: mockExtensionSettings });
+
+      await get("dataTextField").fill("myData");
+
+      await driver.expectValidate().toBe(false);
+      await get("dataTextField").expectError(/please specify a data element/i);
+    });
+
+    it.each([
+      ["data", "dataTextField"],
+      ["xdm", "xdmTextField"],
+    ])(
+      "shows error for %s value that is more than one data element",
+      async (_, testId) => {
+        await driver.init({ extensionSettings: mockExtensionSettings });
+
+        await get(testId).fill("%a%%b%");
+
+        await driver.expectValidate().toBe(false);
+        await get(testId).expectError(/please specify a data element/i);
+      },
+    );
+
+    it.each([
+      ["decision scope", "decisionScopes", "fooScope"],
+      ["surface", "surfaces", "fooSurface"],
+    ])(
+      "shows error for %s value that is not a data element",
+      async (_, name, value) => {
+        await driver.init({ extensionSettings: mockExtensionSettings });
+
+        await get(`${name}DataElementOption`).click();
+        await get(`${name}DataElementField`).fill(value);
+
+        await driver.expectValidate().toBe(false);
+        await get(`${name}DataElementField`).expectError(
+          /please specify a data element/i,
+        );
+      },
+    );
+
+    it(
+      "populates overrides dropdowns with Blackbird config data",
+      async () => {
+        mockConfigOverridesDatastream();
+        await driver.init({
+          extensionSettings: { instances: [configOverridesInstance] },
+        });
+
+        await enableProductionOverrides(view);
+        const expectedOverrides = await selectBlackbirdOverrides(view);
+
+        await driver.expectValidate().toBe(true);
+        await driver
+          .expectSettings((settings) => settings.edgeConfigOverrides)
+          .toEqual({ production: expectedOverrides });
+      },
+      LONG_TEST_TIMEOUT,
+    );
+
+    it(
+      "overrides switch to text fields when the second instance is selected",
+      async () => {
+        mockConfigOverridesDatastream();
+        const environmentIds = (edgeConfigId, sandbox) => ({
+          edgeConfigId,
+          sandbox,
+          stagingEdgeConfigId: edgeConfigId,
+          stagingSandbox: sandbox,
+          developmentEdgeConfigId: edgeConfigId,
+          developmentSandbox: sandbox,
+        });
+        const expectDatasetField = (role) =>
+          expect.element(
+            view.getByTestId("eventDatasetOverride").getByRole(role),
+          );
+        await driver.init({
+          extensionSettings: {
+            instances: [
+              {
+                name: "alloy1",
+                ...environmentIds(
+                  "aca8c786-4940-442f-ace5-7c4aba02118e",
+                  "prod",
+                ),
+              },
+              {
+                name: "alloy2",
+                ...environmentIds(
+                  "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+                  "testsandbox1",
+                ),
+              },
+            ],
+          },
+        });
+
+        await get("instanceNamePicker").expectValue("alloy1");
+        await selectEnvironmentTab(view, "development");
+        await get("overridesEnabled").selectOption("Enabled");
+        await get("datastreamId").expectVisible();
+        await get("experiencePlatformEnabled").selectOption("Enabled");
+        await expectDatasetField("combobox").toBeVisible();
+
+        await get("instanceNamePicker").selectOption("alloy2");
+
+        await get("overridesEnabled").expectValue("Enabled");
+        await get("datastreamId").expectVisible();
+        await expectDatasetField("textbox").toBeVisible();
+        await expectDatasetField("combobox").not.toBeInTheDocument();
+      },
+      LONG_TEST_TIMEOUT,
+    );
+  });
+
+  runInstanceNameOptionsTest({
+    openView: () => useView(SendEventView),
+    pickerTestId: "instanceNamePicker",
   });
 });
