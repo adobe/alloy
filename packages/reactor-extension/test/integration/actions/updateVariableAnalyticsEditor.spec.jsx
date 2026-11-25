@@ -142,16 +142,17 @@ describe("Update variable analytics editor", () => {
   });
 
   it("validates fields", async () => {
-    await init(null);
-    await analytics.evars.value(0).fill("value10");
+    await init({
+      ...SOLUTIONS_DATA_ELEMENT,
+      data: { __adobe: { analytics: { eVar10: "", prop7: "" } } },
+    });
+    await analytics.evars.action(0).selectOption("Copy from");
     await analytics.evars.addRow();
-    await analytics.evars.name(1).searchAndSelectOption("eVar10");
-    await analytics.evars.action(1).selectOption("Copy from");
+    await analytics.evars.value(1).fill("value10");
 
-    await analytics.props.value(0).fill("value42");
+    await analytics.props.action(0).selectOption("Copy from");
     await analytics.props.addRow();
-    await analytics.props.name(1).searchAndSelectOption("prop7");
-    await analytics.props.action(1).selectOption("Copy from");
+    await analytics.props.value(1).fill("value42");
 
     await analytics.events.value(0).fill("123");
     await analytics.events.addRow();
@@ -162,10 +163,10 @@ describe("Update variable analytics editor", () => {
     await analytics.additionalProperties.value(0).fill("mycampaign");
 
     await driver.expectValidate().toBe(false);
-    await analytics.evars.name(0).expectError(/please choose an evar/i);
-    await analytics.evars.copy(1).expectError(/please choose a value/i);
-    await analytics.props.name(0).expectError(/please choose a prop/i);
-    await analytics.props.copy(1).expectError(/please choose a value/i);
+    await analytics.evars.name(1).expectError(/please choose an evar/i);
+    await analytics.evars.copy(0).expectError(/please choose a value/i);
+    await analytics.props.name(1).expectError(/please choose a prop/i);
+    await analytics.props.copy(0).expectError(/please choose a value/i);
     await analytics.events.name(0).expectError(/please choose an event/i);
     await analytics.events.name(1).expectError(/please choose an event/i);
     await analytics.contextData
