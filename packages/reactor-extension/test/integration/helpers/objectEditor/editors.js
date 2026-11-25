@@ -59,6 +59,15 @@ export default (view) => {
     },
     enum: comboBox,
     object: { ...strategies, ...text },
+    // The key/value form of the `target` / `audiencemanager` nodes of a data
+    // variable (objectJsonEdit.jsx); the whole-object value is `...text`.
+    keyValue: {
+      ...strategies,
+      ...text,
+      key: (index) => field(view.getByTestId(`keyField${index}`)),
+      value: (index) => field(view.getByTestId(`valueField${index}`)),
+      addRow: () => field(view.getByTestId("addPropertyButton")).click(),
+    },
     array: {
       ...strategies,
       ...text,

@@ -36,3 +36,6 @@ export const selectMenuOption = async (locator, label) => {
     .getByRole("option", { name: label, exact: true })
     .click(TIMEOUT);
 };
+
+export const searchAndSelectMenuOption = (locator, text, label = text) =>
+  field(locator).searchAndSelectOption(text, label);

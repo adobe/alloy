@@ -153,6 +153,7 @@ const field = (locator) => ({
     }),
   check: async () =>
     withRetries(async () => {
+      await expect.element(locator, TIMEOUT).toBeInTheDocument();
       if (!isChecked(asCheckable(locator).element())) {
         await locator.click(TIMEOUT);
         await expect.element(asCheckable(locator), TIMEOUT).toBeChecked();
@@ -212,6 +213,23 @@ const field = (locator) => ({
       await expect.element(locator, TIMEOUT).toBeVisible();
       locator.element().scrollIntoView();
     }),
+  // Types `text` into a ComboBox to filter its (possibly virtualized) list,
+  // then picks the option labelled `label` from the field's own listbox.
+  searchAndSelectOption: async (text, label = text) =>
+    withRetries(async () => {
+      const trigger = asTrigger(locator);
+      await trigger.fill(text, TIMEOUT);
+      await expect
+        .element(trigger, TIMEOUT)
+        .toHaveAttribute("aria-expanded", "true");
+      const option = trigger
+        .controls()
+        .getByRole("option", { name: label, exact: true })
+        .nth(0);
+      await expect.element(option, TIMEOUT).toBeVisible();
+      await option.click(TIMEOUT);
+      await expect.element(trigger, TIMEOUT).toHaveValue(label);
+    }),
   selectOption: async (name) =>
     withRetries(async () => {
       const trigger = asTrigger(locator);
@@ -250,6 +268,7 @@ const field = (locator) => ({
     }),
   uncheck: async () =>
     withRetries(async () => {
+      await expect.element(locator, TIMEOUT).toBeInTheDocument();
       if (isChecked(asCheckable(locator).element())) {
         await locator.click(TIMEOUT);
         await expect.element(asCheckable(locator), TIMEOUT).not.toBeChecked();
@@ -339,7 +358,10 @@ const field = (locator) => ({
     withRetries(async () => {
       // A Picker's trigger is a button that shows the selected label as text,
       // not a value-bearing form control - use whichever asTrigger finds.
-      const target = asTrigger(locator);
+      const element = locator.element();
+      const hasTextArea =
+        element.matches("textarea") || element.querySelector("textarea");
+      const target = hasTextArea ? asControl(locator) : asTrigger(locator);
       if (target.element().tagName.toLowerCase() === "button") {
         await expect.element(target, TIMEOUT).toHaveTextContent(value);
       } else if (value instanceof RegExp) {

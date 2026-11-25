@@ -46,6 +46,10 @@ XDM object data element, so any view that renders <Editor> can use them.
                                           // expectPartsSelected/WholeSelected,
                                           // plus the text-field methods for
                                           // the whole-object value
+  editor.keyValue                         // key/value form (objectJsonEdit): strategy +
+                                          // whole-value methods, plus key(i) / value(i)
+                                          // (field() of row i) and addRow()
+  editor.analytics                        // the Analytics form, see analyticsEdit.js
   editor.array                            // same strategy + whole-value
                                           // methods, plus addItem,
                                           // removeItem(i), selectItem(i),
@@ -67,11 +71,13 @@ explicit waits are needed between steps.
 import createTree from "./tree";
 import createEditors from "./editors";
 import createNodeEdit from "./nodeEdit";
+import createAnalyticsEdit from "./analyticsEdit";
 
 export const createObjectEditor = (view) => ({
   tree: createTree(view),
   ...createEditors(view),
   nodeEdit: createNodeEdit(view),
+  analytics: createAnalyticsEdit(view),
 });
 
 export const expectData = (driver, data) =>
