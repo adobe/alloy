@@ -30,6 +30,7 @@ const betaBadge = ({ isDisabled }) => {
     <span className={BADGE_CONTAINER_STYLE}>
       {/* Keep the Beta badge at the compact height used before the S2 migration. */}
       <Badge
+        data-test-id="betaBadge"
         variant={isDisabled ? "neutral" : "informative"}
         styles={BADGE_STYLE}
         UNSAFE_style={{

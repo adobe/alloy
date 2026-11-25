@@ -619,4 +619,160 @@ describe("Config data collection section", () => {
       await driver.expectValidate().toBe(false);
     });
   });
+
+  describe("layout", () => {
+    const callbackFieldIds = [
+      "onBeforeEventSendEditButton",
+      "filterClickDetailsEditButton",
+    ];
+
+    const callbackGeometry = (testId) => {
+      const button = view
+        .getByTestId(testId)
+        .element()
+        .closest(".CodePreview-openEditorButton");
+      const textarea = button.parentElement.querySelector("textarea");
+      const buttonBounds = button.getBoundingClientRect();
+      const textareaBounds = textarea.getBoundingClientRect();
+      const buttonLabel = button.querySelector("button span");
+      return {
+        buttonBounds,
+        textareaBounds,
+        buttonLabelClipped: buttonLabel.scrollWidth > buttonLabel.clientWidth,
+        textareaBackground: getComputedStyle(textarea).backgroundColor,
+        parentBackground: getComputedStyle(textarea.parentElement)
+          .backgroundColor,
+        buttonBackground: getComputedStyle(button.querySelector("button"))
+          .backgroundColor,
+      };
+    };
+
+    const betaGeometry = (testId) => {
+      const option = view.getByTestId(testId);
+      const badge = option.getByTestId("betaBadge").element();
+      const label = Array.from(badge.querySelectorAll("*"))
+        .reverse()
+        .find((element) => element.textContent.trim() === "Beta");
+      const badgeBounds = badge.getBoundingClientRect();
+      const labelBounds = (label ?? badge).getBoundingClientRect();
+      return {
+        option: option.element(),
+        badge,
+        badgeBounds,
+        width: badgeBounds.width,
+        height: badgeBounds.height,
+        verticalCenterOffset: Math.abs(
+          (labelBounds.top + labelBounds.bottom) / 2 -
+            (badgeBounds.top + badgeBounds.bottom) / 2,
+        ),
+        textClipped:
+          (label ?? badge).scrollWidth > (label ?? badge).clientWidth,
+        labelText: (label ?? badge).textContent.trim(),
+      };
+    };
+
+    const phraseBounds = (container, phrase) => {
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+      let textNode = walker.nextNode();
+      while (textNode) {
+        const start = textNode.textContent.lastIndexOf(phrase);
+        if (start >= 0) {
+          const range = document.createRange();
+          range.setStart(textNode, start);
+          range.setEnd(textNode, start + phrase.length);
+          return range.getBoundingClientRect();
+        }
+        textNode = walker.nextNode();
+      }
+      throw new Error(`Text "${phrase}" not found`);
+    };
+
+    beforeEach(async () => {
+      await driver.init();
+      await onBeforeEventSendEditButton.expectVisible();
+      await eventGroupingMemoryField.expectVisible();
+      await filterClickDetailsEditButton.expectVisible();
+      await document.fonts.ready;
+    });
+
+    it.each(callbackFieldIds)(
+      "keeps the %s button and its label inside a tall text area",
+      (testId) => {
+        const { buttonBounds, textareaBounds, buttonLabelClipped } =
+          callbackGeometry(testId);
+
+        expect(textareaBounds.height).toBeGreaterThanOrEqual(100);
+        expect(buttonBounds.top).toBeGreaterThanOrEqual(textareaBounds.top);
+        expect(buttonBounds.bottom).toBeLessThanOrEqual(textareaBounds.bottom);
+        expect(
+          Math.abs(
+            (buttonBounds.top + buttonBounds.bottom) / 2 -
+              (textareaBounds.top + textareaBounds.bottom) / 2,
+          ),
+        ).toBeLessThan(1);
+        expect(buttonLabelClipped).toBe(false);
+      },
+    );
+
+    it.each(callbackFieldIds)(
+      "gives the %s code preview and its padding one grey background and a white button",
+      (testId) => {
+        const { textareaBackground, parentBackground, buttonBackground } =
+          callbackGeometry(testId);
+
+        expect(textareaBackground).not.toBe("rgb(255, 255, 255)");
+        expect(textareaBackground).not.toBe("rgba(0, 0, 0, 0)");
+        expect(parentBackground).toBe(textareaBackground);
+        expect(buttonBackground).toBe("rgb(255, 255, 255)");
+      },
+    );
+
+    it.each(["eventGroupingSessionStorageField", "eventGroupingMemoryField"])(
+      "keeps the Beta badge of %s compact, unclipped and centered on its label",
+      async (testId) => {
+        await expect
+          .element(view.getByTestId(testId).getByTestId("betaBadge"))
+          .toBeVisible();
+        const { width, height, textClipped, verticalCenterOffset, labelText } =
+          betaGeometry(testId);
+
+        expect(labelText).toBe("Beta");
+        expect(width).toBeLessThanOrEqual(60);
+        expect(height).toBeLessThanOrEqual(20);
+        expect(textClipped).toBe(false);
+        expect(verticalCenterOffset).toBeLessThanOrEqual(1);
+      },
+    );
+
+    it("keeps the local event grouping badge on the line of its label", async () => {
+      await expect
+        .element(
+          view.getByTestId("eventGroupingMemoryField").getByTestId("betaBadge"),
+        )
+        .toBeVisible();
+      const { option, badgeBounds } = betaGeometry("eventGroupingMemoryField");
+      const labelContainer = Array.from(option.querySelectorAll("span")).find(
+        (element) =>
+          element.textContent.startsWith("Event grouping using local object:"),
+      );
+      const textBounds = phraseBounds(labelContainer, "page applications.");
+
+      expect(badgeBounds.top).toBeLessThan(textBounds.bottom);
+      expect(badgeBounds.bottom).toBeGreaterThan(textBounds.top);
+    });
+
+    it("spaces the event grouping options from the next checkbox", () => {
+      const gap =
+        view
+          .getByTestId("externalLinkEnabledField")
+          .element()
+          .getBoundingClientRect().top -
+        view
+          .getByTestId("eventGroupingMemoryField")
+          .element()
+          .getBoundingClientRect().bottom;
+
+      expect(gap).toBeGreaterThanOrEqual(8);
+    });
+  });
 });
