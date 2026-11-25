@@ -1,14 +1,12 @@
 # Functional (TestCafe) → Vitest Migration Plan — reactor-extension
 
-Ticket: PDCL-13402. Goal: retire the TestCafe suite in
-`packages/reactor-extension/test/functional` in favor of Vitest browser mode
-(Playwright Chromium) + MSW, which already runs on GitHub Actions via
-`pnpm run test` (`reactor-extension/integration` project in
-`packages/reactor-extension/vitest.projects.js`). TestCafe is not run in CI
-today.
+Ticket: PDCL-13402. The TestCafe suite was replaced with Vitest browser mode
+(Playwright Chromium) and MSW. Run the extension unit, integration, and runtime
+projects with `pnpm run test:extension` from the repository root; they also run
+in CI via `pnpm run test`.
 
-Status: **spike in progress** (2026-11-24). Counts below are as of
-`origin/main` 29d6da116.
+Status: **migration complete — TestCafe removed**. The baseline counts and
+crosswalk below describe `origin/main` 29d6da116 before the migration.
 
 ## Why the TestCafe suite cannot be the parity oracle
 
@@ -32,7 +30,7 @@ asserted against current `src/`, not the literal TestCafe expectations. Where a
 TestCafe expectation is stale, the Vitest test asserts the current behavior and
 the crosswalk notes it.
 
-## Summary
+## Pre-migration summary
 
 | Area                                                                                                                                  | Spec files | Tests   | Migrated | Partial | Missing | Obsolete |
 | ------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------- | -------- | ------- | ------- | -------- |
@@ -57,12 +55,100 @@ behavior no longer exists in `src/`.
 
 ## Runtime specs
 
-_TBD — see runtime feasibility section (in progress)._
+The separate `reactor-extension/runtime` project in `vitest.projects.js` runs
+five specs under `test/runtime/` in Chromium. A browser-side harness evaluates
+the real Turbine engine used by `@adobe/reactor-sandbox` and reachable
+`src/lib` CommonJS modules in a hand-built Tags container. A Vite plugin
+builds Alloy in memory once per run and evaluates a fresh bundle per test.
+MSW mocks Edge and blocks unexpected cross-origin requests; tests isolate
+commands, page state, and listeners between runs.
 
-## Crosswalk
+The 13 tests cover send-event timestamps and configuration overrides, variable
+updates, response rendering, identity redirect, and Visitor/AMCV migration.
+The redirect test checks the `window.open` URL and ECID but cannot exercise
+identity continuity across a real second page load. Mocked Edge responses do
+not verify live Edge behavior; no Adobe credentials, Sauce, or VPN are needed.
+Source modules evaluated with `new Function` do not contribute runtime coverage.
+The separate `packages/reactor-extension/scripts/extensionBuild.spec.js` smoke
+tests the packaged manifest libPaths and built Alloy output rather than executing
+the runtime suite against the packaged Babel output.
 
-Each table maps every TestCafe test to its Vitest coverage. Vitest paths are
-relative to `packages/reactor-extension/test/integration/`.
+There is no pre-build: the in-memory Rollup costs about 1.4 seconds once per
+Vitest run, and the complete project took about 3–4 seconds on a quiet machine
+(11–36 seconds under load). It uses the existing Chromium install and CI retry
+policy. Integration runs have shown timeouts under heavy load; see Follow-ups.
+
+## Results
+
+The original inventory covered **31 specs / 335 tests**, including injected
+tests. Counts below are the original inventory, not a count of new Vitest
+`it` calls: existing coverage was reused, duplicates collapsed, and obsolete
+or skipped behavior was not blindly reproduced. The final per-test mapping is
+in the Vitest `describe`/`it` names under
+`packages/reactor-extension/test/integration/` and
+`packages/reactor-extension/test/runtime/`, whose titles mirror the TestCafe
+test names, and in the PR description.
+
+| Area                              | Original specs / tests | Result                                                                                                                                                                |
+| --------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actions excluding update variable | 7 / 109                | Interaction, settings, validation, required-component and override coverage in `test/integration/actions/`; reused existing cases and collapsed duplicate assertions. |
+| Update variable                   | 5 / 52                 | Data-element selection, schema errors, clearing, Analytics, JSON and key-value editors in `test/integration/actions/updateVariable*.spec.jsx`.                        |
+| Configuration                     | 3 / 15                 | Library type, overrides and layout in `test/integration/configuration/`, adapting removed UI and stale expectations.                                                  |
+| Components                        | 2 / 25                 | Heading and body typography and margins in `test/integration/components/`; removed props are obsolete.                                                                |
+| Data elements                     | 9 / 125                | XDM editing, validation, display names, population, schema selection, variable, identity map and event merge ID in `test/integration/dataElements/`.                  |
+| Runtime                           | 5 / 9                  | Five runtime specs yield 13 Vitest tests, including previously skipped redirect and visitor-migration paths with the limitations above.                               |
+
+### Known src bugs found
+
+Paths below are relative to `packages/reactor-extension/`. The tests document
+these as `it.fails` or current-behavior checks where applicable; they do not fix
+production behavior.
+
+- Saved boolean values reach `text?.startsWith` as booleans and crash the editor:
+  `src/view/components/objectEditor/helpers/boolean/populateInitialFormStateNode.js`
+  and `src/view/forms/fields/KeyedComboBox.jsx`; see
+  `test/integration/dataElements/xdmObjectEditing.spec.jsx`.
+- Clearing the selected schema on sandbox change causes an unhandled null
+  `$id` rejection in `src/view/dataElements/xdmObjectView.jsx`;
+  `test/integration/dataElements/xdmObjectSchemaSelection.spec.jsx` narrowly
+  expects it.
+- `src/view/actions/updateVariableView.jsx` mutates `schemaLoadFailed` on a
+  ref without triggering a render, leaving a spinner instead of an error when
+  the first schema fails to load; see
+  `test/integration/actions/updateVariableDataElementSelection.spec.jsx`.
+- `src/view/configuration/basicSectionBridge.js` checks legacy
+  `librarySettings.type` instead of `libraryCode.type` when detecting a prior
+  preinstalled library; see `test/integration/configuration/libraryType.spec.jsx`.
+- `src/view/actions/sendPushSubscription.jsx` displays a required-component
+  error but validates a new action when push notifications are disabled; see
+  `test/integration/actions/sendPushSubscription.spec.jsx`.
+- `src/view/forms/comboBox.jsx` treats an empty value as a data element and can
+  suppress the normal description;
+  `test/integration/actions/applyPropositions.spec.jsx` selects a value before
+  checking the description.
+- `src/view/components/objectEditor/helpers/entityVariablesConverter.js` has
+  asymmetric key ordering: form-to-JSON preserves target row order whereas
+  JSON-to-form sorts it; see
+  `test/integration/actions/updateVariableJsonEditor.spec.jsx`.
+
+### Follow-ups
+
+- Give `src/view/components/objectEditor/populationAmountIndicator.jsx` an
+  accessible state hook; tests currently inspect SVG `stroke-dasharray`.
+- Consider rejecting unhandled external requests in
+  `test/integration/helpers/setup.js` rather than `onUnhandledRequest: "bypass"`;
+  the runtime project already blocks them.
+- Investigate integration-suite timeouts under contention and replace narrow
+  current-behavior/expected-failure tests when the corresponding src bugs are fixed.
+
+## Crosswalk — pre-migration snapshot
+
+These tables and their statuses record coverage before porting, not the current
+state. The final per-test mapping is in the Vitest test titles and the PR
+description, as described in Results.
+
+Each table maps every TestCafe test to the Vitest coverage available at the time.
+Vitest paths are relative to `packages/reactor-extension/test/integration/`.
 
 ### view/actions (sendEvent, setConsent, redirectWithIdentity, applyPropositions, applyResponse, resetEventMergeId, sendPushSubscription)
 
@@ -234,13 +320,10 @@ Shared required-component alerts: src/view/components/requiredComponent.jsx has 
 
 #### Notes
 
-- Snapshot tests assert settings and visible errors only. Every "initializes form fields …" TestCafe test that asserts rendered values (radio checked, field value, picker label, sub-field existence) is at most partial. A cheap port is a helper that asserts those from `view` after `driver.init`.
-- Interaction-driven "returns full valid settings" tests are mostly absent: the snapshot tests seed settings and round-trip them but don't type/select through the UI. Port with `field(view.getByTestId(...))` helpers (`fill`, `click`, `selectOption`).
-- Missing shared Vitest helpers:
-  - `runCustomBuildTests` equivalent: render with `components: {[name]: false|true}`, `settings: null | minimal`, then assert `requiredComponentError` / `requiredComponentWarning` test ids and `driver.expectValidate()`. Affects setConsent, applyPropositions, resetEventMergeId (3 tests each).
-  - `testInstanceNameOptions` equivalent: `settings.instanceName: "alloydeleted"` → selected label "alloydeleted (Deleted)", options `["alloydeleted (Deleted)","alloy1","alloy2"]`. Affects sendEvent, setConsent, applyPropositions, applyResponse.
-  - MSW: the `configuration/datastreamFields.spec.jsx` suite already uses `worker.use(http.get(DATASTREAMS_URL…))` and `mockActionDatastreams()` in actionsSnapshots.js exists, but nothing serves the "withConfigOverrides" datastream (dataset `6335faf30f5a161c0b4b1444`, idSync containers `107756/107757`, target tokens `aba5431a-…`/`65d186ff-…`, report suites `unifiedjsqeonly2/latest/mobileweb`). Check defaultHandlers.js for those ids before porting; none matched in a grep of test/integration.
-  - Combobox option helpers: `field.js` has `selectOption` (field.js:209) but no `expectMenuOptionLabels` equivalent for override comboboxes.
+- At the time, snapshot tests asserted settings and visible errors but not
+  rendered values or interaction-driven entry of full settings.
+- The ports needed shared required-component and instance-name tests, MSW
+  handlers for the "withConfigOverrides" datastream, and combobox option helpers.
 - Obsolete TestCafe UI: sandbox picker (`overrideViewSelectors.sandbox`), `datastreamInputMethod.freeform` radio, `datastreamIdFreeform`/`datastreamIdDropdown` no longer exist in src/view (grep finds none). Vitest sendEvent.spec asserts "without a sandbox picker" and the datastream field is a single combobox. TestCafe expectations such as "PRODUCTION Prod (VA7)" and "freeform.click()" cannot be ported literally.
 - Flaky / meaningless TestCafe items:
   - sendEvent has duplicated tests: "shows error for data value that is not a data element" ×2 (lines 568, 652), "…more than one data element" for data ×2 (681, 699). Port once each.
@@ -450,28 +533,30 @@ Same harness as heading. Stale class assertions (`spectrum-Body--sizeX`, inline 
 
 #### Notes
 
-Shared helpers for porting:
+Porting needs identified at the time:
 
-- The MSW worker, `useView`, `field` and `driver` helpers cover what is needed. `mocks/defaultHandlers.js` already has `dataElementsUnauthorizedHandlers`, `dataElementsServerErrorHandlers`, `dataElementsEmptyHandlers`, `singleSchemaHandlers`, `schemaNotFoundHandlers`, `schemasEmptyHandlers`, `schemaDetailsHandlers` and `variableDataElementsHandlers`. `helpers/dataElementsSnapshot.js` provides `dataElementHandlers` (XDM and Data variable DEs, with a `DE_STALE` stand-in), `schemaHandlers`, `selectTreeNode` and `reinitialize`. The configuration side has `configurationHandlers({preconfigured})` in `helpers/configurationSnapshots.js`.
-- Missing for the update-variable ports: (a) a data-elements handler that returns a single variable DE and one that pages (page 1 none, page 2 one); (b) per-DE schema handlers (readable vs 404) plus a second schema with an `otherField` and array schemas for the "keeps data" tests; (c) an extra schema version (1.5 vs saved 1.1) for the `schemaChangedNotice` test; (d) object-editor drivers in `helpers/` equivalent to `functional/helpers/objectEditor/*` (`xdmTree`, `stringEdit`, `arrayEdit`, `objectAnalyticsEdit`, `objectJsonEdit`). Only `selectTreeNode` exists today. Test ids for the analytics form are generated from the field path (`properties.data.properties.__adobe.properties.analytics.value.evars.<i>.evarField`), so a locator helper is the cheapest port. Also needed: `expectDisabled` on a checkbox (check `field` for it) and combobox virtual scrolling for `prop42` / `prop75`.
-- For the configuration overrides ports: the `preconfigured` handler data (`suite-*`, `token-*`, `dataset-*`, `[1,2,3]`) doesn't match the TestCafe expectations (`6335faf30f5a161c0b4b1444`, `107756/107757`, `aba5431a-…`, `unifiedjsqeonly2/latest/mobileweb`). Either add a handler variant using the TestCafe `datastreamMocks.withConfigOverrides` data, or rewrite the expected labels. Opening comboboxes and listing option labels needs a helper (see how `DF` / `comboBox.spec.jsx` do it). Also an instance-with-a-different-org handler to assert that the second instance gets text inputs.
-- Component specs: replace class assertions with computed styles (as in H). The TestCafe component fixture build (`build:componentFixtures`, Parcel, `componentFixtureDist`) and `helpers/components/*` become unnecessary once Heading/Body are rendered via `renderView`.
+- Update-variable coverage needed additional data-element and schema handlers,
+  object-editor drivers, and helpers for analytics fields and comboboxes.
+- Configuration overrides needed fixtures matching the original datastream
+  options and helpers for opening comboboxes and listing their options.
+- Component specs needed computed-style assertions instead of class assertions;
+  rendering Heading and Body through `renderView` replaced the fixture build.
 
 Flaky / meaningless / stale TestCafe tests:
 
-- `view/configuration/configuration.spec.mjs`: wrong port (3000), `createExtensionViewFixture` misused in `beforeEach`, calls non-existent `saveSettings` / `isValid`, passes settings as `initInfo`, and reads a POST that never happens. The tests are effectively meaningless. A complaint was filed in the complaints box.
+- `view/configuration/configuration.spec.mjs`: wrong port (3000), `createExtensionViewFixture` misused in `beforeEach`, calls non-existent `saveSettings` / `isValid`, passes settings as `initInfo`, and reads a POST that never happens. The tests are effectively meaningless.
 - `updateVariableKeyValueEditor` (most tests) and `updateVariableJsonEditor` #3 and #5: `xdmTree.node("target").click()` / `jsonEdit.*` calls without `await`, which is racy.
 - `updateVariable` #15 ends with an un-awaited `extensionViewController.expectSettings(...)`, so that assertion may never run or fail the test.
 - `updateVariable` #18 (search) cannot actually test searching, per its own comment (the mock ignores the filter).
 - `updateVariable` #16 never asserts settings; it only checks tree string values.
 - All `expectSettings` in the `updateVariable*` files omit `dataElementName`, and all configuration override tests use removed UI (input method/sandbox pickers). Treat those as stale rather than regressions.
-- The `.js` configuration specs and `specs/runtime/*` are only run by the full `test:functional` script (there is no `test:functional:configuration`).
+- The `.js` configuration specs and `specs/runtime/*` were only run by the full `test:functional` script (there was no `test:functional:configuration`).
 
 ### view/dataElements
 
 Vitest files consulted (all under packages/reactor-extension/test/integration/dataElements): eventMergeId.snapshot.spec.jsx, identityMap.snapshot.spec.jsx, identityMapValidation.spec.jsx, variable.snapshot.spec.jsx, variableErrorHandling.spec.jsx, variableTypography.spec.jsx, xdmObject.snapshot.spec.jsx, xdmObjectErrorHandling.spec.jsx, xdmObjectTypography.spec.jsx, plus helpers/dataElementsSnapshot.js and helpers/mocks/defaultHandlers.js. Abbreviations: EMI = eventMergeId.snapshot.spec.jsx, IMS = identityMap.snapshot.spec.jsx, IMV = identityMapValidation.spec.jsx, VS = variable.snapshot.spec.jsx, VE = variableErrorHandling.spec.jsx, XS = xdmObject.snapshot.spec.jsx, XE = xdmObjectErrorHandling.spec.jsx, XT = xdmObjectTypography.spec.jsx.
 
-Key fact: the Vitest xdmObject tests use a tiny synthetic schema ("Test Schema 1": testField, count, flag, tags, nested). None of them use the real "XDM Object Data Element Tests" schema (\_unifiedjsqeonly/vendor/environment/device/placeContext/\_id) the TestCafe tests depend on. No Vitest test touches populationIndicator, autoPopulationAlert, nodeDescription, enum/number/boolean editors, or required-field validation.
+At the time, the Vitest xdmObject tests used a tiny synthetic schema ("Test Schema 1": testField, count, flag, tags, nested), not the richer schema used by TestCafe. They did not cover population indicators, auto-population alerts, node descriptions, enum/number/boolean editors, or required-field validation.
 
 #### view/dataElements/eventMergeId.spec.mjs — 5 tests: 1 migrated / 1 partial / 2 missing / 1 obsolete
 
@@ -641,9 +726,10 @@ Expanded loop: 7 entries (whole array, string, integer, number, boolean DE, bool
 
 #### Notes
 
-- **MSW handlers present** (helpers/mocks/defaultHandlers.js): default sandboxes (prod default + number-two-prod), datastreams list/detail, `sandboxUnauthorizedHandlers`, `sandboxServerErrorHandlers`, `sandboxEmptyHandlers`, `sandboxWithoutProdHandlers` (testsandbox1/2), `sandboxUserRegionMissingHandlers`, `schemasEmptyHandlers`, `schemasServerErrorHandlers`, `schemaNotFoundHandlers`, `singleSchemaHandlers`, `schemaDetailsHandlers`; identity namespaces only inline in IMS/IMV; richer `schemaHandlers` (synthetic schema) in dataElementsSnapshot.js.
-- **MSW handlers missing**: sandbox variants `singleWithoutDefault` (testsandbox1 only), `multipleWithDefault`, `multipleWithoutDefault` (testsandbox1-3, "PRODUCTION Test Sandbox N (VA7)" titles); non-JSON 200 sandbox body; schemas `multiple`/`sandbox2`/`sandbox3`/`search` (`property=title`)/`paging` (start & title query); schema `schema3b`; identity namespaces `multiple` (named, e.g. AAID → "Adobe Analytics") and `error` (403) as shared exports; a rich "XDM Object Data Element Tests" schema fixture (needs `_id`, `environment.type` enum, `device.colorDepth` with description, `placeContext.activePOIs[]…`, `_experience.decisioning.propositionAction.label`, `_unifiedjsqeonly.vendor` {name, industries[], numEmployees, revenue, isLicensed, customer.emailAddress required, mailingAddress.city}) and an "Analytics Migration" schema with eVar1…eVar10+. The old tests rely on a live-ish fixture; check functional/helpers/endpointMocks/schemaMocks.mjs for the source JSON.
-- **Driver helpers missing**: none of the objectEditor helpers (xdmTree node expand/click/validity/populationIndicator/in-viewport, arrayEdit, booleanEdit, enumEdit, integer/number/stringEdit, objectEdit, nodeEdit breadcrumb) exist on the Vitest side; only the `selectTreeNode` util and `field()` (helpers/field.js). Also a tab helper (labels/selectTab) and sandbox picker/schema combobox option helpers (`selectOption`, `openMenu`, `expectMenuOptionLabels`) may need checking in field.js.
-- **Event merge preinstalled alert**: `preinstalledModeError` is not asserted in any Vitest file (also used by actions/resetEventMergeId; not my scope).
+- **MSW handlers and drivers needed at the time**: additional sandbox, schema,
+  search, pagination and identity namespace fixtures, richer XDM schemas, and
+  object-editor and picker drivers.
+- **Event merge preinstalled alert**: the old `preinstalledModeError` selector
+  was not asserted in the pre-migration Vitest coverage.
 - **Flaky/meaningless TestCafe tests**: xdmObjectEditing #28/#29 are duplicates; #10 uses lowercase "item 1" so it passes vacuously; #15 number test uses `integerEdit`; xdmObjectSchemaSelection #13 has no assertion; PopulationIndicator #13 asserts the same thing twice; xdmObjectDisplayNames and variable #2 use fixed `t.wait`s; variable #2 only asserts absence of text.
 - Snapshots that count: IMS, EMI, VS `.snap` files capture settings and validation errors (field/messages/testId), which is what I credited; they do not capture tab labels or delete-button presence.
