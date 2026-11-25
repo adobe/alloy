@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import alloyConfig from "../../helpers/alloy/config.js";
 import cleanAlloy from "../../helpers/alloy/clean.js";
 import setupAlloy from "../../helpers/alloy/setup.js";
@@ -120,5 +120,31 @@ describe("C81183 - getLinkDetails monitoring hook via __alloyMonitors", () => {
     expect(result.linkType).toBeUndefined();
     expect(result.linkUrl).toBeUndefined();
     expect(result.pageName).toBeUndefined();
+  });
+
+  test("C81183: getLinkDetails clears details when the click callback returns false", async () => {
+    const callback = vi.fn(() => false);
+    await alloy("configure", {
+      ...alloyConfig,
+      clickCollectionEnabled: true,
+      onBeforeLinkClickSend: callback,
+    });
+
+    const link = appendLink({
+      id: "canceled-alloy-link-test",
+      href: "canceled.html",
+      text: "Link Click that is canceled",
+    });
+
+    expect(window.___getLinkDetails(link)).toEqual({
+      linkName: undefined,
+      linkRegion: undefined,
+      linkType: undefined,
+      linkUrl: undefined,
+      pageName: undefined,
+      pageIDType: undefined,
+    });
+    expect(callback).toHaveBeenCalledOnce();
+    expect(callback.mock.calls[0][0].clickedElement).toBe(link);
   });
 });

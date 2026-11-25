@@ -196,10 +196,6 @@ export const sourceExportConditions = ["alloy-source"];
 const BASE_CODE = "BASE_CODE";
 // build the standalone distribution
 const STANDALONE = "STANDALONE";
-// build the npm package entrypoint (createInstance) for functional tests
-const FUNCTIONAL_TEST_LOCAL = "FUNCTIONAL_TEST_LOCAL";
-// build from the published npm package for functional tests
-const FUNCTIONAL_TEST_PROD = "FUNCTIONAL_TEST_PROD";
 // build the standalone distrobution, but exclude some (specified) modules
 const CUSTOM_BUILD = "CUSTOM_BUILD";
 // build the service worker (used for push notifications feature).
@@ -348,22 +344,7 @@ export const buildConfig = ({
     };
   }
 
-  // FUNCTIONAL_TEST_LOCAL or FUNCTIONAL_TEST_PROD
-  const filename =
-    variant === FUNCTIONAL_TEST_LOCAL
-      ? "functionalTestLocal"
-      : "functionalTestProd";
-
-  return {
-    input: `${dirname}/test/functional/helpers/${filename}.js`,
-    output: [
-      {
-        file: `${dirname}/distTest/${filename}${minifiedExtension}.js`,
-        format: "iife",
-      },
-    ],
-    plugins,
-  };
+  throw new Error(`Unknown build variant: ${variant}`);
 };
 
 const config = [];
@@ -387,8 +368,6 @@ const addUtilityExportConfigs = () => {
 
 addConfig(BASE_CODE);
 addConfig(STANDALONE);
-addConfig(FUNCTIONAL_TEST_LOCAL);
-addConfig(FUNCTIONAL_TEST_PROD);
 addConfig(SERVICE_WORKER);
 addUtilityExportConfigs();
 

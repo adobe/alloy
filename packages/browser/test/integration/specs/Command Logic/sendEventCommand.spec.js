@@ -18,7 +18,7 @@ import {
 import alloyConfig from "../../helpers/alloy/config.js";
 
 describe("Send event command", () => {
-  test("throws an error when calling after bad configure", async ({
+  test("C13817: throws an error when calling after bad configure", async ({
     alloy,
   }) => {
     try {
@@ -38,7 +38,7 @@ describe("Send event command", () => {
     expect(error.message).toContain("The library must be configured first.");
   });
 
-  test("throws an error when calling without configuring alloy first", async ({
+  test("C2585: throws an error when calling without configuring alloy first", async ({
     alloy,
   }) => {
     let error;
@@ -54,7 +54,7 @@ describe("Send event command", () => {
     );
   });
 
-  test("uses the computed config even if the original config object is changed at a later time", async ({
+  test("C13818: uses the computed config even if the original config object is changed at a later time", async ({
     alloy,
     worker,
     networkRecorder,
@@ -71,9 +71,14 @@ describe("Send event command", () => {
 
     const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
     expect(call?.request.url.includes(alloyConfig.datastreamId)).toBe(true);
+    expect(
+      networkRecorder.calls.filter((item) =>
+        /\/v1\/(interact|collect)/.test(item.url),
+      ),
+    ).toHaveLength(1);
   });
 
-  test("throws an error when the datastreamId is invalid", async ({
+  test("C13819: throws an error when the datastreamId is invalid", async ({
     alloy,
     worker,
   }) => {
@@ -95,5 +100,21 @@ describe("Send event command", () => {
       "The server responded with a status code 400 and response body",
     );
     expect(error.message).toContain("EXEG-0003-400");
+  });
+
+  // The actual Edge error contract cannot be checked with a mocked response.
+  test("C13819: live Edge rejects an invalid datastream with a useful error", async ({
+    alloy,
+  }) => {
+    await alloy("configure", {
+      orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
+      datastreamId: "BOGUS",
+      edgeDomain: "edge.adobedc.net",
+      edgeBasePath: "ee-pre-prd",
+    });
+
+    await expect(alloy("sendEvent")).rejects.toThrow(
+      /The server responded with a status code 400 and response body.*EXEG-0003-400/s,
+    );
   });
 });

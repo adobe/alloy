@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import { test, expect } from "../../helpers/testsSetup/extend.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 
-test("Unknown command throws error", async ({ alloy }) => {
+test("C2587: Unknown command throws error", async ({ alloy }) => {
   let error;
 
   try {

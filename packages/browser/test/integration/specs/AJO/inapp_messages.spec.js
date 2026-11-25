@@ -10,7 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { http, HttpResponse } from "msw";
 import alloyConfig from "../../helpers/alloy/config.js";
+import { inAppMessagesPropositions } from "./rankedInAppMessagesFixture.js";
 import {
   describe,
   test,
@@ -38,6 +40,73 @@ describe("AJO In-App Messages", () => {
   afterEach(() => {
     removeInAppMessage();
     localStorage.clear();
+  });
+
+  test("C21636439: displays the highest-priority in-app message and suppresses the other", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(
+      http.post(/\/v1\/(interact|collect)/, async ({ request }) => {
+        const body = await request.json();
+        if (
+          body.events?.[0]?.xdm?.eventType?.startsWith(
+            "decisioning.proposition",
+          )
+        ) {
+          return HttpResponse.json({
+            requestId: "notification-ack",
+            handle: [],
+          });
+        }
+        return HttpResponse.json(inAppMessagesPropositions);
+      }),
+    );
+    await alloy("configure", alloyConfig);
+    await alloy("sendEvent", { renderDecisions: true });
+    const result = await alloy("evaluateRulesets", { renderDecisions: true });
+
+    expect(
+      result.propositions.map(({ scopeDetails }) => scopeDetails.rank),
+    ).toEqual([1, 2]);
+    const frames = document.querySelectorAll("#alloy-content-iframe");
+    expect(frames).toHaveLength(1);
+    await expect
+      .poll(() => frames[0].contentDocument?.body?.textContent)
+      .toBe("Proposition 1");
+
+    const calls = await networkRecorder.findCalls(/\/v1\/(interact|collect)/, {
+      retries: 30,
+      delayMs: 100,
+      minCalls: 3,
+    });
+    const notifications = calls
+      .map((call) => call.request.body.events[0].xdm)
+      .filter(({ eventType }) =>
+        eventType?.startsWith("decisioning.proposition"),
+      );
+    expect(notifications).toHaveLength(2);
+    expect(notifications).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          eventType: "decisioning.propositionDisplay",
+          _experience: {
+            decisioning: expect.objectContaining({
+              propositions: [expect.objectContaining({ id: "id1" })],
+            }),
+          },
+        }),
+        expect.objectContaining({
+          eventType: "decisioning.propositionSuppressDisplay",
+          _experience: {
+            decisioning: expect.objectContaining({
+              propositions: [expect.objectContaining({ id: "id2" })],
+            }),
+          },
+        }),
+      ]),
+    );
   });
 
   test("are rendered correctly and with the correct styles applied", async ({

@@ -1240,7 +1240,7 @@ describe("C8118 - Collects and sends link click information", () => {
     );
   });
 
-  test("multiple grouped link clicks surface on the next page view event", async ({
+  test("C8118: the last grouped click wins on the next page view event", async ({
     alloy,
     worker,
     networkRecorder,
@@ -1276,15 +1276,17 @@ describe("C8118 - Collects and sends link click information", () => {
     });
 
     const call = await findInteractCall(networkRecorder);
+    expect(interactCalls(networkRecorder)).toHaveLength(1);
+    expect(
+      networkRecorder.calls.filter((item) =>
+        /\/v1\/collect(?:\?|$)/.test(item.url),
+      ),
+    ).toHaveLength(0);
+    expect(sendBeaconCalls()).toHaveLength(0);
     const { webInteraction } = firstEvent(call).xdm.web;
-    expect(webInteraction).toBeDefined();
-    // Event grouping caches one click at a time, so the last click wins. The
-    // payload shape is not guaranteed, so accept either an array or an object.
-    if (Array.isArray(webInteraction)) {
-      expect(webInteraction.at(-1).name).toBe("Link 2");
-    } else {
-      expect(webInteraction.name).toBe("Link 2");
-    }
+    // Event grouping caches one click at a time, so the last click wins.
+    expect(Array.isArray(webInteraction)).toBe(false);
+    expect(webInteraction.name).toBe("Link 2");
   });
 
   test("link click with custom XDM data via onBeforeLinkClickSend", async ({

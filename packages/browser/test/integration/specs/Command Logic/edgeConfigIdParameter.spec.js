@@ -14,7 +14,7 @@ import { test, expect } from "../../helpers/testsSetup/extend.js";
 import { sendEventHandler } from "../../helpers/mswjs/handlers.js";
 import alloyConfig from "../../helpers/alloy/config.js";
 
-test("edgeConfigId is swapped with datastreamId when sendEvent command is sent", async ({
+test("C11634155: edgeConfigId is swapped with datastreamId when sendEvent command is sent", async ({
   alloy,
   worker,
   networkRecorder,
@@ -31,4 +31,8 @@ test("edgeConfigId is swapped with datastreamId when sendEvent command is sent",
 
   const call = await networkRecorder.findCall(/edge\.adobedc\.net/);
   expect(call?.request.url.includes(config.edgeConfigId)).toBe(true);
+  expect(call.response.status).toBe(200);
+  expect(
+    networkRecorder.calls.filter((item) => /\/v1\/interact/.test(item.url)),
+  ).toHaveLength(1);
 });
