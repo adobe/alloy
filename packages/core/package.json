@@ -61,7 +61,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "pnpm run clean && tsc -p tsconfig.json",
+    "build": "pnpm run clean && tsc -p tsconfig.json && node ../../scripts/helpers/writeVersionModule.js dist/constants/libraryVersion.js",
     "prepack": "pnpm run build",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p test/typecheck/tsconfig.json"
   },

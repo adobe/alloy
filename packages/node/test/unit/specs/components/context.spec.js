@@ -35,6 +35,23 @@ describe("Node context component", () => {
     });
   });
 
+  it("uses platformServices.libraryVersion in implementationDetails when supplied", async () => {
+    const event = createFakeEvent();
+    const { lifecycle } = createContext({
+      platformServices: { libraryVersion: "9.8.7" },
+    });
+
+    await lifecycle.onBeforeEvent({ event });
+
+    expect(event.mergeXdm).toHaveBeenCalledWith({
+      implementationDetails: {
+        name: "https://ns.adobe.com/experience/alloy-node",
+        version: "9.8.7",
+        environment: "server",
+      },
+    });
+  });
+
   it("does not merge web.webPageDetails when no request was given", async () => {
     const event = createFakeEvent();
     const { lifecycle } = createContext({ platformServices: {} });

@@ -348,9 +348,6 @@ importers:
       '@rollup/plugin-node-resolve':
         specifier: ^16.0.3
         version: 16.0.3(rollup@4.60.3)
-      '@rollup/plugin-replace':
-        specifier: ^6.0.0
-        version: 6.0.3(rollup@4.60.3)
       '@rollup/plugin-terser':
         specifier: ^1.0.0
         version: 1.0.0(rollup@4.60.3)
@@ -525,9 +522,6 @@ importers:
       '@rollup/plugin-node-resolve':
         specifier: ^16.0.3
         version: 16.0.3(rollup@4.60.1)
-      '@rollup/plugin-replace':
-        specifier: ^6.0.3
-        version: 6.0.3(rollup@4.60.1)
       adm-zip:
         specifier: ^0.6.1
         version: 0.6.1
@@ -546,9 +540,6 @@ importers:
       babel-plugin-jsx-remove-data-test-id:
         specifier: ^3.0.0
         version: 3.0.0(@babel/core@7.28.5(supports-color@8.1.1))
-      babel-plugin-version:
-        specifier: ^0.2.3
-        version: 0.2.3
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
@@ -4145,15 +4136,6 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/plugin-replace@6.0.3':
-    resolution: {integrity: sha512-J4RZarRvQAm5IF0/LwUUg+obsm+xZhYnbMXmXROyoSE1ATJe3oXSb9L5MMppdxP2ylNSjv6zFBwKYjcKMucVfA==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
   '@rollup/plugin-terser@1.0.0':
     resolution: {integrity: sha512-FnCxhTBx6bMOYQrar6C8h3scPt8/JwIzw3+AJ2K++6guogH5fYaIFia+zZuhqv0eo1RN7W1Pz630SyvLbDjhtQ==}
     engines: {node: '>=20.0.0'}
@@ -5482,9 +5464,6 @@ packages:
 
   babel-plugin-transform-object-rest-spread@6.26.0:
     resolution: {integrity: sha512-ocgA9VJvyxwt+qJB0ncxV8kb/CjfTcECUY4tQ5VT7nP6Aohzobm8CDFaQ5FHdvZQzLmf0sgDxB8iRXZXxwZcyA==}
-
-  babel-plugin-version@0.2.3:
-    resolution: {integrity: sha512-YylmpgfdYrCiLGLtR7tLa+VYXJAadBSeH7asYvVLQPlooyQYQ1YFemiGZcryWsIyoj8w6P20qW0y7y6+AiDFbQ==}
 
   babel-runtime@6.26.0:
     resolution: {integrity: sha512-ITKNuq2wKlW1fJg9sSW52eepoYgZBggvOAHC0u/CYu/qxQ9EVzThCgR69BnSXLHjy2f7SY5zaQ4yt7H9ZVxY2g==}
@@ -18123,20 +18102,6 @@ snapshots:
     optionalDependencies:
       rollup: 4.60.3
 
-  '@rollup/plugin-replace@6.0.3(rollup@4.60.1)':
-    dependencies:
-      '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
-      magic-string: 0.30.21
-    optionalDependencies:
-      rollup: 4.60.1
-
-  '@rollup/plugin-replace@6.0.3(rollup@4.60.3)':
-    dependencies:
-      '@rollup/pluginutils': 5.3.0(rollup@4.60.3)
-      magic-string: 0.30.21
-    optionalDependencies:
-      rollup: 4.60.3
-
   '@rollup/plugin-terser@1.0.0(rollup@4.60.3)':
     dependencies:
       serialize-javascript: 7.1.4
@@ -19501,8 +19466,6 @@ snapshots:
     dependencies:
       babel-plugin-syntax-object-rest-spread: 6.13.0
       babel-runtime: 6.26.0
-
-  babel-plugin-version@0.2.3: {}
 
   babel-runtime@6.26.0:
     dependencies:

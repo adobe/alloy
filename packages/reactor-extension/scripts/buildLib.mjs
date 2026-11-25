@@ -17,6 +17,7 @@ import fs from "fs";
 import { spawn } from "child_process";
 import run from "./helpers/run.mjs";
 import { watch, inputDir, outputDir } from "./helpers/options.mjs";
+import { writeVersionModule } from "../../../scripts/helpers/writeVersionModule.js";
 
 // Runtime tests need a .sandbox directory to run
 const sandboxDir = path.join(outputDir, "../.sandbox");
@@ -27,17 +28,28 @@ if (!fs.existsSync(sandboxDir)) {
 const libInDir = path.join(inputDir, "lib");
 const libOutDir = path.join(outputDir, "lib");
 const alloyInFile = path.join(libInDir, "alloy.js");
+const extensionVersionInFile = path.join(
+  libInDir,
+  "constants/extensionVersion.js",
+);
+const ignoredFiles = `${alloyInFile},${extensionVersionInFile}`;
 
-// ignore alloy.js because it will be built separately in buildAlloy.js
+// ignore alloy.js because it will be built separately in buildAlloy.js, and
+// extensionVersion.js because we emit a static literal version module below.
 try {
   await run("babel", [
     libInDir,
     "--out-dir",
     libOutDir,
     "--ignore",
-    alloyInFile,
+    ignoredFiles,
     "--presets=@babel/preset-env",
   ]);
+  writeVersionModule({
+    packageJsonPath: path.join(inputDir, "../package.json"),
+    outputPath: path.join(libOutDir, "constants/extensionVersion.js"),
+    format: "cjs",
+  });
 } catch (error) {
   console.error(error);
   process.exit(1);
@@ -53,7 +65,7 @@ if (watch) {
       "--watch",
       "--skip-initial-build",
       "--ignore",
-      alloyInFile,
+      ignoredFiles,
       "--presets=@babel/preset-env",
     ],
     { stdio: "inherit" },

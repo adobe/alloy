@@ -10,10 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import replace from "@rollup/plugin-replace";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import alloyPackageJson from "./node_modules/@adobe/alloy/package.json" with { type: "json" };
 import {
   typeScriptSourcePlugins,
   sourceExportConditions,
@@ -28,10 +26,6 @@ export default [
       },
     ],
     plugins: [
-      replace({
-        __VERSION__: alloyPackageJson.version,
-        preventAssignment: true,
-      }),
       ...typeScriptSourcePlugins(),
       resolve({
         preferBuiltins: false,

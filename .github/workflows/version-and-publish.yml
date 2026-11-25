@@ -62,6 +62,12 @@ jobs:
             git push origin HEAD:main
           fi
 
+      # Verify every publishable artifact (npm packages, CDN bundles, custom
+      # builds, and the Tags extension zip) reports valid release versions
+      # before anything is published.
+      - name: Verify release artifacts
+        run: pnpm run test:release
+
       # Backfill tags if an earlier run published packages but failed before pushing tags.
       - name: Publish + tag
         run: |

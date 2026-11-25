@@ -25,7 +25,7 @@ const { version: LIBRARY_VERSION } = packageJson;
  * `forRequest({ request })`.
  *
  * @param {Object} params
- * @param {{ request?: NodeRequestLike }} params.platformServices
+ * @param {{ request?: NodeRequestLike, libraryVersion?: string }} params.platformServices
  */
 const createContext = ({ platformServices }) => ({
   lifecycle: {
@@ -34,7 +34,7 @@ const createContext = ({ platformServices }) => ({
       event.mergeXdm({
         implementationDetails: {
           name: LIBRARY_NAME,
-          version: LIBRARY_VERSION,
+          version: platformServices?.libraryVersion ?? LIBRARY_VERSION,
           environment: "server",
         },
       });

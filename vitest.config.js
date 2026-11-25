@@ -33,6 +33,18 @@ export default defineConfig({
           environment: "node",
         },
       },
+      {
+        extends: false,
+        test: {
+          name: "node/package",
+          include: [
+            "packages/node/test/package/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+          ],
+          environment: "node",
+          // Reuses core's built dist/, so run after core/package.
+          sequence: { groupOrder: 2 },
+        },
+      },
       // Node integration tests are excluded from base test commands so other
       // tests don't need credentials to run. Run explicitly with
       // `pnpm run test:node-integration`.

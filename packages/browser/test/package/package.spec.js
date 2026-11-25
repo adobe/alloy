@@ -13,6 +13,10 @@ governing permissions and limitations under the License.
 import { execFileSync } from "child_process";
 import fs from "fs";
 import path from "path";
+import commonjs from "@rollup/plugin-commonjs";
+import resolve from "@rollup/plugin-node-resolve";
+import { rollup } from "rollup";
+import semver from "semver";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 // eslint-disable-next-line import/no-relative-packages
@@ -39,15 +43,23 @@ describe("@adobe/alloy npm package", () => {
       try {
         for (const packageDir of ["core", "browser"]) {
           const sourcePath = path.resolve(browserPath, "..", packageDir);
-          const output = execFileSync(
-            "pnpm",
-            ["pack", "--json", "--pack-destination", workPath],
-            {
-              cwd: sourcePath,
-              encoding: "utf8",
-              stdio: ["ignore", "pipe", "pipe"],
-            },
-          );
+          // Skip core's prepack when dist/ is already built (core/package tests
+          // core's prepack directly, and CI runs `pnpm run build` beforehand).
+          const skipPrepack =
+            packageDir === "core" &&
+            fs.existsSync(path.join(sourcePath, "dist"));
+          const packArgs = [
+            "pack",
+            "--json",
+            "--pack-destination",
+            workPath,
+            ...(skipPrepack ? ["--config.ignore-scripts=true"] : []),
+          ];
+          const output = execFileSync("pnpm", packArgs, {
+            cwd: sourcePath,
+            encoding: "utf8",
+            stdio: ["ignore", "pipe", "pipe"],
+          });
           const { filename } = JSON.parse(output.slice(output.indexOf("{")));
           const packageName =
             packageDir === "core" ? "@adobe/alloy-core" : "@adobe/alloy";
@@ -90,32 +102,19 @@ describe("@adobe/alloy npm package", () => {
     );
     // A consumer has neither the alloy-source condition nor our version-replacement plugin.
     const script = `
+      import fs from "fs";
+      import path from "path";
       import { Window } from "happy-dom";
-      const window = new Window({ url: "https://example.com" });
-      globalThis.window = window;
-      globalThis.document = window.document;
-      Object.defineProperty(globalThis, "navigator", { value: window.navigator });
 
-      const { createInstance, createCustomInstance } = await import("@adobe/alloy");
-      const { default: setupBaseCode } = await import("@adobe/alloy/baseCode.js");
-      setupBaseCode(window, ["standalone"]);
-      await import("@adobe/alloy/standalone.js");
-
-      const instances = {
-        createInstance: createInstance(),
-        createCustomInstance: createCustomInstance(),
-        standalone: window.standalone,
-      };
-      const results = {};
-      for (const [name, alloy] of Object.entries(instances)) {
+      const collectVersionInfo = async (alloy, name, { includeOptional = true } = {}) => {
         let implementationDetails;
         await alloy("configure", {
           orgId: name + "@AdobeOrg",
           datastreamId: name + "-datastream",
           context: [],
-          ...(name === "createCustomInstance" ? {} : {
+          ...(includeOptional ? {
             streamingMedia: { channel: "test", playerName: "test" },
-          }),
+          } : {}),
           onBeforeEventSend({ xdm }) {
             implementationDetails = xdm.implementationDetails;
             return false;
@@ -123,13 +122,13 @@ describe("@adobe/alloy npm package", () => {
         });
         await alloy("sendEvent");
         const { libraryInfo } = await alloy("getLibraryInfo");
-        results[name] = { implementationDetails, libraryInfo };
-        if (name !== "createCustomInstance") {
+        const entry = { implementationDetails, libraryInfo };
+        if (includeOptional) {
           const tracker = await alloy("getMediaAnalyticsTracker");
-          results[name].mediaVersion = tracker.version;
+          entry.mediaVersion = tracker.version;
           const rulesets = [
             ["sdk-version-match", ${JSON.stringify(manifest.version)}],
-            ["sdk-version-placeholder", "__VERSION__"],
+            ["sdk-version-other", "0.0.0-mismatch"],
           ].map(([id, version]) => ({
             id,
             scope: "web://example.com",
@@ -163,11 +162,47 @@ describe("@adobe/alloy npm package", () => {
             },
           });
           const { propositions } = await alloy("evaluateRulesets");
-          results[name].rulesetPropositionIds = propositions.map(({ id }) => id);
+          entry.rulesetPropositionIds = propositions.map(({ id }) => id);
         }
-      }
-      console.log(JSON.stringify(results));
+        return entry;
+      };
+
+      const window = new Window({ url: "https://example.com" });
+      globalThis.window = window;
+      globalThis.document = window.document;
+      Object.defineProperty(globalThis, "navigator", { value: window.navigator, configurable: true });
+
+      const { createInstance, createCustomInstance } = await import("@adobe/alloy");
+      const { default: setupBaseCode } = await import("@adobe/alloy/baseCode.js");
+      setupBaseCode(window, ["standalone"]);
+      await import("@adobe/alloy/standalone.js");
+
+      const results = {
+        createInstance: await collectVersionInfo(createInstance(), "createInstance"),
+        createCustomInstance: await collectVersionInfo(
+          createCustomInstance(),
+          "createCustomInstance",
+          { includeOptional: false },
+        ),
+        standalone: await collectVersionInfo(window.standalone, "standalone"),
+      };
       await window.happyDOM.close();
+
+      // Also execute the built CDN IIFE bundles (unminified and minified).
+      const alloyDistDir = path.join(process.cwd(), "node_modules/@adobe/alloy/dist");
+      for (const [key, filename] of [
+        ["cdn", "alloy.js"],
+        ["cdnMin", "alloy.min.js"],
+      ]) {
+        const cdnWindow = new Window({ url: "https://example.com" });
+        cdnWindow.structuredClone = globalThis.structuredClone;
+        setupBaseCode(cdnWindow, [key]);
+        cdnWindow.eval(fs.readFileSync(path.join(alloyDistDir, filename), "utf8"));
+        results[key] = await collectVersionInfo(cdnWindow[key], key);
+        await cdnWindow.happyDOM.close();
+      }
+
+      console.log(JSON.stringify(results));
     `;
     const output = execFileSync(
       process.execPath,
@@ -269,32 +304,67 @@ describe("@adobe/alloy npm package", () => {
     });
   });
 
-  describe.each(["createInstance", "createCustomInstance", "standalone"])(
-    "%s",
-    (name) => {
-      test("uses the browser package version in XDM implementationDetails", () => {
-        expect(result[name].implementationDetails).toEqual({
-          name: "https://ns.adobe.com/experience/alloy",
-          version: manifest.version,
-          environment: "browser",
-        });
+  test("has a valid semver package version", () => {
+    expect(semver.valid(manifest.version)).toBe(manifest.version);
+  });
+
+  test("bundles with plain Rollup without @rollup/plugin-json", async () => {
+    const entryPath = path.join(workPath, "rollup-consumer-entry.js");
+    fs.writeFileSync(
+      entryPath,
+      [
+        'export { createInstance, createCustomInstance } from "@adobe/alloy";',
+        'import "@adobe/alloy/standalone.js";',
+      ].join("\n"),
+    );
+    const bundle = await rollup({
+      input: entryPath,
+      plugins: [
+        resolve({
+          browser: true,
+          mainFields: ["module", "main", "browser"],
+          rootDir: workPath,
+        }),
+        commonjs(),
+      ],
+    });
+    try {
+      const { output } = await bundle.generate({ format: "es" });
+      expect(output[0].code).toContain(manifest.version);
+    } finally {
+      await bundle.close();
+    }
+  });
+
+  describe.each([
+    "createInstance",
+    "createCustomInstance",
+    "standalone",
+    "cdn",
+    "cdnMin",
+  ])("%s", (name) => {
+    test("uses the browser package version in XDM implementationDetails", () => {
+      expect(result[name].implementationDetails).toEqual({
+        name: "https://ns.adobe.com/experience/alloy",
+        version: manifest.version,
+        environment: "browser",
+      });
+    });
+
+    test("reports the browser package version in getLibraryInfo", () => {
+      expect(result[name].libraryInfo.version).toBe(manifest.version);
+    });
+
+    if (name !== "createCustomInstance") {
+      test("uses the browser package version in the media tracker", () => {
+        expect(result[name].mediaVersion).toBe(`WEBSDK ${manifest.version}`);
       });
 
-      test("reports the browser package version in getLibraryInfo", () => {
-        expect(result[name].libraryInfo.version).toBe(manifest.version);
+      test("uses the browser package version for RulesEngine ~sdkver", () => {
+        expect(result[name].rulesetPropositionIds).toEqual([
+          "sdk-version-match",
+        ]);
       });
-
-      if (name !== "createCustomInstance") {
-        test("uses the browser package version in the media tracker", () => {
-          expect(result[name].mediaVersion).toBe(`WEBSDK ${manifest.version}`);
-        });
-
-        test("uses the browser package version for RulesEngine ~sdkver", () => {
-          expect(result[name].rulesetPropositionIds).toEqual([
-            "sdk-version-match",
-          ]);
-        });
-      }
-    },
-  );
+    }
+  });
 });

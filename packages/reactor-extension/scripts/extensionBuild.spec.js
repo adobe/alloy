@@ -21,9 +21,14 @@ governing permissions and limitations under the License.
 
 import { exec } from "child_process";
 import fs from "fs";
+import { Window } from "happy-dom";
+import { createRequire } from "module";
 import os from "os";
 import path from "path";
+import semver from "semver";
+import { fileURLToPath } from "url";
 import { promisify } from "util";
+import vm from "vm";
 import AdmZip from "adm-zip";
 import { describe, expect, test as baseTest } from "vitest";
 
@@ -33,6 +38,194 @@ import {
 } from "./createExtensionPackage.mjs";
 
 const execAsync = promisify(exec);
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const extensionPackageJson = JSON.parse(
+  fs.readFileSync(path.join(dirname, "../package.json"), "utf8"),
+);
+const browserPackageJson = JSON.parse(
+  fs.readFileSync(path.join(dirname, "../../browser/package.json"), "utf8"),
+);
+const expectedExtensionVersion = extensionPackageJson.version;
+const expectedAlloyVersion = browserPackageJson.version;
+
+/**
+ * Load the packaged CommonJS `dist/lib/instanceManager/index.js` together with
+ * a specific `alloy.js` bundle inside a happy-dom browser realm (mirroring how
+ * Adobe Tags / Turbine executes extension delegates) and inspect the versions
+ * reported across getLibraryInfo, implementationDetails, media tracker, and
+ * RulesEngine.
+ *
+ * @param {string} forgeDir - Extracted extension directory.
+ * @param {string} alloyBundleCode - Contents of `dist/lib/alloy.js` to load.
+ * @param {string} instanceName - Alloy instance name to configure.
+ */
+const collectExtensionVersionInfo = async (
+  forgeDir,
+  alloyBundleCode,
+  instanceName,
+) => {
+  const window = new Window({ url: "https://example.com" });
+  try {
+    let implementationDetails;
+    const turbine = {
+      getExtensionSettings: () => ({
+        instances: [
+          {
+            name: instanceName,
+            edgeConfigId: `${instanceName}-datastream`,
+            orgId: `${instanceName}@AdobeOrg`,
+            context: [],
+            streamingMedia: { channel: "test", playerName: "test" },
+            onBeforeEventSend({ xdm }) {
+              implementationDetails = xdm.implementationDetails;
+              return false;
+            },
+          },
+        ],
+      }),
+      environment: { stage: "production" },
+      debugEnabled: false,
+      onDebugChanged: () => {},
+    };
+
+    const libDir = path.join(forgeDir, "dist/lib");
+    const forgeRequire = createRequire(path.join(forgeDir, "package.json"));
+    const moduleCache = new Map();
+    const resolveCjsPath = (fromDir, request) => {
+      const base = path.resolve(fromDir, request);
+      if (fs.existsSync(base) && fs.statSync(base).isFile()) {
+        return base;
+      }
+      if (fs.existsSync(`${base}.js`)) {
+        return `${base}.js`;
+      }
+      if (fs.existsSync(path.join(base, "index.js"))) {
+        return path.join(base, "index.js");
+      }
+      throw new Error(`Cannot resolve ${request} from ${fromDir}`);
+    };
+
+    const loadCjs = (filePath, codeOverride) => {
+      const normalized = path.resolve(filePath);
+      if (moduleCache.has(normalized)) {
+        return moduleCache.get(normalized).exports;
+      }
+      const mod = { exports: {} };
+      moduleCache.set(normalized, mod);
+      const code = codeOverride ?? fs.readFileSync(normalized, "utf8");
+      const localDir = path.dirname(normalized);
+      const localRequire = (req) => {
+        if (!req.startsWith(".")) {
+          return forgeRequire(req);
+        }
+        const resolved = resolveCjsPath(localDir, req);
+        if (resolved === path.join(libDir, "alloy.js")) {
+          return loadCjs(resolved, alloyBundleCode);
+        }
+        return loadCjs(resolved);
+      };
+      const wrapper = vm.runInThisContext(
+        `(function(exports, require, module, window, document, navigator, turbine, _satellite) {\n${code}\n})`,
+        { filename: normalized },
+      );
+      wrapper(
+        mod.exports,
+        localRequire,
+        mod,
+        window,
+        window.document,
+        window.navigator,
+        turbine,
+        { company: { orgId: `${instanceName}@AdobeOrg` } },
+      );
+      return mod.exports;
+    };
+
+    const previousWindow = globalThis.window;
+    const previousDocument = globalThis.document;
+    const previousNavigator = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "navigator",
+    );
+    globalThis.window = window;
+    globalThis.document = window.document;
+    Object.defineProperty(globalThis, "navigator", {
+      value: window.navigator,
+      configurable: true,
+    });
+    try {
+      const instanceManager = loadCjs(
+        path.join(libDir, "instanceManager/index.js"),
+      );
+      const alloy = instanceManager.getInstance(instanceName);
+      await alloy("sendEvent");
+      const { libraryInfo } = await alloy("getLibraryInfo");
+      const tracker = await alloy("getMediaAnalyticsTracker");
+      const rulesets = [
+        ["sdk-version-match", expectedAlloyVersion],
+        ["sdk-version-other", "0.0.0-mismatch"],
+      ].map(([id, version]) => ({
+        id,
+        scope: "web://example.com",
+        scopeDetails: { activity: { id } },
+        items: [
+          {
+            id: `${id}-ruleset`,
+            schema: "https://ns.adobe.com/personalization/ruleset-item",
+            data: {
+              version: 1,
+              rules: [
+                {
+                  condition: {
+                    type: "matcher",
+                    definition: {
+                      key: "~sdkver",
+                      matcher: "eq",
+                      values: [version],
+                    },
+                  },
+                  consequences: [
+                    {
+                      id: `${id}-consequence`,
+                      type: "schema",
+                      detail: {
+                        schema:
+                          "https://ns.adobe.com/personalization/json-content-item",
+                        data: { content: { id } },
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      }));
+      await alloy("applyResponse", {
+        renderDecisions: false,
+        responseBody: {
+          handle: [{ type: "personalization:decisions", payload: rulesets }],
+        },
+      });
+      const { propositions } = await alloy("evaluateRulesets");
+
+      return {
+        implementationDetails,
+        libraryVersion: libraryInfo.version,
+        mediaVersion: tracker.version,
+        rulesetPropositionIds: propositions.map(({ id }) => id),
+      };
+    } finally {
+      globalThis.window = previousWindow;
+      globalThis.document = previousDocument;
+      if (previousNavigator) {
+        Object.defineProperty(globalThis, "navigator", previousNavigator);
+      }
+    }
+  } finally {
+    await window.happyDOM.close();
+  }
+};
 
 /**
  * Run buildAlloy.mjs inside the staged forge dir and return the bundle source.
@@ -83,6 +276,10 @@ const test = baseTest
       return tmpDir;
     },
   )
+  .extend("prebuiltBundle", { scope: "file" }, async ({ extensionPackage }) => {
+    const zip = new AdmZip(extensionPackage);
+    return zip.readAsText("dist/lib/alloy.js");
+  })
   .extend(
     "buildAlloy",
     { scope: "file" },
@@ -177,6 +374,40 @@ describe(
         expect(offenders).toEqual([]);
       });
 
+      test("sets a valid semver version in extension.json matching package.json", ({
+        forgeDir,
+      }) => {
+        expect(semver.valid(expectedExtensionVersion)).toBe(
+          expectedExtensionVersion,
+        );
+        expect(semver.valid(expectedAlloyVersion)).toBe(expectedAlloyVersion);
+        const manifest = JSON.parse(
+          fs.readFileSync(path.join(forgeDir, "extension.json"), "utf8"),
+        );
+        expect(manifest.version).toBe(expectedExtensionVersion);
+      });
+
+      test("reports real Alloy and extension versions from the prebuilt zip bundle", async ({
+        forgeDir,
+        prebuiltBundle,
+      }) => {
+        const info = await collectExtensionVersionInfo(
+          forgeDir,
+          prebuiltBundle,
+          "extensionPrebuilt",
+        );
+        expect(info).toEqual({
+          implementationDetails: {
+            name: "https://ns.adobe.com/experience/alloy/reactor",
+            version: `${expectedAlloyVersion}+${expectedExtensionVersion}`,
+            environment: "browser",
+          },
+          libraryVersion: expectedAlloyVersion,
+          mediaVersion: `WEBSDK ${expectedAlloyVersion}`,
+          rulesetPropositionIds: ["sdk-version-match"],
+        });
+      });
+
       test("bundles @adobe/alloy and @adobe/alloy-core tarballs", ({
         forgeDir,
       }) => {
@@ -199,10 +430,25 @@ describe(
         expect(defaultBundle).toContain("ActivityCollector");
       });
 
-      test("replaces the alloy version placeholder", async ({
+      test("reports real Alloy and extension versions in the Forge-rebuilt bundle", async ({
+        forgeDir,
         defaultBundle,
       }) => {
-        expect(defaultBundle).not.toContain("__VERSION__");
+        const info = await collectExtensionVersionInfo(
+          forgeDir,
+          defaultBundle,
+          "extensionForge",
+        );
+        expect(info).toEqual({
+          implementationDetails: {
+            name: "https://ns.adobe.com/experience/alloy/reactor",
+            version: `${expectedAlloyVersion}+${expectedExtensionVersion}`,
+            environment: "browser",
+          },
+          libraryVersion: expectedAlloyVersion,
+          mediaVersion: `WEBSDK ${expectedAlloyVersion}`,
+          rulesetPropositionIds: ["sdk-version-match"],
+        });
       });
 
       test("can exclude activityCollector", async ({ buildAlloy }) => {

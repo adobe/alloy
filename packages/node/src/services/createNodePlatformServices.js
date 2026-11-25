@@ -73,8 +73,6 @@ const createNodePlatformServices = ({
   legacy: legacy || createNodeLegacyService(),
   globals: globals || createNodeGlobalsService(),
   request,
-  // Node ships unbundled source, so the build-time __VERSION__ placeholder
-  // never gets replaced — report the real package.json version instead.
   libraryVersion: packageJson.version,
 });
 
