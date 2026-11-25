@@ -23,6 +23,7 @@ import { exec } from "child_process";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import vm from "vm";
 import { promisify } from "util";
 import AdmZip from "adm-zip";
 import { describe, expect, test as baseTest } from "vitest";
@@ -189,6 +190,93 @@ describe(
             /^adobe-alloy-core-[^/]+\.tgz$/.test(name),
           ),
         ).toBe(true);
+      });
+    });
+
+    describe("packaged manifest", () => {
+      const collectLibPaths = (value, found = []) => {
+        if (Array.isArray(value)) {
+          value.forEach((item) => collectLibPaths(item, found));
+        } else if (value && typeof value === "object") {
+          Object.entries(value).forEach(([key, child]) => {
+            if (key === "libPath") {
+              found.push(child);
+            } else {
+              collectLibPaths(child, found);
+            }
+          });
+        }
+        return found;
+      };
+
+      test("every libPath resolves to a built file in the package", ({
+        forgeDir,
+      }) => {
+        const manifest = JSON.parse(
+          fs.readFileSync(path.join(forgeDir, "extension.json"), "utf8"),
+        );
+        const libPaths = collectLibPaths(manifest);
+        expect(libPaths.length).toBeGreaterThan(0);
+        const missing = libPaths.filter(
+          (libPath) =>
+            !fs.existsSync(
+              path.join(forgeDir, manifest.libBasePath ?? "", libPath),
+            ),
+        );
+        expect(missing).toEqual([]);
+      });
+
+      test("main and the expected delegates map to their built lib files", ({
+        forgeDir,
+      }) => {
+        const manifest = JSON.parse(
+          fs.readFileSync(path.join(forgeDir, "extension.json"), "utf8"),
+        );
+        const expectBuilt = (libPath) =>
+          expect(fs.existsSync(path.join(forgeDir, libPath))).toBe(true);
+
+        expect(manifest.main).toBe("dist/lib/instanceManager/index.js");
+        expectBuilt(manifest.main);
+
+        const expectedLibPaths = {
+          actions: {
+            "send-event": "dist/lib/actions/sendEvent/index.js",
+            "update-variable": "dist/lib/actions/updateVariable/index.js",
+            "redirect-with-identity":
+              "dist/lib/actions/redirectWithIdentity/index.js",
+            "apply-response": "dist/lib/actions/applyResponse/index.js",
+          },
+          dataElements: {
+            "xdm-object": "dist/lib/dataElements/xdmObject/index.js",
+            variable: "dist/lib/dataElements/variable/index.js",
+          },
+          events: {
+            "send-event-complete": "dist/lib/events/sendEventComplete/index.js",
+          },
+        };
+        for (const [kind, expected] of Object.entries(expectedLibPaths)) {
+          const actual = Object.fromEntries(
+            manifest[kind].map(({ name, libPath }) => [name, libPath]),
+          );
+          expect(actual).toMatchObject(expected);
+          Object.values(expected).forEach(expectBuilt);
+        }
+      });
+
+      test("the built alloy bundle evaluates and exports the runtime API", ({
+        defaultBundle,
+      }) => {
+        // Tags evaluates the bundle as a CommonJS module in a browser page;
+        // an empty window and navigator are enough for its module-level code to run.
+        const bundleModule = { exports: {} };
+        vm.runInNewContext(
+          `(function (module, exports, require) {${defaultBundle}\n})`,
+          { window: {}, navigator: { userAgent: "" } },
+        )(bundleModule, bundleModule.exports, () => ({}));
+        expect(typeof bundleModule.exports.createCustomInstance).toBe(
+          "function",
+        );
+        expect(Array.isArray(bundleModule.exports.components)).toBe(true);
       });
     });
 

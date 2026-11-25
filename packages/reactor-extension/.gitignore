@@ -1,6 +1,5 @@
 node_modules
 dist
-componentFixtureDist
 .cache
 coverage
 .sandbox

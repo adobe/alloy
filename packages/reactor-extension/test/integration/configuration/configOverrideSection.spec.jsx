@@ -16,6 +16,13 @@ import useView from "../helpers/useView";
 import ConfigurationView from "../../../src/view/configuration/configurationView";
 import { buildSettings } from "../helpers/settingsUtils";
 import field from "../helpers/field";
+import {
+  copyEnvironmentOverrides,
+  expectEnvironmentOverrides,
+  selectEnvironmentTab,
+  typedOverrideValues,
+  typeEnvironmentOverrides,
+} from "../helpers/actions/configOverrides";
 
 let view;
 let driver;
@@ -693,5 +700,117 @@ describe("Config overrides section", () => {
           },
         },
       });
+  });
+
+  it("copies every override from development to staging and on to production", async () => {
+    const values = {
+      datasetId: typedOverrideValues.datasetId,
+      idSyncContainerId: typedOverrideValues.idSyncContainerId,
+      propertyToken: typedOverrideValues.propertyToken,
+      reportSuites: typedOverrideValues.reportSuites,
+    };
+    const copyButton = (name) =>
+      field(view.getByTestId(`copyFrom${name}Button`));
+    await driver.init(buildSettingsWithDummyDatastream());
+
+    await developmentOverridesTab.expectSelected();
+    await typeEnvironmentOverrides(view, "development", values);
+    await copyButton("Development").expectHidden();
+    await copyButton("Staging").expectVisible();
+    await copyButton("Production").expectVisible();
+
+    await copyEnvironmentOverrides(view, "development", "staging");
+    await copyButton("Staging").expectHidden();
+    await copyButton("Development").expectVisible();
+    await copyButton("Production").expectVisible();
+    await expectEnvironmentOverrides(view, "staging", values);
+
+    await copyEnvironmentOverrides(view, "staging", "production");
+    await copyButton("Production").expectHidden();
+    await copyButton("Development").expectVisible();
+    await copyButton("Staging").expectVisible();
+    await expectEnvironmentOverrides(view, "production", values);
+
+    const expectedEnvironment = {
+      enabled: true,
+      com_adobe_experience_platform: {
+        datasets: { event: { datasetId: values.datasetId } },
+      },
+      com_adobe_analytics: { reportSuites: values.reportSuites },
+      com_adobe_identity: { idSyncContainerId: values.idSyncContainerId },
+      com_adobe_target: { propertyToken: values.propertyToken },
+    };
+    await driver
+      .expectSettings((s) => s.instances[0].edgeConfigOverrides)
+      .toEqual({
+        development: expectedEnvironment,
+        staging: expectedEnvironment,
+        production: expectedEnvironment,
+      });
+  }, 90_000);
+
+  it("allows the setting of overrides in only a single environment", async () => {
+    await driver.init();
+
+    await field(view.getByTestId("productionDatastreamField")).fill("PR123");
+    await selectEnvironmentTab(view, "development");
+    await overridesEnabled.selectOption("Enabled");
+    await experiencePlatformEnabled.selectOption("Enabled");
+    await eventDatasetOverride.fill("6336ff95ba16ca1c07b4c0db");
+
+    await driver.expectValidate().toBe(true);
+    await driver.expectSettings().toMatchObject({
+      components: { eventMerge: false },
+      instances: [
+        {
+          edgeConfigId: "PR123",
+          name: "alloy",
+          edgeConfigOverrides: {
+            development: {
+              enabled: true,
+              com_adobe_experience_platform: {
+                datasets: { event: { datasetId: "6336ff95ba16ca1c07b4c0db" } },
+              },
+            },
+          },
+        },
+      ],
+    });
+    await driver
+      .expectSettings((s) => Object.keys(s.instances[0].edgeConfigOverrides))
+      .toEqual(["development"]);
+  });
+
+  it("allows the load of the view with overrides settings in only a single environment", async () => {
+    await driver.init({
+      settings: {
+        components: { eventMerge: false },
+        instances: [
+          {
+            name: "alloy1",
+            edgeConfigId: "PR123",
+            edgeConfigOverrides: {
+              development: {
+                enabled: true,
+                com_adobe_experience_platform: {
+                  datasets: {
+                    event: { datasetId: "6336ff95ba16ca1c07b4c0db" },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    await developmentOverridesTab.expectSelected();
+    await overridesEnabled.expectValue("Enabled");
+    await experiencePlatformEnabled.expectValue("Enabled");
+    await eventDatasetOverride.expectValue("6336ff95ba16ca1c07b4c0db");
+    await stagingOverridesTab.click();
+    await overridesEnabled.expectValue("No override");
+    await productionOverridesTab.click();
+    await overridesEnabled.expectValue("No override");
   });
 });

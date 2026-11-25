@@ -34,6 +34,7 @@ When changes land on `main`, CI publishes based on the accumulated changesets an
 ### Prerelease mode
 
 To switch from releasing betas to stable releases, or back to betas, use the following commands:
+
 - Beta -> Stable: Run the [Trigger stable release](.github/workflows/exit-prerelease.yml) workflow from the Actions tab. This exits prerelease mode and triggers a stable publish automatically.
 - Stable -> Beta: happens automatically as part of the release process in [.github/workflows/changeset-publish.yml](.github/workflows/changeset-publish.yml).
 
@@ -79,7 +80,7 @@ Include in your pull request:
 - Ensure code adheres to our formatting and usage standards (`pnpm run format` and `pnpm run lint`)
 - Testing:
   - Detail your test cases comprehensively. PRs lacking tests will not be reviewed.
-  - Include unit and functional tests.
+  - Include unit and integration tests.
   - Test your feature in the [Sandbox](https://github.com/adobe/alloy/wiki/Running-the-sandbox-locally-over-HTTPS-on-Mac-OS).
 - Make sure the PR merges cleanly with the latest main.
 - Obtain 3 approvals from the Core Web SDK team to have your PR approved.

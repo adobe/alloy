@@ -16,6 +16,7 @@ import { sourceConditionResolve } from "../../vitest.shared.js";
 import { playwright } from "@vitest/browser-playwright";
 import react from "@vitejs/plugin-react";
 import macros from "unplugin-parcel-macros";
+import alloyBundle from "./test/runtime/plugins/alloyBundle.js";
 const isCi = !!process.env.CI;
 
 const packageCoverage = {
@@ -100,6 +101,33 @@ export const reactorExtensionTestProjects = [
       setupFiles: [
         "packages/reactor-extension/test/integration/helpers/setup.js",
       ],
+      coverage: packageCoverage,
+    },
+  }),
+  defineProject({
+    extends: false,
+    ...sourceConditionResolve,
+    plugins: [alloyBundle()],
+    test: {
+      name: "reactor-extension/runtime",
+      include: [
+        "packages/reactor-extension/test/runtime/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+      ],
+      testTimeout: 30_000,
+      hookTimeout: 30_000,
+      retry: isCi ? 2 : 0,
+      // Each file needs a fresh page: Alloy keeps state on window, in cookies
+      // and storage. Tests within a file get a fresh Alloy by re-evaluating
+      // the bundle (see helpers/appendLaunchLibrary.js).
+      isolate: true,
+      browser: {
+        enabled: true,
+        instances: [{ browser: "chromium" }],
+        provider: playwright(),
+        headless: true,
+        screenshotFailures: false,
+      },
+      setupFiles: ["packages/reactor-extension/test/runtime/helpers/setup.js"],
       coverage: packageCoverage,
     },
   }),

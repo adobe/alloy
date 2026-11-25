@@ -22,20 +22,47 @@ describe("Heading spacing", () => {
   });
 
   it.each([
-    ["S", 4, "18px", "800"],
-    ["XS", 5, "14px", "700"],
+    ["XXXL", "H1", 1, "58px", "800"],
+    ["XXL", "H1", 1, "45px", "800"],
+    ["XL", "H1", 1, "36px", "800"],
+    ["L", "H2", 2, "28px", "800"],
+    ["M", "H3", 3, "22px", "800"],
+    ["S", "H4", 4, "18px", "800"],
+    ["XS", "H5", 5, "14px", "700"],
+    ["XXS", "H6", 6, "14px", "800"],
   ])(
-    "uses native typography tokens for size %s",
-    async (size, level, fontSize, fontWeight) => {
+    "renders size %s as an %s heading with its native typography tokens",
+    async (size, tagName, level, fontSize, fontWeight) => {
       view = await renderView(() => (
-        <Heading size={size}>Section heading</Heading>
+        <Heading size={size}>Test Heading</Heading>
       ));
 
+      const heading = view.getByRole("heading", { level });
+      await expect.element(heading).toHaveTextContent("Test Heading");
+      expect(heading.element().tagName).toBe(tagName);
       await expect
-        .element(view.getByRole("heading", { level }))
+        .element(heading)
         .toHaveStyle({ "font-size": fontSize, "font-weight": fontWeight });
     },
   );
+
+  it("defaults to a size S h4 heading", async () => {
+    view = await renderView(() => <Heading>Test Heading</Heading>);
+
+    await expect
+      .element(view.getByRole("heading", { level: 4 }))
+      .toHaveStyle({ "font-size": "18px", "font-weight": "800" });
+  });
+
+  it("preserves an explicit bottom margin of size-300", async () => {
+    view = await renderView(() => (
+      <Heading marginBottom="size-300">Test Heading</Heading>
+    ));
+
+    await expect
+      .element(view.getByRole("heading", { level: 4 }))
+      .toHaveStyle({ "margin-bottom": "24px" });
+  });
 
   it("leaves h5 top spacing to the surrounding layout", async () => {
     view = await renderView(() => (

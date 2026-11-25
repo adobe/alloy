@@ -26,7 +26,7 @@
     "test:scripts": "vitest run --project scripts",
     "test:package": "vitest run --project=core/package --project=browser/package",
     "test:node-integration": "vitest run --project=node-integration",
-    "test:extension": "pnpm exec playwright install chromium && vitest run --project=reactor-extension/unit --project=reactor-extension/integration",
+    "test:extension": "pnpm exec playwright install chromium && vitest run --project=reactor-extension/unit --project=reactor-extension/integration --project=reactor-extension/runtime",
     "package:extension": "pnpm --filter reactor-extension-alloy run package",
     "sandbox:extension": "pnpm --filter reactor-extension-alloy run sandbox",
     "dev:extension": "pnpm --filter reactor-extension-alloy run dev",
