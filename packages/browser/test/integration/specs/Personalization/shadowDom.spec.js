@@ -14,7 +14,7 @@ import { http, HttpResponse } from "msw";
 import alloyConfig from "../../helpers/alloy/config.js";
 import { test, expect } from "../../helpers/testsSetup/extend.js";
 
-const edgeUrl = /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/;
+const edgeUrl = /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/interact/;
 
 test("C21886916: tracks a link click inside an open shadow root", async ({
   alloy,

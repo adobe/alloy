@@ -32,7 +32,7 @@ const metricItem = {
 };
 const makeHandler = (scope) =>
   http.post(
-    /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+    /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/interact/,
     async ({ request }) => {
       const body = await request.json();
       if (!body.events[0].query?.personalization?.schemas) {

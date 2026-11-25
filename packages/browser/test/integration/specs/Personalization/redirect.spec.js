@@ -26,7 +26,7 @@ const frameUrl = new URL(
 const redirectUrl = `${frameUrl}?redirected=true`;
 const makeRedirectHandler = (url) =>
   http.post(
-    /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/,
+    /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/interact/,
     async ({ request }) => {
       const body = await request.json();
       if (!body.events[0].query?.personalization?.schemas)

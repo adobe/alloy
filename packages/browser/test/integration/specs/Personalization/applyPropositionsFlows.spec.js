@@ -16,7 +16,7 @@ import alloyConfig from "../../helpers/alloy/config.js";
 import { test, expect } from "../../helpers/testsSetup/extend.js";
 import { appendHtmlToBody } from "../../helpers/utils/domHelpers.js";
 
-const interact = /https:\/\/edge.adobedc.net\/ee\/.*\/?v1\/interact/;
+const interact = /https:\/\/edge\.adobedc\.net\/ee\/.*\/?v1\/interact/;
 const pageWide = "__view__";
 const schemas = [
   "https://ns.adobe.com/personalization/default-content-item",
