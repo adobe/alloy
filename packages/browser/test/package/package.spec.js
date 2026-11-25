@@ -13,6 +13,9 @@ governing permissions and limitations under the License.
 import { execFileSync } from "child_process";
 import fs from "fs";
 import path from "path";
+import commonjs from "@rollup/plugin-commonjs";
+import resolve from "@rollup/plugin-node-resolve";
+import { rollup } from "rollup";
 import semver from "semver";
 import { fileURLToPath } from "url";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
@@ -303,6 +306,34 @@ describe("@adobe/alloy npm package", () => {
 
   test("has a valid semver package version", () => {
     expect(semver.valid(manifest.version)).toBe(manifest.version);
+  });
+
+  test("bundles with plain Rollup without @rollup/plugin-json", async () => {
+    const entryPath = path.join(workPath, "rollup-consumer-entry.js");
+    fs.writeFileSync(
+      entryPath,
+      [
+        'export { createInstance, createCustomInstance } from "@adobe/alloy";',
+        'import "@adobe/alloy/standalone.js";',
+      ].join("\n"),
+    );
+    const bundle = await rollup({
+      input: entryPath,
+      plugins: [
+        resolve({
+          browser: true,
+          mainFields: ["module", "main", "browser"],
+          rootDir: workPath,
+        }),
+        commonjs(),
+      ],
+    });
+    try {
+      const { output } = await bundle.generate({ format: "es" });
+      expect(output[0].code).toContain(manifest.version);
+    } finally {
+      await bundle.close();
+    }
   });
 
   describe.each([

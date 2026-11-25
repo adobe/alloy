@@ -17,6 +17,7 @@ import fs from "fs";
 import { spawn } from "child_process";
 import run from "./helpers/run.mjs";
 import { watch, inputDir, outputDir } from "./helpers/options.mjs";
+import { writeVersionModule } from "../../../scripts/helpers/writeVersionModule.js";
 
 // Runtime tests need a .sandbox directory to run
 const sandboxDir = path.join(outputDir, "../.sandbox");
@@ -33,31 +34,6 @@ const extensionVersionInFile = path.join(
 );
 const ignoredFiles = `${alloyInFile},${extensionVersionInFile}`;
 
-const writeExtensionVersionModule = () => {
-  const { version } = JSON.parse(
-    fs.readFileSync(path.join(inputDir, "../package.json"), "utf8"),
-  );
-  const outFile = path.join(libOutDir, "constants/extensionVersion.js");
-  fs.mkdirSync(path.dirname(outFile), { recursive: true });
-  fs.writeFileSync(
-    outFile,
-    `/*
-Copyright 2026 Adobe. All rights reserved.
-This file is licensed to you under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License. You may obtain a copy
-of the License at http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-OF ANY KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License.
-*/
-
-module.exports = ${JSON.stringify(version)};
-`,
-  );
-};
-
 // ignore alloy.js because it will be built separately in buildAlloy.js, and
 // extensionVersion.js because we emit a static literal version module below.
 try {
@@ -69,7 +45,11 @@ try {
     ignoredFiles,
     "--presets=@babel/preset-env",
   ]);
-  writeExtensionVersionModule();
+  writeVersionModule({
+    packageJsonPath: path.join(inputDir, "../package.json"),
+    outputPath: path.join(libOutDir, "constants/extensionVersion.js"),
+    format: "cjs",
+  });
 } catch (error) {
   console.error(error);
   process.exit(1);

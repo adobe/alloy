@@ -161,6 +161,17 @@ describe("@adobe/alloy-core npm package", () => {
     expect(semver.valid(manifest.version)).toBe(manifest.version);
   });
 
+  test("emits a static version module without JSON imports", () => {
+    const builtVersionModule = fs.readFileSync(
+      path.join(packagePath, "dist/constants/libraryVersion.js"),
+      "utf8",
+    );
+    expect(builtVersionModule).toContain(
+      `export default ${JSON.stringify(manifest.version)};`,
+    );
+    expect(builtVersionModule).not.toContain(".json");
+  });
+
   test("reports real version numbers from the built package", () => {
     const script = `
       const { createInstance } = await import("@adobe/alloy-core");
