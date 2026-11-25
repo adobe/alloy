@@ -546,46 +546,65 @@ describe("C5594871: getIdentity works with adobe_mc query string parameter", () 
 });
 
 describe("C5594872: An expired adobe_mc query string parameter is not used", () => {
-  test("ignores the ECID from an expired adobe_mc and generates a new one", async ({
-    alloy,
-    worker,
+  // Live edge: the original also verifies the ECID returned by Experience Edge.
+  test("C5594872: ignores expired adobe_mc but uses the same ECID when fresh", async ({
     networkRecorder,
   }) => {
     await deleteCookies();
-
-    worker.use(interactWithIdentityHandler);
-
     const expiredEcid = createRandomEcid();
-    // TTL is 5 minutes (300s); use a timestamp 400s in the past
-    const expiredTimestamp = Date.now() / 1000 - 400;
-    const expiredAdobeMC = createAdobeMC({
-      id: expiredEcid,
-      timestamp: expiredTimestamp,
-    });
+    const config = {
+      orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
+      datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+      edgeDomain: "edge.adobedc.net",
+      edgeBasePath: "ee-pre-prd",
+    };
 
     await withTemporaryUrl(async ({ applyUrl, currentHref }) => {
       const url = new URL(currentHref);
-      url.searchParams.set("adobe_mc", expiredAdobeMC);
+      url.searchParams.set(
+        "adobe_mc",
+        createAdobeMC({
+          id: expiredEcid,
+          orgId: config.orgId,
+          timestamp: Date.now() / 1000 - 400,
+        }),
+      );
       applyUrl(url);
 
-      await alloy("configure", {
-        ...alloyConfig,
-        thirdPartyCookiesEnabled: false,
+      await window.alloy("configure", config);
+      await window.alloy("sendEvent", {});
+      const expiredCall = await networkRecorder.findCall(/v1\/interact/, {
+        retries: 40,
       });
-      await alloy("sendEvent", {});
-    });
+      expect(
+        JSON.stringify(expiredCall.request.body.xdm?.identityMap || {}),
+      ).not.toContain(expiredEcid);
+      expect(ecidFromResponse(expiredCall)).toBeTruthy();
+      expect(ecidFromResponse(expiredCall)).not.toBe(expiredEcid);
 
-    const call = await networkRecorder.findCall(/v1\/interact/);
-    expect(call).toBeDefined();
-    // The ECID from the mocked response should be used, not the expired one
-    const returnedEcid = call.response.body?.handle?.find(
-      (h) => h.type === "identity:result",
-    )?.payload?.[0]?.id;
-    expect(returnedEcid).toBeDefined();
-    expect(returnedEcid).not.toBe(expiredEcid);
-  });
+      await deleteCookies();
+      await cookieStore.delete(MAIN_IDENTITY_COOKIE_NAME);
+      networkRecorder.reset();
+      await reloadAlloy();
+      url.searchParams.set(
+        "adobe_mc",
+        createAdobeMC({ id: expiredEcid, orgId: config.orgId }),
+      );
+      applyUrl(url);
+      await window.alloy("configure", config);
+      await window.alloy("sendEvent", {});
+      const freshCall = await networkRecorder.findCall(/v1\/interact/, {
+        retries: 40,
+      });
+      expect(freshCall.request.body.xdm?.identityMap?.ECID?.[0]?.id).toBe(
+        expiredEcid,
+      );
+      expect(ecidFromResponse(freshCall)).toBe(expiredEcid);
+    });
+  }, 30000);
 });
 
+// Formerly TestCafe C5594865 (packages/browser/test/functional/specs/Identity/C5594865.js): append adobe_mc on the first domain, navigate to a second domain, and verify the returned and cached ECID match. Not ported: browser-mode runs on one origin, so the approximation below cannot verify real cross-domain cookie isolation or edge identity persistence.
 describe("C5594865: Identity maintained across domains via adobe_mc", () => {
   test("a fresh domain state reuses the ECID passed via adobe_mc", async ({
     alloy,
@@ -619,6 +638,7 @@ describe("C5594865: Identity maintained across domains via adobe_mc", () => {
   });
 });
 
+// Formerly TestCafe C5594866 (packages/browser/test/functional/specs/Identity/C5594866.js): establish different ECIDs on two domains, append the second domain's identity to the first domain URL, and verify Edge returns that identity both on return and after reload. Not ported: browser-mode has one origin, and the canned response below cannot verify two independent cookie jars or live Edge persistence.
 describe("C5594866: Identity changed across domains via adobe_mc", () => {
   test("a different domain identity overrides the existing ECID and persists", async ({
     alloy,
@@ -643,6 +663,10 @@ describe("C5594866: Identity changed across domains via adobe_mc", () => {
     await deleteCookies();
     networkRecorder.reset();
     await reloadAlloy();
+    document.cookie = `${MAIN_IDENTITY_COOKIE_NAME}=${DEMDEX_IDENTITY_COOKIE_VALUE}; path=/`;
+    expect(getCookieValue(MAIN_IDENTITY_COOKIE_NAME)).toBe(
+      DEMDEX_IDENTITY_COOKIE_VALUE,
+    );
     await withTemporaryUrl(async ({ applyUrl, currentHref }) => {
       const destinationUrl = new URL(currentHref);
       destinationUrl.search = new URL(url).search;
@@ -803,14 +827,8 @@ describe("C6842980: FPID from the identityMap is used to generate an ECID", () =
   }, 30000);
 });
 
-// NOTE: Functional C6842981 supplies the FPID via a custom first-party cookie
-// (`myFPID`). That cookie-to-FPID mapping is configured at the datastream/edge,
-// not in alloy — alloy has no FPID-specific code or `fpidCookieName` option
-// (confirmed: no `fpid` reference anywhere in source). At the alloy layer this
-// collapses to the same observable behavior as C6842980: alloy forwards the
-// FPID from the identityMap, which is what we assert here.
-
-describe("C6842981: FPID from identityMap produces a stable ECID across requests", () => {
+// Formerly TestCafe C6842981 (packages/browser/test/functional/specs/Identity/C6842981.js): set a random myFPID cookie on alloyio.com, send to firstparty.alloyio.com with datastream bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83, clear the identity cookie, and assert edge derives the same ECID. Not ported: the localhost runner cannot set an alloyio.com cookie; a live ee-pre-prd attempt with a localhost myFPID produced different ECIDs because that cookie is not sent to firstparty.alloyio.com.
+describe("C6842981: FPID from identityMap is forwarded across requests", () => {
   const fpidValue = "stable-fpid-value-for-test-6842981";
   const fpidEvent = {
     xdm: {
@@ -824,7 +842,7 @@ describe("C6842981: FPID from identityMap produces a stable ECID across requests
     await deleteCookies();
   });
 
-  test("consistent FPID in identityMap produces the same ECID on repeat requests", async ({
+  test("the same identityMap FPID is forwarded on repeat requests", async ({
     alloy,
     worker,
     networkRecorder,
@@ -1059,9 +1077,55 @@ describe("C14699834: Identity is still established if the first request fails", 
   });
 });
 
+// Formerly TestCafe C19160486 (packages/browser/test/functional/specs/Identity/C19160486.js): request ECID and CORE first on each of two domains and compare them, including the null CORE/different ECID branch when third-party cookies are unsupported. Not ported: browser-mode runs on a single origin and cannot test real cross-domain third-party cookie support.
+// Formerly TestCafe C19160486 (packages/browser/test/functional/specs/Identity/C19160486.js): sendEvent on both domains before getIdentity, assert no acquire calls on either, and compare ECID/CORE with and without third-party cookie support. Not ported: browser-mode cannot navigate between two independent origins while retaining the runner and recorder.
 describe("C19160486: CORE identity namespace behavior", () => {
   beforeEach(async () => {
     await deleteCookies();
+  });
+
+  test("C19160486: getIdentity first acquires both ECID and CORE", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(coreAcquireHandler);
+    await alloy("configure", {
+      ...alloyConfig,
+      thirdPartyCookiesEnabled: true,
+    });
+    const result = await alloy("getIdentity", { namespaces: ["ECID", "CORE"] });
+    expect(result.identity).toEqual({ ECID: MOCK_ECID, CORE: MOCK_CORE });
+    expect(result.identity.ECID).not.toBe(result.identity.CORE);
+    const calls = await networkRecorder.findCalls(/v1\/identity\/acquire/);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].request.body.query.identity.fetch).toEqual([
+      "ECID",
+      "CORE",
+    ]);
+    expect(await networkRecorder.findCalls(/v1\/interact/)).toHaveLength(0);
+  });
+
+  test("C19160486: sendEvent caches ECID and CORE for getIdentity without acquire", async ({
+    alloy,
+    worker,
+    networkRecorder,
+  }) => {
+    worker.use(demdexHandler, coreAcquireHandler);
+    await alloy("configure", {
+      ...alloyConfig,
+      thirdPartyCookiesEnabled: true,
+    });
+    await alloy("sendEvent");
+    const call = await networkRecorder.findCall(/v1\/interact/);
+    expect(new URL(call.request.url).hostname).toBe("adobedc.demdex.net");
+    expect(call.request.body.query.identity.fetch).toEqual(["ECID", "CORE"]);
+    const result = await alloy("getIdentity", { namespaces: ["ECID", "CORE"] });
+    expect(result.identity).toEqual({ ECID: DEMDEX_ECID, CORE: MOCK_CORE });
+    expect(result.identity.ECID).not.toBe(result.identity.CORE);
+    expect(
+      await networkRecorder.findCalls(/v1\/identity\/acquire/),
+    ).toHaveLength(0);
   });
 
   test("third-party cookies disabled: only ECID is fetched (not CORE)", async ({
@@ -1261,6 +1325,123 @@ describe("Legacy identity cookie migration (migrationEnabled)", () => {
 });
 
 describe("C10922: demdex is used for the first request", () => {
+  const legacyEcid = "16908443662402872073525706953453086963";
+  const legacyAmcvValue = `77933605%7CMCIDTS%7C18290%7CMCMID%7C${legacyEcid}%7CvVersion%7C4.5.1`;
+  const firstPartyHandler = http.post(
+    /https:\/\/firstparty\.alloyio\.com\/ee\/.*\/?v1\/interact/,
+    async () =>
+      new HttpResponse(
+        await readFile(
+          `${server.config.root}/packages/browser/test/integration/helpers/mocks/sendEventWithIdentityCookieResponse.json`,
+        ),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-adobe-edge": "or2;35",
+          },
+        },
+      ),
+  );
+
+  [
+    ["enabled with first-party edge", true, "firstparty.alloyio.com", false],
+    ["enabled with legacy migration", true, "edge.adobedc.net", true],
+    ["disabled with third-party edge", false, "edge.adobedc.net", false],
+    ["disabled with first-party edge", false, "firstparty.alloyio.com", false],
+    ["disabled with legacy migration", false, "firstparty.alloyio.com", true],
+  ].forEach(([description, enabled, edgeDomain, migration]) => {
+    test(`C10922: ${description} routes the first request correctly and subsequent requests to edge`, async ({
+      alloy,
+      worker,
+      networkRecorder,
+    }) => {
+      document.cookie = `${LEGACY_IDENTITY_COOKIE_NAME}=${legacyAmcvValue}; path=/`;
+      worker.use(demdexHandler, interactWithIdentityHandler, firstPartyHandler);
+      const config = {
+        ...alloyConfig,
+        edgeDomain,
+        thirdPartyCookiesEnabled: enabled,
+        idMigrationEnabled: migration,
+      };
+      await alloy("configure", config);
+      await alloy("sendEvent");
+      const firstCall = await networkRecorder.findCall(/v1\/interact/);
+      expect(new URL(firstCall.request.url).hostname).toBe(
+        enabled ? "adobedc.demdex.net" : edgeDomain,
+      );
+      if (migration) {
+        expect(firstCall.request.body.xdm.identityMap.ECID[0].id).toBe(
+          legacyEcid,
+        );
+      }
+      expect(getCookieValue(MAIN_IDENTITY_COOKIE_NAME)).toBeTruthy();
+
+      networkRecorder.reset();
+      await reloadAlloy();
+      await window.alloy("configure", config);
+      await window.alloy("sendEvent");
+      const secondCall = await networkRecorder.findCall(/v1\/interact/);
+      expect(new URL(secondCall.request.url).hostname).toBe(edgeDomain);
+      expect(
+        await networkRecorder.findCalls(/v1\/identity\/acquire/),
+      ).toHaveLength(0);
+    });
+  });
+
+  // The first-party permutation also covers C148846's unsupported-browser CNAME route.
+  [
+    ["third-party edge", "edge.adobedc.net", false],
+    ["first-party edge", "firstparty.alloyio.com", false],
+    ["legacy migration", "edge.adobedc.net", true],
+  ].forEach(([description, edgeDomain, migration]) => {
+    test(`C10922: ${description} avoids demdex when the browser defaults to blocking third-party cookies`, async ({
+      worker,
+      networkRecorder,
+    }) => {
+      const userAgent = vi
+        .spyOn(navigator, "userAgent", "get")
+        .mockReturnValue(
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:69.0) Gecko/20100101 Firefox/69.0",
+        );
+      try {
+        // Alloy captures the user agent when its instance is initialized.
+        await reloadAlloy();
+        document.cookie = `${LEGACY_IDENTITY_COOKIE_NAME}=${legacyAmcvValue}; path=/`;
+        worker.use(
+          demdexHandler,
+          interactWithIdentityHandler,
+          firstPartyHandler,
+        );
+        const config = {
+          ...alloyConfig,
+          edgeDomain,
+          thirdPartyCookiesEnabled: true,
+          idMigrationEnabled: migration,
+        };
+        await window.alloy("configure", config);
+        await window.alloy("sendEvent");
+        const firstCall = await networkRecorder.findCall(/v1\/interact/);
+        expect(new URL(firstCall.request.url).hostname).toBe(edgeDomain);
+        expect(firstCall.request.body.query.identity.fetch).toEqual(["ECID"]);
+        if (migration) {
+          expect(firstCall.request.body.xdm.identityMap.ECID[0].id).toBe(
+            legacyEcid,
+          );
+        }
+        expect(getCookieValue(MAIN_IDENTITY_COOKIE_NAME)).toBeTruthy();
+
+        networkRecorder.reset();
+        await reloadAlloy();
+        await window.alloy("configure", config);
+        await window.alloy("sendEvent");
+        const secondCall = await networkRecorder.findCall(/v1\/interact/);
+        expect(new URL(secondCall.request.url).hostname).toBe(edgeDomain);
+      } finally {
+        userAgent.mockRestore();
+      }
+    });
+  });
+
   test("first request routes through demdex, reload skips it", async ({
     alloy,
     worker,

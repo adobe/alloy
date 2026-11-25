@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 /*
- * Migration notes (functional → integration):
+ * Migration notes (TestCafe functional → integration):
  *
  * C28755 — sendEvent fetches personalization with expected schemas/scopes.
  *   Covered here with a deterministic VEC proposition response.
@@ -21,30 +21,26 @@ governing permissions and limitations under the License.
  * C28757 — VEC offer renders when renderDecisions=true (DOM action setHtml).
  *   Covered by personalizationRender.spec.js.
  *
- * C28758 — ShadowDOM selectors. Skipped (complex DOM fixture setup from
- *   functional test fixtures; out of scope for unit-style integration tests).
+ * C28758 — ShadowDOM selectors. Covered by shadowDom.spec.js.
  *
- * C28759 — Inline script execution. Skipped (needs live Target activity with
- *   script injection; custom-code handler only covers the counter pattern).
- *   Already covered for the counter case by deduplication_spa.spec.js.
+ * C28759 — Inline script execution. Covered by personalizationRender.spec.js.
  *
  * C28760 — Notification sent after VEC render.
  *   Covered by personalizationRender.spec.js.
  *
- * C44363 — QA Mode propositions. Skipped (requires live Target QA cookie;
- *   not reproducible with MSW mocks).
+ * C44363 — QA Mode propositions. Covered against live Edge by
+ *   liveTarget.spec.js.
  *
- * C205528 — Redirect offer. Skipped (redirect requires navigating the page,
- *   hard to assert in integration context without a real redirect activity).
+ * C205528 — Redirect offer. Covered by redirect.spec.js, which runs Alloy in
+ *   an iframe so the redirect can navigate without unloading the runner.
  *
  * C205529 — Offer based on device XDM field. The live Target evaluation is
  *   replaced by a request-sensitive handler that returns the captured offer
  *   only for the original device field value.
  *
- * C753469 — CSP nonce on injected script tags. Skipped (requires CSP headers
- *   configured on the test page itself).
+ * C753469 — CSP nonce on injected script tags. Covered by csp.spec.js.
  *
- * C753470 — CSP nonce on injected style tags. Skipped (same as C753469).
+ * C753470 — CSP nonce on injected style tags. Covered by csp.spec.js.
  *
  * C782718 — SPA auto-rendering + view notifications.
  *   Covered by personalizationSpa.spec.js.
@@ -52,28 +48,29 @@ governing permissions and limitations under the License.
  * C782719 — SPA with auto-rendering disabled.
  *   Covered by personalizationSpa.spec.js.
  *
- * C1234567 — Content cards subscribe/display/interact.
- *   Covered by AJO/content_cards_and_event_history.spec.js.
+ * C1234567 — Content cards subscribe/display/interact, expiry, and
+ *   collectEvent tracking. Covered by AJO/content_cards_and_event_history.spec.js.
  *
- * C3272624 — Profile attribute targeting. Skipped (requires live Target
- *   activity using profile attributes; cannot mock server-side evaluation).
+ * C3272624 — Profile attribute targeting. Covered against live Edge by
+ *   liveTarget.spec.js.
  *
- * C5298194 ×2 — Include propositions on every request. Skipped per migration
- *   plan baseline failures.
+ * C5298194 ×2 — Include propositions on every request.
+ *   Covered by propositionsOnEveryRequest.spec.js.
  *
  * C5805675 — Default content offers delivered + display notification.
  *   Covered by personalizationRender.spec.js.
  *
- * C5805676 — Merged metric propositions. Skipped per migration plan.
+ * C5805676 — Merged metric propositions. Covered by mergedMetrics.spec.js,
+ *   including a live Edge check of the server-side merge.
  *
  * C6364797 — applyPropositions renders page-wide propositions.
- *   Covered by applyPropositions.spec.js.
+ *   Covered by applyPropositionsFlows.spec.js.
  *
  * C6364798 — applyPropositions re-renders SPA view.
- *   Covered by applyPropositions.spec.js and personalizationSpa.spec.js.
+ *   Covered by applyPropositionsFlows.spec.js.
  *
  * C6364799 — applyPropositions renders html-content-item with metadata.
- *   Covered by applyPropositions.spec.js.
+ *   Covered by applyPropositionsFlows.spec.js.
  *
  * C6364800 — applyResponse accepts response, updates DOM, returns decisions.
  *   The live Target activity is replaced by a deterministic response containing
@@ -82,24 +79,25 @@ governing permissions and limitations under the License.
  * C6984408 — Target mbox cookie included when targetMigrationEnabled=true.
  *   Covered here.
  *
- * C7494472 — AJO offers (test.skip in original). Skipped.
+ * C7494472 — AJO offers. Disabled in the original suite; not ported.
  *
  * C7498683 — mbox cookie NOT included when targetMigrationEnabled not set.
  *   Covered here.
  *
- * C7638574 — AJO custom surface (test.skip in original). Skipped.
+ * C7638574 — AJO custom surface. Disabled in the original suite; not ported.
  *
  * C7878996 — Manual notification event without propositionEventType succeeds.
  *   Covered here.
  *
- * C8631576 — Client hints low entropy. Skipped (needs browser-level sec-ch-ua
- *   headers; not injectable via MSW).
+ * C8631576 — Client hints low entropy. Request headers are covered against
+ *   live Edge by liveTarget.spec.js; Target qualification is not ported.
  *
- * C8631577 — Client hints high entropy. Skipped (same as C8631576).
+ * C8631577 — Client hints high entropy. Covered against live Edge by
+ *   liveTarget.spec.js.
  *
- * C9932846 — AJO click-tracking (test.skip in original). Skipped.
+ * C9932846 — AJO click-tracking. Disabled in the original suite; not ported.
  *
- * C11389844 — AJO SPA (test.skip in original). Skipped.
+ * C11389844 — AJO SPA. Disabled in the original suite; not ported.
  *
  * C14286730 — Target SPA click interaction includes viewName.
  *   Covered by personalizationSpa.spec.js.
@@ -111,8 +109,7 @@ governing permissions and limitations under the License.
  *   Covered by personalizationRender.spec.js.
  *
  * C14299421 — Prehiding style removed when rendering fails.
- *   Skipped (requires a live activity that targets an element not present;
- *   hard to guarantee with MSW mock responses).
+ *   Covered by personalizationRender.spec.js.
  *
  * C14299422 — Prehiding style removed when personalization payload returned.
  *   Covered by personalizationRender.spec.js.
@@ -133,7 +130,9 @@ governing permissions and limitations under the License.
  * C21636439 — Conflict resolution: show one in-app message sorted by rank.
  *   Covered by AJO/inapp_messages.spec.js.
  *
- * C21886916 — Shadow-DOM click tracking. Skipped per migration plan.
+ * C21886916 — Shadow-DOM click tracking. Open shadow roots are covered by
+ *   shadowDom.spec.js; the closed-root case was disabled in the original
+ *   suite and is not ported.
  *
  * C22098199 — Non-idempotent actions not applied multiple times.
  *   Covered by personalizationRender.spec.js.

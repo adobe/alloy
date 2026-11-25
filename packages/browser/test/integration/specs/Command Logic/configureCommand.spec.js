@@ -32,7 +32,7 @@ describe("Configure command", () => {
       consoleSpy.mockRestore();
     });
 
-    test("logs a warning when only edgeConfigId exits in the config object", async ({
+    test("C11634155: logs a warning when only edgeConfigId exists in the config object", async ({
       alloy,
     }) => {
       const config = structuredClone(alloyConfig);
@@ -52,7 +52,7 @@ describe("Configure command", () => {
       ).toBe(true);
     });
 
-    test("logs a warning when edgeConfigId and datastreamId exits in the config object", async ({
+    test("C11634155: logs a warning when edgeConfigId and datastreamId exist in the config object", async ({
       alloy,
     }) => {
       const config = structuredClone(alloyConfig);
@@ -72,7 +72,9 @@ describe("Configure command", () => {
     });
   });
 
-  test("throws error when no options are provided", async ({ alloy }) => {
+  test("C13816: throws error when no options are provided", async ({
+    alloy,
+  }) => {
     let error;
 
     try {
@@ -86,7 +88,9 @@ describe("Configure command", () => {
     expect(error.message).toContain("documentation");
   });
 
-  test("throws error when it is called multple times", async ({ alloy }) => {
+  test("C2588: throws error when it is called multiple times", async ({
+    alloy,
+  }) => {
     let error;
 
     try {
@@ -101,7 +105,7 @@ describe("Configure command", () => {
     );
   });
 
-  test("returns a promise that resolves with an empty result object", async ({
+  test("C3484892: returns a promise that resolves with an empty result object", async ({
     alloy,
   }) => {
     const result = await alloy("configure", alloyConfig);

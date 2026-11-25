@@ -180,7 +180,10 @@ const getCookie = async (name) =>
     (await cookieStore.get(decodeURIComponent(name)))
   )?.value;
 
-const loadAtJs = async (majorVersion, { ecid } = {}) => {
+const loadAtJs = async (
+  majorVersion,
+  { ecid, orgId = alloyConfig.orgId } = {},
+) => {
   if (ecid) {
     await cookieStore.set({
       name: AMCV_COOKIE,
@@ -196,7 +199,7 @@ const loadAtJs = async (majorVersion, { ecid } = {}) => {
   visitorScript.dataset.legacyTarget = "visitor";
   visitorScript.textContent = visitorSource;
   document.head.appendChild(visitorScript);
-  window.visitor = window.Visitor.getInstance(alloyConfig.orgId);
+  window.visitor = window.Visitor.getInstance(orgId);
   window.targetGlobalSettings = {
     bodyHidingEnabled: false,
     globalMboxAutoCreate: false,
@@ -522,7 +525,7 @@ describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
     );
   });
 
-  test("C8085779: At.js 1.x → Web SDK shares identity and visitor profile", async ({
+  test("C8085779: At.js 1.x → Web SDK shares identity and visitor profile (mocked services)", async ({
     alloy,
     worker,
     networkRecorder,
@@ -561,7 +564,7 @@ describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
     );
   });
 
-  test("C8085780: At.js 2.x → Web SDK shares identity and visitor profile", async ({
+  test("C8085780: At.js 2.x → Web SDK shares identity and visitor profile (mocked services)", async ({
     alloy,
     worker,
     networkRecorder,
@@ -598,5 +601,114 @@ describe("Migration (Web SDK ↔ At.js mixed-mode)", () => {
     expect(proposition.items[0].data.content).toBe(
       getProfileContent(favoriteColor),
     );
+  });
+
+  // Only live Target and Edge can establish that a Target profile update is shared.
+  [
+    ["C8085779", 1, "green-1234"],
+    ["C8085780", 2, "red-1234"],
+  ].forEach(([id, majorVersion, favoriteColor]) => {
+    test(`${id}: At.js ${majorVersion}.x → Web SDK shares identity and visitor profile (live services)`, async ({
+      networkRecorder,
+    }) => {
+      await loadAtJs(majorVersion, {
+        orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
+      });
+      await fetchAtJsOffer({
+        mbox: "target-global-mbox",
+        params: { "profile.favoriteColor": favoriteColor },
+      });
+
+      const targetCalls = await networkRecorder.findCalls(
+        /https?:\/\/[^/]+\.tt\.omtrdc\.net\/(?:m2\/unifiedjsqeonly\/mbox\/json|rest\/v1\/delivery)/,
+      );
+      const targetCall = targetCalls.find(({ request }) => {
+        if (majorVersion === 1) {
+          const params = new URL(request.url).searchParams;
+          return (
+            params.get("mbox") === "target-global-mbox" &&
+            params.get("profile.favoriteColor") === favoriteColor
+          );
+        }
+        // at.js 2.x serializes the target-global-mbox as execute.pageLoad.
+        return (
+          request.body.execute?.pageLoad?.profileParameters?.favoriteColor ===
+          favoriteColor
+        );
+      });
+      expect(targetCall).toBeDefined();
+      expect([200, 207]).toContain(targetCall.response.status);
+      const targetEcid =
+        majorVersion === 1
+          ? new URL(targetCall.request.url).searchParams.get("mboxMCGVID")
+          : targetCall.request.body.id.marketingCloudVisitorId;
+      expect(targetEcid).toBeTruthy();
+      expect(
+        decodeURIComponent(
+          await getCookie("AMCV_5BFE274A5F6980A50A495C08%40AdobeOrg"),
+        ),
+      ).toContain(`MCMID|${targetEcid}`);
+      const frame = document.createElement("iframe");
+      try {
+        const loaded = new Promise((resolve, reject) => {
+          frame.onload = resolve;
+          frame.onerror = reject;
+        });
+        frame.src =
+          "/packages/browser/test/integration/specs/Migration/migrationFrame.html";
+        document.body.appendChild(frame);
+        await loaded;
+        const frameDocument = frame.contentDocument;
+        const baseCode = frameDocument.createElement("script");
+        baseCode.textContent = await readFile(
+          `${server.config.root}/packages/browser/distTest/baseCode.min.js`,
+        );
+        frameDocument.body.appendChild(baseCode);
+        const sdk = frameDocument.createElement("script");
+        sdk.src = "/packages/browser/dist/alloy.js";
+        await new Promise((resolve, reject) => {
+          sdk.onload = resolve;
+          sdk.onerror = reject;
+          frameDocument.body.appendChild(sdk);
+        });
+
+        expect(frame.contentWindow.Visitor).toBeUndefined();
+        expect(frame.contentWindow.adobe?.target).toBeUndefined();
+        const frameAlloy = frame.contentWindow.alloy;
+        await frameAlloy("configure", {
+          orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
+          datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+          edgeDomain: "edge.adobedc.net",
+          edgeBasePath: "ee-pre-prd",
+          idMigrationEnabled: true,
+          targetMigrationEnabled: true,
+        });
+        await frameAlloy("sendEvent", { decisionScopes: [MIGRATION_LOCATION] });
+
+        const edgeCall = await networkRecorder.findCall(
+          /https:\/\/(?:edge\.adobedc\.net|adobedc\.demdex\.net)\/ee-pre-prd\/(?:[^/]+\/)?v1\/interact/,
+        );
+        expect(edgeCall).toBeDefined();
+        expect(edgeCall.request.body.xdm?.identityMap?.ECID?.[0]?.id).toBe(
+          targetEcid,
+        );
+        const edgeEcid =
+          majorVersion === 1
+            ? edgeCall.response.body.handle
+                .find(({ type }) => type === "identity:result")
+                .payload.find(({ namespace }) => namespace.code === "ECID").id
+            : edgeCall.request.body.xdm.identityMap.ECID[0].id;
+        expect(edgeEcid).toBe(targetEcid);
+        const proposition = edgeCall.response.body.handle
+          .filter(({ type }) => type === "personalization:decisions")
+          .flatMap(({ payload }) => payload)
+          .find(({ scope }) => scope === MIGRATION_LOCATION);
+        expect(proposition.items[0].data.content).toBe(
+          getProfileContent(favoriteColor),
+        );
+      } finally {
+        frame.remove();
+      }
+    }, 30000);
   });
 });

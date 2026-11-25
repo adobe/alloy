@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import { http, HttpResponse } from "msw";
+import { cdp } from "vitest/browser";
 import {
   test,
   expect,
@@ -53,7 +55,7 @@ describe("Send event command", () => {
     expect(destinationUrls.length).toBeGreaterThan(0);
   });
 
-  test("response should contain cookie destinations if turned on in Blackbird", async ({
+  test("C12412: logs an attempt to set a cookie destination from a mocked Edge response", async ({
     alloy,
     worker,
     networkRecorder,
@@ -85,5 +87,36 @@ describe("Send event command", () => {
       domain: "alloyio.com",
       expires: 30,
     });
+  });
+
+  // Formerly TestCafe C12412 (packages/browser/test/functional/specs/Audiences/C12412.js): on HTTPS, a cookie destination has SameSite=None and Secure. Not ported: the Vitest page runs on http://localhost, so Alloy omits them. Configure the integration Vite server with HTTPS and a trusted TLS certificate to test this branch.
+  test("C12412: stores the destination cookie on the root path", async ({
+    alloy,
+    worker,
+  }) => {
+    worker.use(
+      http.post(/https:\/\/edge\.adobedc\.net\/ee\/.*v1\/interact/, () =>
+        HttpResponse.json({
+          handle: [
+            {
+              type: "activation:push",
+              payload: [
+                {
+                  type: "cookie",
+                  spec: { name: "C12412", value: "test=C12412", ttlDays: 30 },
+                },
+              ],
+            },
+          ],
+        }),
+      ),
+    );
+    await alloy("configure", alloyConfig);
+    await alloy("sendEvent");
+
+    expect(document.cookie).toContain("C12412=test%3DC12412");
+    const { cookies } = await cdp().send("Network.getAllCookies");
+    const destination = cookies.find((cookie) => cookie.name === "C12412");
+    expect(destination).toMatchObject({ value: "test%3DC12412", path: "/" });
   });
 });

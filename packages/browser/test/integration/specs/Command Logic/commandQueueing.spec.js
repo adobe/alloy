@@ -29,7 +29,7 @@ describe("Command queueing", () => {
     consoleSpy.mockRestore();
   });
 
-  test("works", async () => {
+  test("C2580: queues commands until the library loads", async () => {
     await setupBaseCode();
     const p = getOnCommandResolvedPromise("getLibraryInfo");
     window.alloy("configure", {

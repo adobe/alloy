@@ -32,6 +32,7 @@ import {
   test,
   expect,
   beforeEach,
+  vi,
 } from "../../helpers/testsSetup/extend.js";
 import {
   sendEventHandler,
@@ -139,6 +140,84 @@ const makeSetHtmlHandler = (selector, content) =>
       return emptyEventResponse();
     },
   );
+
+test("C28759: inline scripts in rendered VEC offers execute", async ({
+  alloy,
+  worker,
+  networkRecorder,
+}) => {
+  const target = document.createElement("div");
+  target.id = "inline-script-target";
+  document.body.appendChild(target);
+  try {
+    worker.use(
+      makeSetHtmlHandler(
+        "#inline-script-target",
+        '<div id="C28759">Here is an awesome target offer!</div><script id="evar123">setTimeout(function onTimeout() { window.someEvar123 = 1; }, 200);</script>',
+      ),
+    );
+    await alloy("configure", alloyConfig);
+    const result = await alloy("sendEvent", { renderDecisions: true });
+    await expect.poll(() => window.someEvar123).toBe(1);
+    expect(target.querySelector("#C28759").textContent).toBe(
+      "Here is an awesome target offer!",
+    );
+    expect(target.querySelectorAll("#evar123")).toHaveLength(1);
+    expect(target.querySelector("#evar123").textContent).toContain(
+      "setTimeout(function onTimeout() { window.someEvar123 = 1; }, 200);",
+    );
+    expect(result.propositions.some((p) => p.renderAttempted)).toBe(true);
+    expect(result.decisions).toEqual([]);
+    const calls = await networkRecorder.findCalls(/v1\/interact/, {
+      retries: 30,
+      delayMs: 100,
+      minCalls: 2,
+    });
+    expect(calls).toHaveLength(2);
+    expect(
+      calls[0].request.body.events[0].query.personalization.decisionScopes,
+    ).toEqual(["__view__"]);
+    expect(
+      calls[0].request.body.events[0].query.personalization.schemas,
+    ).toEqual(expect.arrayContaining(personalizationSchemas));
+  } finally {
+    target.remove();
+    delete window.someEvar123;
+  }
+});
+
+test("C14299421: prehiding is removed even when an action fails", async ({
+  alloy,
+  worker,
+}) => {
+  const style = document.createElement("style");
+  style.id = "alloy-prehiding";
+  style.textContent = "body { visibility: hidden; }";
+  document.head.appendChild(style);
+  const warn = vi.spyOn(console, "warn");
+  try {
+    worker.use(makeSetHtmlHandler("#missing-c14299421-target", "offer"));
+    await alloy("configure", { ...alloyConfig, debugEnabled: true });
+    expect(document.getElementById("alloy-prehiding")).toBe(style);
+    const result = await alloy("sendEvent", { renderDecisions: true });
+    expect(result.propositions.some((p) => p.renderAttempted)).toBe(true);
+    expect(document.getElementById("alloy-prehiding")).toBeNull();
+    await expect
+      .poll(
+        () =>
+          warn.mock.calls.some((args) =>
+            args.some((arg) =>
+              String(arg).includes("Failed to execute action"),
+            ),
+          ),
+        { timeout: 8000 },
+      )
+      .toBe(true);
+  } finally {
+    warn.mockRestore();
+    style.remove();
+  }
+}, 12000);
 
 // ---------------------------------------------------------------------------
 // C28757 — VEC offer renders when renderDecisions=true

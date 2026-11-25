@@ -37,8 +37,9 @@ const getIdentityCookie = (call) => {
   return identityCookie;
 };
 
+// Only Chromium's third-party-cookie-supported path is covered; the browser-default-unsupported path is not.
 describe("Setting edgeDomain to CNAME", () => {
-  test("results in server calls made to this CNAME", async ({
+  test("C148846: results in server calls made to this CNAME", async ({
     worker,
     alloy,
     networkRecorder,
@@ -67,5 +68,32 @@ describe("Setting edgeDomain to CNAME", () => {
       /\/ee\/.*v1\/interact/.test(call.url),
     );
     expect(edgeCalls).toHaveLength(1);
+  });
+
+  // Live Edge and the real CNAME are required to verify first-party routing.
+  test("C148846: live Edge routes through the first-party CNAME", async ({
+    alloy,
+    networkRecorder,
+  }) => {
+    await alloy("configure", {
+      orgId: "5BFE274A5F6980A50A495C08@AdobeOrg",
+      datastreamId: "bc1a10e0-aee4-4e0e-ac5b-cdbb9abbec83",
+      edgeDomain: FIRST_PARTY_DOMAIN,
+      edgeBasePath: "ee-pre-prd",
+      thirdPartyCookiesEnabled: true,
+    });
+    await alloy("sendEvent");
+    await alloy("sendEvent");
+
+    const calls = await networkRecorder.findCalls(
+      /\/ee-pre-prd\/.*v1\/interact/,
+      { minCalls: 2 },
+    );
+    expect(calls).toHaveLength(2);
+    expect(calls[0].request.url).toMatch(
+      /^https:\/\/adobedc\.demdex\.net\/ee-pre-prd\/v1\/interact/,
+    );
+    expect(getIdentityCookie(calls[0])).toBeDefined();
+    expect(calls[1].request.url).toContain(FIRST_PARTY_DOMAIN);
   });
 });
