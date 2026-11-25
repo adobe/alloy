@@ -416,20 +416,6 @@ export default defineConfig([
     },
   },
   {
-    name: "alloy/tests/functional",
-    files: ["packages/**/test/functional/**/*.{cjs,js,mjs,jsx}"],
-    settings: {
-      "import/core-modules": ["@adobe/alloy", "testcafe", "uuid"],
-    },
-    languageOptions: {
-      globals: {
-        test: "readonly",
-        fixture: "readonly",
-        ...globals.node,
-      },
-    },
-  },
-  {
     name: "alloy/core-tests-browser-globals",
     files: ["packages/core/test/**/*.{cjs,js,mjs,jsx}"],
     ignores: [
@@ -633,7 +619,6 @@ export default defineConfig([
     name: "alloy/reactor-extension/view-and-tests",
     files: [
       "packages/reactor-extension/src/view/**/*.{js,jsx}",
-      "packages/reactor-extension/test/functional/**/*.{js,jsx}",
       "packages/reactor-extension/test/integration/**/*.{js,jsx}",
     ],
     rules: {
@@ -665,20 +650,6 @@ export default defineConfig([
       "vitest/expect-expect": [
         "error",
         { assertFunctionNames: ["expect", "assert", "**.expect*"] },
-      ],
-    },
-  },
-  // Extension functional tests use testcafe/browser patterns; relax vitest assertion rules
-  {
-    name: "alloy/reactor-extension/functional-tests",
-    files: ["packages/reactor-extension/test/functional/**/*.{cjs,js,mjs,jsx}"],
-    rules: {
-      "vitest/expect-expect": "off",
-      "vitest/no-identical-title": "off",
-      "vitest/no-disabled-tests": "off",
-      "unused-imports/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^(_|t)$" },
       ],
     },
   },

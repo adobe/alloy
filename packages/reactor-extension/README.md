@@ -8,3 +8,4 @@ For documentation on how to use the extension, please see the [user documentatio
 
 For documentation on how to contribute to the extension, please see the [developer documentation](https://github.com/adobe/reactor-extension-alloy/wiki).
 
+Run the extension's unit, integration, and runtime tests from the repository root with `pnpm run test:extension`.
